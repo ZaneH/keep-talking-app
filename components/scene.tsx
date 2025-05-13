@@ -1,18 +1,13 @@
 "use client";
 
-import {
-  Environment,
-  PerspectiveCamera,
-  useGLTF,
-  useHelper,
-} from "@react-three/drei";
+import { Environment, PerspectiveCamera, useGLTF } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { DepthOfField, EffectComposer } from "@react-three/postprocessing";
-import { useEffect, useRef } from "react";
-import { RectAreaLightHelper } from "three/examples/jsm/Addons.js";
+import { useEffect } from "react";
 import Bomb from "./bomb";
 import { materials } from "./materials";
-import { DirectionalLightHelper } from "three";
+import { GameServiceClient } from "@/generated/proto/GameServiceClientPb";
+import { CreateGameRequest } from "@/generated/proto/player_pb";
 
 export default function Scene() {
   const { camera, gl } = useThree();
@@ -26,6 +21,11 @@ export default function Scene() {
     };
 
     onResize();
+    (async () => {
+      const gameService = new GameServiceClient("http://localhost:8080");
+      const response = await gameService.createGame(new CreateGameRequest());
+      console.log(response.toObject());
+    })();
 
     window.addEventListener("resize", onResize);
     return () => {
