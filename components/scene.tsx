@@ -16,15 +16,10 @@ import { DirectionalLightHelper } from "three";
 
 export default function Scene() {
   const { camera, gl } = useThree();
-  const light = useRef<any>(null);
-  const light2 = useRef<any>(null);
-  const light3 = useRef<any>(null);
-  const light4 = useRef<any>(null);
-  const light5 = useRef<any>(null);
   useEffect(() => {
     // TODO: Might be useless. PerspectiveCamera has a aspect property
     const onResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      (camera as any).aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
 
       gl.setSize(window.innerWidth, window.innerHeight);
