@@ -1,3 +1,5 @@
+"use client";
+
 import { OrbitControls, SoftShadows, Stats } from "@react-three/drei";
 import { Canvas as Canvas3 } from "@react-three/fiber";
 import Scene from "./scene";
