@@ -15,7 +15,7 @@ export default function Table() {
           scale={[0.106, 1.058, 0.106]}
         />
         <mesh
-          castShadow
+          // castShadow
           receiveShadow
           geometry={nodes.Frame.geometry}
           material={materials["Darker Orange"]}
@@ -24,7 +24,7 @@ export default function Table() {
           scale={[5.492, 12, 5.492]}
         />
         <mesh
-          castShadow
+          // castShadow
           receiveShadow
           geometry={nodes.Glass.geometry}
           material={materials.Window}
@@ -33,15 +33,15 @@ export default function Table() {
         />
       </group>
       <mesh
-        castShadow
+        // castShadow
         receiveShadow
         geometry={nodes.Floor.geometry}
         material={materials["Orange PBSR"]}
         scale={[5.492, 12, 5.492]}
       />
       <mesh
-        castShadow
-        receiveShadow
+        // castShadow
+        // receiveShadow
         geometry={nodes.Roof.geometry}
         material={materials["Orange PBSR"]}
         position={[0, 2.73, 0]}
@@ -49,15 +49,15 @@ export default function Table() {
         scale={[5.492, 12, 5.492]}
       />
       <mesh
-        castShadow
+        // castShadow
         receiveShadow
         geometry={nodes.WallAccent.geometry}
         material={materials["Darker Orange"]}
         position={[1.674, 0.369, 0]}
       />
       <mesh
-        castShadow
-        receiveShadow
+        // castShadow
+        // receiveShadow
         geometry={nodes.WallB.geometry}
         material={materials["Orange PBSR"]}
         position={[0, 1.674, -1.674]}
@@ -65,8 +65,8 @@ export default function Table() {
         scale={[5.492, 12, 5.492]}
       />
       <mesh
-        castShadow
-        receiveShadow
+        // castShadow
+        // receiveShadow
         geometry={nodes.WallF.geometry}
         material={materials["Orange PBSR"]}
         position={[0, 1.674, 1.674]}
@@ -74,8 +74,8 @@ export default function Table() {
         scale={[5.492, 12, 5.492]}
       />
       <mesh
-        castShadow
-        receiveShadow
+        // castShadow
+        // receiveShadow
         geometry={nodes.WallL.geometry}
         material={materials["Orange PBSR"]}
         position={[-1.674, 1.674, 0]}
@@ -83,8 +83,8 @@ export default function Table() {
         scale={[5.492, 12, 5.492]}
       />
       <mesh
-        castShadow
-        receiveShadow
+        // castShadow
+        // receiveShadow
         geometry={nodes.WallR.geometry}
         material={materials["Orange PBSR"]}
         position={[1.674, 1.674, 0]}

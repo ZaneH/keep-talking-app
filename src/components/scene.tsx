@@ -11,7 +11,7 @@ import Table from "./table";
 
 export default function Scene() {
   const lightRef = useRef<any>(null);
-  const lightRef2 = useRef<any>(null);
+  // const lightRef2 = useRef<any>(null);
   const lightRef3 = useRef<any>(null);
   const lightRef4 = useRef<any>(null);
   const lightRef5 = useRef<any>(null);
@@ -47,19 +47,19 @@ export default function Scene() {
         <directionalLight
           position={[1, 1.9, 1.1]}
           scale={[0.5, 0.5, 0.5]}
-          intensity={1.0}
+          intensity={0.75}
           castShadow
           shadow-normalBias={0.05}
           ref={lightRef5}
         />
-        <directionalLight
+        {/* <directionalLight
           position={[-0.9, 1.9, -1.0]}
           intensity={0.8}
           scale={[0.5, 0.5, 0.5]}
           castShadow
           shadow-normalBias={0.05}
           ref={lightRef2}
-        />
+        /> */}
         <ambientLight intensity={0.2} />
         <pointLight
           position={[0, 1.5, 0]}
