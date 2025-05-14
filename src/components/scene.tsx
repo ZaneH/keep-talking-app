@@ -1,14 +1,13 @@
 "use client";
 
+import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { Environment, PerspectiveCamera, useGLTF } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { DepthOfField, EffectComposer } from "@react-three/postprocessing";
 import { useEffect } from "react";
+import { GameServiceClient } from "../generated/proto/game.client";
 import Bomb from "./bomb";
 import { materials } from "./materials";
-import { GameServiceClient } from "../generated/proto/game.client";
-import { CreateGameRequest } from "../generated/proto/player";
-import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 
 export default function Scene() {
   const { camera, gl } = useThree();
