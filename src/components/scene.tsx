@@ -6,8 +6,9 @@ import { DepthOfField, EffectComposer } from "@react-three/postprocessing";
 import { useEffect } from "react";
 import Bomb from "./bomb";
 import { materials } from "./materials";
-import { GameServiceClient } from "@/generated/proto/GameServiceClientPb";
-import { CreateGameRequest } from "@/generated/proto/player_pb";
+import { GameServiceClient } from "../generated/proto/game.client";
+import { CreateGameRequest } from "../generated/proto/player";
+import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 
 export default function Scene() {
   const { camera, gl } = useThree();
@@ -22,9 +23,12 @@ export default function Scene() {
 
     onResize();
     (async () => {
-      const gameService = new GameServiceClient("http://localhost:8080");
-      const response = await gameService.createGame(new CreateGameRequest());
-      console.log(response.toObject());
+      const transport = new GrpcWebFetchTransport({
+        baseUrl: "http://localhost:8080",
+      });
+      const gameService = new GameServiceClient(transport);
+      const response = await gameService.createGame({});
+      console.log(response.response);
     })();
 
     window.addEventListener("resize", onResize);
