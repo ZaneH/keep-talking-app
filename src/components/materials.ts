@@ -15,7 +15,7 @@ export const materials = {
     metalness: 0.0,
     toneMapped: false,
   }),
-  Glass: new MeshPhongMaterial({
+  Window: new MeshPhongMaterial({
     color: 0x000000,
     opacity: 0.85,
     transparent: true,
@@ -24,8 +24,57 @@ export const materials = {
   Silver: new MeshStandardMaterial({
     color: "#BFB4B0",
     opacity: 1,
-    roughness: 0.6,
-    metalness: 0.4,
+    roughness: 1.0,
+    metalness: 0.0,
+    toneMapped: false,
+  }),
+  "Silver Dark": new MeshStandardMaterial({
+    color: "#BFB4B0",
+    opacity: 1,
+    roughness: 0.7,
+    metalness: 0.0,
+    toneMapped: false,
+  }),
+  "Plastic Dark": new MeshStandardMaterial({
+    color: "#000000",
+    opacity: 1,
+    roughness: 0.7,
+    metalness: 0,
+    toneMapped: false,
+  }),
+  "Plastic Light": new MeshStandardMaterial({
+    color: "#FFFFFF",
+    opacity: 1,
+    roughness: 0.7,
+    metalness: 0,
+    toneMapped: false,
+  }),
+  "Solved light": new MeshStandardMaterial({
+    color: "#00FF00",
+    opacity: 1,
+    roughness: 0.7,
+    metalness: 0,
+    toneMapped: false,
+  }),
+  "Button Red": new MeshStandardMaterial({
+    color: "#FF0000",
+    opacity: 1,
+    roughness: 0.7,
+    metalness: 0,
+    toneMapped: false,
+  }),
+  "Button Green": new MeshStandardMaterial({
+    color: "#00FF00",
+    opacity: 1,
+    roughness: 0.7,
+    metalness: 0,
+    toneMapped: false,
+  }),
+  "Unlit light": new MeshStandardMaterial({
+    color: "#000000",
+    opacity: 1,
+    roughness: 0.7,
+    metalness: 0,
     toneMapped: false,
   }),
 };

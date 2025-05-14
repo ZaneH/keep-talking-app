@@ -1,18 +1,22 @@
 "use client";
 
-import { OrbitControls, SoftShadows, Stats } from "@react-three/drei";
+import { OrbitControls, Stats } from "@react-three/drei";
 import { Canvas as Canvas3 } from "@react-three/fiber";
-import Scene from "./scene";
 import * as THREE from "three";
+import Scene from "./scene";
 
 export default function Canvas() {
   return (
     <Canvas3
+      shadows
       gl={{
         antialias: true,
         toneMapping: THREE.AgXToneMapping,
+        shadowMap: {
+          enabled: true,
+          type: THREE.PCFSoftShadowMap,
+        } as any,
       }}
-      shadows
     >
       <OrbitControls
         maxDistance={1.75}
@@ -21,7 +25,7 @@ export default function Canvas() {
         //
         maxPolarAngle={Math.PI / 2 + 0.1}
       />
-      <SoftShadows />
+      {/* <SoftShadows samples={40} /> */}
       <Stats />
       <Scene />
     </Canvas3>
