@@ -7,7 +7,7 @@ import { useControls } from "./controls-provider";
 export default function Table() {
   const { nodes, materials } = useGLTF("/table-room.glb") as any;
   const controls = useControls();
-  const { zoomState, setZoomState } = useGameStore();
+  const { setSelectedModule, zoomState, setZoomState } = useGameStore();
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -22,6 +22,7 @@ export default function Table() {
 
         e.stopPropagation();
         setZoomState("idle");
+        setSelectedModule(undefined);
         const orbitalControls = controls.current;
         orbitalControls.object.position.set(0, 0, 10);
         orbitalControls.target.set(0, 0, 0);
