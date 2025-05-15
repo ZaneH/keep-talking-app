@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  ContactShadows,
-  Environment,
-  PerspectiveCamera,
-} from "@react-three/drei";
+import { Environment, PerspectiveCamera } from "@react-three/drei";
 import {
   BrightnessContrast,
   EffectComposer,

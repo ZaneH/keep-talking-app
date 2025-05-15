@@ -1,12 +1,25 @@
-import { Edges, useGLTF, useSelect } from "@react-three/drei";
+import { Text, useGLTF, useSelect } from "@react-three/drei";
 
 export default function ClockModule() {
   const { nodes, materials } = useGLTF("/clock-module.glb") as any;
-  const selected = useSelect((state) => state.selected);
+  const selected = useSelect();
   console.log(selected);
 
   return (
     <group position={[0, 0.629, 0.1]}>
+      <Text
+        fontSize={0.05}
+        position={[0, 0.033, 0.034]}
+        color={"green"}
+        font="/fonts/Seven_Segment.ttf"
+      >
+        00:00
+        <meshStandardMaterial
+          emissive={"green"}
+          emissiveIntensity={3.5}
+          color={"green"}
+        />
+      </Text>
       <mesh
         castShadow
         receiveShadow

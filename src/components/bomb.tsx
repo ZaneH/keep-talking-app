@@ -1,5 +1,5 @@
 import { Select, useGLTF } from "@react-three/drei";
-import ClockModule from "./modules/clock";
+import ClockModule from "./modules/clock-module";
 import BigButtonModule from "./modules/big-button-module";
 import SimpleWiresModule from "./modules/simple-wires-module";
 // import { materials } from "./materials";
