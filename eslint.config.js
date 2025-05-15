@@ -34,6 +34,7 @@ export default [
           caughtErrors: "all",
           ignoreRestSiblings: false,
           reportUsedIgnorePattern: false,
+          argsIgnorePattern: "^_",
         },
       ],
       "@typescript-eslint/no-explicit-any": [
