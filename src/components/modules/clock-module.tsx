@@ -1,4 +1,7 @@
 import { Text, useGLTF } from "@react-three/drei";
+import { useEffect, useRef } from "react";
+import { useGameStore } from "../../store/use-game-store";
+import { useHighlight } from "../highlight-provider";
 import Module from "./module";
 
 function TextLabel() {
@@ -19,11 +22,20 @@ function TextLabel() {
   );
 }
 
-export default function ClockModule() {
+export default function ClockModule({ id = "clock" }) {
   const { nodes, materials } = useGLTF("/clock-module.glb") as any;
+  const { highlight, unhighlight } = useHighlight();
+  const outlineRef = useRef(null);
+  const { zoomState, selectedModuleUUID } = useGameStore();
+
+  useEffect(() => {
+    if (zoomState !== "idle") {
+      unhighlight(outlineRef);
+    }
+  }, [zoomState]);
 
   return (
-    <Module userData={{ id: "clock" }} position={[0, 0.629, 0.1]}>
+    <Module id={id} position={[0, 0.629, 0.1]}>
       <TextLabel />
       <mesh
         castShadow
@@ -31,6 +43,15 @@ export default function ClockModule() {
         geometry={nodes.ClockModule_1.geometry}
         material={materials["Silver Dark"]}
         scale={[1.028, 1.028, 1]}
+        ref={outlineRef}
+        onPointerEnter={() => {
+          if (selectedModuleUUID !== id) {
+            highlight(outlineRef);
+          }
+        }}
+        onPointerLeave={() => {
+          unhighlight(outlineRef);
+        }}
       >
         <group position={[0.191, 0.099, -0.074]} scale={[0.972, 0.972, 1]}>
           <mesh

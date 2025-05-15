@@ -1,11 +1,45 @@
-import { useGLTF } from "@react-three/drei";
+import { useCursor, useGLTF } from "@react-three/drei";
+import { useState } from "react";
+import { useGameStore } from "../store/use-game-store";
+import { useControls } from "./controls-provider";
 // import { materials } from "./materials";
 
 export default function Table() {
   const { nodes, materials } = useGLTF("/table-room.glb") as any;
+  const controls = useControls();
+  const { zoomState, setZoomState } = useGameStore();
+
+  const [isHovered, setIsHovered] = useState(false);
+
+  useCursor(isHovered);
 
   return (
-    <group>
+    <group
+      onClick={(e) => {
+        if (zoomState !== "module-view") {
+          return;
+        }
+
+        e.stopPropagation();
+        setZoomState("idle");
+        const orbitalControls = controls.current;
+        orbitalControls.object.position.set(0, 0, 10);
+        orbitalControls.target.set(0, 0, 0);
+        setIsHovered(false);
+      }}
+      onPointerEnter={(e) => {
+        if (zoomState === "module-view") {
+          setIsHovered(true);
+          e.stopPropagation();
+        }
+      }}
+      onPointerLeave={(e) => {
+        if (zoomState === "module-view") {
+          setIsHovered(false);
+          e.stopPropagation();
+        }
+      }}
+    >
       <group position={[0, 0.916, -1.674]}>
         <mesh
           castShadow

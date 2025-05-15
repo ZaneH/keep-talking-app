@@ -1,15 +1,23 @@
 import { useGLTF } from "@react-three/drei";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { useGameStore } from "../../store/use-game-store";
 import { useHighlight } from "../highlight-provider";
 import Module from "./module";
 
-export default function SimpleWiresModule() {
+export default function SimpleWiresModule({ id = "simplewires" }) {
   const { nodes, materials } = useGLTF("/simple-wires.glb") as any;
   const { highlight, unhighlight } = useHighlight();
   const outlineRef = useRef(null);
+  const { zoomState, selectedModuleUUID } = useGameStore();
+
+  useEffect(() => {
+    if (zoomState !== "idle") {
+      unhighlight(outlineRef);
+    }
+  }, [zoomState]);
 
   return (
-    <Module position={[-0.195, 0.629, 0.1]}>
+    <Module id={id} position={[-0.195, 0.629, 0.1]}>
       <mesh
         castShadow
         receiveShadow
@@ -18,7 +26,9 @@ export default function SimpleWiresModule() {
         scale={[1.028, 1.028, 1]}
         ref={outlineRef}
         onPointerEnter={() => {
-          highlight(outlineRef);
+          if (selectedModuleUUID !== id) {
+            highlight(outlineRef);
+          }
         }}
         onPointerLeave={() => {
           unhighlight(outlineRef);

@@ -1,6 +1,30 @@
-export default function Module({ children, ...props }: any) {
+import { useCursor } from "@react-three/drei";
+import { useState } from "react";
+
+export default function Module({
+  id,
+  children,
+  onPointerEnter,
+  onPointerLeave,
+  ...props
+}: any) {
+  const [isHovered, setIsHovered] = useState(false);
+  useCursor(isHovered);
+
   return (
-    <group name="module" {...props}>
+    <group
+      userData={{ id }}
+      name="module"
+      onPointerEnter={(e) => {
+        setIsHovered(true);
+        onPointerEnter?.(e);
+      }}
+      onPointerLeave={(e) => {
+        setIsHovered(false);
+        onPointerLeave?.(e);
+      }}
+      {...props}
+    >
       {children}
     </group>
   );

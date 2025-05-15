@@ -1,5 +1,6 @@
 import { Select, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
+import { useGameStore } from "../store/use-game-store";
 import { getModuleRoot } from "../utils/node-finder";
 import { useControls } from "./controls-provider";
 import BigButtonModule from "./modules/big-button-module";
@@ -8,11 +9,17 @@ import SimpleWiresModule from "./modules/simple-wires-module";
 
 export default function Bomb() {
   const { nodes, materials } = useGLTF("/bomb.glb") as any;
+  const { selectedModuleUUID, setSelectedModule, setZoomState } =
+    useGameStore();
   const controlsRef = useControls();
 
   return (
     <>
-      <group dispose={null} position={[0, 0.73, 0]}>
+      <group
+        dispose={null}
+        position={[0, 0.73, 0]}
+        onPointerEnter={(e) => e.stopPropagation()}
+      >
         <mesh
           castShadow
           receiveShadow
@@ -71,6 +78,13 @@ export default function Bomb() {
           if (!selected || !selected[0]) return;
 
           const module = getModuleRoot(selected[0]);
+          if (selectedModuleUUID === module.userData["id"]) {
+            return;
+          }
+
+          setSelectedModule(module.userData["id"]);
+          setZoomState("module-view");
+
           const pos = module.getWorldPosition(new THREE.Vector3());
 
           const orbitalControls = controlsRef.current;
