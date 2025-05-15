@@ -4,9 +4,11 @@ import { Environment, PerspectiveCamera } from "@react-three/drei";
 import {
   BrightnessContrast,
   EffectComposer,
+  Outline,
 } from "@react-three/postprocessing";
 import { useRef } from "react";
 import Bomb from "./bomb";
+import { useHighlight } from "./highlight-provider";
 import Table from "./table";
 
 export default function Scene() {
@@ -15,6 +17,7 @@ export default function Scene() {
   const lightRef3 = useRef<any>(null);
   const lightRef4 = useRef<any>(null);
   const lightRef5 = useRef<any>(null);
+  const { selected } = useHighlight();
 
   // useEffect(() => {
   //   (async () => {
@@ -107,9 +110,17 @@ export default function Scene() {
       </group>
 
       <Environment preset="night" background blur={0.8} />
-      <EffectComposer>
+      <EffectComposer autoClear={false}>
         {/* <DepthOfField focusDistance={0.01} focalLength={0.1} bokehScale={2} /> */}
         <BrightnessContrast contrast={0.15} />
+        <Outline
+          selection={selected}
+          visibleEdgeColor={"green" as any}
+          hiddenEdgeColor={"green" as any}
+          edgeStrength={100}
+          xRay
+          blur
+        />
       </EffectComposer>
       <PerspectiveCamera
         makeDefault

@@ -1,11 +1,14 @@
 import { Select, useGLTF } from "@react-three/drei";
-import ClockModule from "./modules/clock-module";
+import * as THREE from "three";
+import { getModuleRoot } from "../utils/node-finder";
+import { useControls } from "./controls-provider";
 import BigButtonModule from "./modules/big-button-module";
+import ClockModule from "./modules/clock-module";
 import SimpleWiresModule from "./modules/simple-wires-module";
-// import { materials } from "./materials";
 
 export default function Bomb() {
   const { nodes, materials } = useGLTF("/bomb.glb") as any;
+  const controlsRef = useControls();
 
   return (
     <>
@@ -63,7 +66,22 @@ export default function Bomb() {
           />
         </mesh>
       </group>
-      <Select>
+      <Select
+        onChangePointerUp={(selected) => {
+          if (!selected || !selected[0]) return;
+
+          const module = getModuleRoot(selected[0]);
+          const pos = module.getWorldPosition(new THREE.Vector3());
+
+          const orbitalControls = controlsRef.current;
+
+          if (!orbitalControls) return;
+
+          orbitalControls.object.position.set(pos.x, pos.y + 0, pos.z + 0.1);
+          orbitalControls.target.set(pos.x, pos.y, pos.z);
+          orbitalControls.update();
+        }}
+      >
         <ClockModule />
         <BigButtonModule />
         <SimpleWiresModule />
@@ -73,3 +91,6 @@ export default function Bomb() {
 }
 
 useGLTF.preload("/bomb.glb");
+useGLTF.preload("/clock-module.glb");
+useGLTF.preload("/big-button-module.glb");
+useGLTF.preload("/simple-wires-module.glb");

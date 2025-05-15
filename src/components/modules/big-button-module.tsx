@@ -1,16 +1,28 @@
 import { useGLTF } from "@react-three/drei";
+import { useRef } from "react";
+import { useHighlight } from "../highlight-provider";
+import Module from "./module";
 
 export default function BigButtonModule() {
   const { nodes, materials } = useGLTF("/big-button-module.glb") as any;
+  const { highlight, unhighlight } = useHighlight();
+  const outlineRef = useRef(null);
 
   return (
-    <group position={[0.195, 0.629, 0.1]}>
+    <Module position={[0.195, 0.629, 0.1]}>
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.ButtonModule.geometry}
         material={materials.Silver}
         scale={[1.028, 1.028, 1]}
+        ref={outlineRef}
+        onPointerEnter={() => {
+          highlight(outlineRef);
+        }}
+        onPointerLeave={() => {
+          unhighlight(outlineRef);
+        }}
       >
         <group position={[0.002, 0.096, -0.074]} scale={[0.943, 0.943, 1]}>
           <mesh
@@ -42,6 +54,6 @@ export default function BigButtonModule() {
           scale={[0.011, 0.012, 0.011]}
         />
       </mesh>
-    </group>
+    </Module>
   );
 }

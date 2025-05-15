@@ -1,16 +1,28 @@
 import { useGLTF } from "@react-three/drei";
+import { useRef } from "react";
+import { useHighlight } from "../highlight-provider";
+import Module from "./module";
 
 export default function SimpleWiresModule() {
   const { nodes, materials } = useGLTF("/simple-wires.glb") as any;
+  const { highlight, unhighlight } = useHighlight();
+  const outlineRef = useRef(null);
 
   return (
-    <group position={[-0.195, 0.629, 0.1]}>
+    <Module position={[-0.195, 0.629, 0.1]}>
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.WiresModule001.geometry}
         material={materials.Silver}
         scale={[1.028, 1.028, 1]}
+        ref={outlineRef}
+        onPointerEnter={() => {
+          highlight(outlineRef);
+        }}
+        onPointerLeave={() => {
+          unhighlight(outlineRef);
+        }}
       >
         <mesh
           castShadow
@@ -198,6 +210,6 @@ export default function SimpleWiresModule() {
           scale={0.012}
         />
       </mesh>
-    </group>
+    </Module>
   );
 }
