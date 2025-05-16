@@ -65,9 +65,18 @@ export default function ClockModule({ id = "clock" }) {
             <mesh
               castShadow
               receiveShadow
+              geometry={nodes.HoleBGC.geometry}
+              material={materials.HoleCuts}
+              position={[0, 0, 0.03]}
+              rotation={[Math.PI / 2, 0, 0]}
+              scale={0.009}
+            />
+            <mesh
+              castShadow
+              receiveShadow
               geometry={nodes.HoleBGL.geometry}
               material={materials.HoleCuts}
-              position={[0, 0, 0.029]}
+              position={[0, 0, 0.03]}
               rotation={[Math.PI / 2, 0, 0]}
               scale={0.02}
             />
