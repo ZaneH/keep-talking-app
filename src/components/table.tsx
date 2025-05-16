@@ -2,7 +2,6 @@ import { useCursor, useGLTF } from "@react-three/drei";
 import { useState } from "react";
 import { useControls } from "./controls-provider";
 import { useGameStore } from "../hooks/use-game-store";
-// import { materials } from "./materials";
 
 export default function Table() {
   const { nodes, materials } = useGLTF("/table-room.glb") as any;
