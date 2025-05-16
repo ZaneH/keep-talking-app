@@ -1,12 +1,11 @@
 import { createContext, useContext } from "react";
-import type { OrbitControls } from "three/examples/jsm/Addons.js";
+import OGCameraControls from "camera-controls";
 
-const ControlsContext = createContext<React.RefObject<OrbitControls> | null>(
-  null
-);
+const ControlsContext =
+  createContext<React.RefObject<OGCameraControls | null> | null>(null);
 
 interface ControlsProviderProps {
-  controlsRef: React.RefObject<OrbitControls>;
+  controlsRef: React.RefObject<OGCameraControls | null>;
   children: React.ReactNode;
 }
 

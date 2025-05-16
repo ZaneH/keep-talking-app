@@ -17,6 +17,9 @@ importers:
       '@react-three/postprocessing':
         specifier: ^3.0.4
         version: 3.0.4(@react-three/fiber@9.1.2(@types/react@19.1.4)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.176.0))(@types/three@0.176.0)(react@19.1.0)(three@0.176.0)
+      camera-controls:
+        specifier: ^2.10.1
+        version: 2.10.1(three@0.176.0)
       google-protobuf:
         specifier: ^3.21.4
         version: 3.21.4

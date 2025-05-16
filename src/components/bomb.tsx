@@ -1,6 +1,6 @@
 import { Select, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import { useGameStore } from "../store/use-game-store";
+import { useGameStore } from "../hooks/use-game-store";
 import { getModuleRoot } from "../utils/node-finder";
 import { useControls } from "./controls-provider";
 import BigButtonModule from "./modules/big-button-module";
@@ -9,8 +9,7 @@ import SimpleWiresModule from "./modules/simple-wires-module";
 
 export default function Bomb() {
   const { nodes, materials } = useGLTF("/bomb.glb") as any;
-  const { selectedModuleUUID, setSelectedModule, setZoomState } =
-    useGameStore();
+  const { zoomToModule, selectedModuleId } = useGameStore();
   const controlsRef = useControls();
 
   return (
@@ -78,22 +77,20 @@ export default function Bomb() {
           if (!selected || !selected[0]) return;
 
           const module = getModuleRoot(selected[0]);
-          if (selectedModuleUUID === module.userData["id"]) {
+          const moduleId = module.userData["id"];
+          if (selectedModuleId === moduleId) {
             return;
           }
 
-          setSelectedModule(module.userData["id"]);
-          setZoomState("module-view");
-
           const pos = module.getWorldPosition(new THREE.Vector3());
+          const camControls = controlsRef.current;
+          if (!camControls) return;
 
-          const orbitalControls = controlsRef.current;
-
-          if (!orbitalControls) return;
-
-          orbitalControls.object.position.set(pos.x, pos.y + 0, pos.z + 0.1);
-          orbitalControls.target.set(pos.x, pos.y, pos.z);
-          orbitalControls.update();
+          zoomToModule(
+            moduleId,
+            new THREE.Vector3(pos.x, pos.y, pos.z + 0.4),
+            camControls
+          );
         }}
       >
         <ClockModule />
