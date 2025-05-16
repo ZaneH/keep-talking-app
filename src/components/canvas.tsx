@@ -26,14 +26,12 @@ export default function Canvas() {
       controlsRef.current.touches.three = OGCameraControls.ACTION.NONE;
     } else {
       controlsRef.current.mouseButtons.left = OGCameraControls.ACTION.ROTATE;
-      controlsRef.current.mouseButtons.right = OGCameraControls.ACTION.TRUCK;
-      controlsRef.current.mouseButtons.middle = OGCameraControls.ACTION.DOLLY;
+      controlsRef.current.mouseButtons.right = OGCameraControls.ACTION.NONE;
+      controlsRef.current.mouseButtons.middle = OGCameraControls.ACTION.NONE;
       controlsRef.current.mouseButtons.wheel = OGCameraControls.ACTION.ZOOM;
       controlsRef.current.touches.one = OGCameraControls.ACTION.TOUCH_ROTATE;
-      controlsRef.current.touches.two =
-        OGCameraControls.ACTION.TOUCH_DOLLY_TRUCK;
-      controlsRef.current.touches.three =
-        OGCameraControls.ACTION.TOUCH_DOLLY_TRUCK;
+      controlsRef.current.touches.two = OGCameraControls.ACTION.NONE;
+      controlsRef.current.touches.three = OGCameraControls.ACTION.NONE;
     }
   }, [cameraLocked]);
 
@@ -56,6 +54,14 @@ export default function Canvas() {
             maxDistance={1.75}
             minDistance={0.5}
             maxPolarAngle={Math.PI / 2 + 0.1}
+            maxZoom={2}
+            minZoom={0.8}
+            mouseButtons={{
+              right: OGCameraControls.ACTION.NONE,
+              middle: OGCameraControls.ACTION.NONE,
+              left: OGCameraControls.ACTION.ROTATE,
+              wheel: OGCameraControls.ACTION.ZOOM,
+            }}
             ref={controlsRef}
           />
 
