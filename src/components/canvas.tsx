@@ -18,10 +18,22 @@ export default function Canvas() {
     if (!controlsRef.current) return;
     if (cameraLocked) {
       controlsRef.current.mouseButtons.left = OGCameraControls.ACTION.NONE;
+      controlsRef.current.mouseButtons.right = OGCameraControls.ACTION.NONE;
+      controlsRef.current.mouseButtons.middle = OGCameraControls.ACTION.NONE;
       controlsRef.current.mouseButtons.wheel = OGCameraControls.ACTION.NONE;
+      controlsRef.current.touches.one = OGCameraControls.ACTION.NONE;
+      controlsRef.current.touches.two = OGCameraControls.ACTION.NONE;
+      controlsRef.current.touches.three = OGCameraControls.ACTION.NONE;
     } else {
       controlsRef.current.mouseButtons.left = OGCameraControls.ACTION.ROTATE;
+      controlsRef.current.mouseButtons.right = OGCameraControls.ACTION.TRUCK;
+      controlsRef.current.mouseButtons.middle = OGCameraControls.ACTION.DOLLY;
       controlsRef.current.mouseButtons.wheel = OGCameraControls.ACTION.ZOOM;
+      controlsRef.current.touches.one = OGCameraControls.ACTION.TOUCH_ROTATE;
+      controlsRef.current.touches.two =
+        OGCameraControls.ACTION.TOUCH_DOLLY_TRUCK;
+      controlsRef.current.touches.three =
+        OGCameraControls.ACTION.TOUCH_DOLLY_TRUCK;
     }
   }, [cameraLocked]);
 
