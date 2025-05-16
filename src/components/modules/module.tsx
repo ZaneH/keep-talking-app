@@ -14,6 +14,7 @@ export default function Module({
   return (
     <group
       userData={{ id }}
+      dispose={null}
       name="module"
       onPointerEnter={(e) => {
         setIsHovered(true);

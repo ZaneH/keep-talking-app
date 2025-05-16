@@ -1,8 +1,8 @@
-import { Text, useGLTF } from "@react-three/drei";
-import { useEffect, useRef } from "react";
-import { useGameStore } from "../../store/use-game-store";
-import { useHighlight } from "../highlight-provider";
+import { Text } from "@react-three/drei";
+import { useModuleModel } from "../../hooks/use-module-model";
 import Module from "./module";
+import { useRef } from "react";
+import useModuleHighlight from "../../hooks/use-module-highlight";
 
 function TextLabel() {
   return (
@@ -23,16 +23,9 @@ function TextLabel() {
 }
 
 export default function ClockModule({ id = "clock" }) {
-  const { nodes, materials } = useGLTF("/clock-module.glb") as any;
-  const { highlight, unhighlight } = useHighlight();
-  const outlineRef = useRef(null);
-  const { zoomState, selectedModuleUUID } = useGameStore();
-
-  useEffect(() => {
-    if (zoomState !== "idle") {
-      unhighlight(outlineRef);
-    }
-  }, [zoomState]);
+  const { nodes, materials } = useModuleModel("clock");
+  const meshRef = useRef<any>(null);
+  const { pointerHandlers } = useModuleHighlight({ id, meshRef });
 
   return (
     <Module id={id} position={[0, 0.629, 0.1]}>
@@ -43,15 +36,8 @@ export default function ClockModule({ id = "clock" }) {
         geometry={nodes.ClockModule_1.geometry}
         material={materials["Silver Dark"]}
         scale={[1.028, 1.028, 1]}
-        ref={outlineRef}
-        onPointerEnter={() => {
-          if (selectedModuleUUID !== id) {
-            highlight(outlineRef);
-          }
-        }}
-        onPointerLeave={() => {
-          unhighlight(outlineRef);
-        }}
+        ref={meshRef}
+        {...pointerHandlers}
       >
         <group position={[0.191, 0.099, -0.074]} scale={[0.972, 0.972, 1]}>
           <mesh

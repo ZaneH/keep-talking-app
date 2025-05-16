@@ -2,14 +2,29 @@
 
 import { OrbitControls, Stats } from "@react-three/drei";
 import { Canvas as Canvas3 } from "@react-three/fiber";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import Scene from "./scene";
+import { useGameStore } from "../hooks/use-game-store";
 import { ControlsProvider } from "./controls-provider";
 import { HighlightProvider } from "./highlight-provider";
+import Scene from "./scene";
+import { CameraControls } from "@react-three/drei";
+import OGCameraControls from "camera-controls";
 
 export default function Canvas() {
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<OGCameraControls>(null);
+  const cameraLocked = useGameStore((state) => state.cameraLocked);
+
+  useEffect(() => {
+    if (!controlsRef.current) return;
+    if (cameraLocked) {
+      controlsRef.current.mouseButtons.left = OGCameraControls.ACTION.NONE;
+      controlsRef.current.mouseButtons.wheel = OGCameraControls.ACTION.NONE;
+    } else {
+      controlsRef.current.mouseButtons.left = OGCameraControls.ACTION.ROTATE;
+      controlsRef.current.mouseButtons.wheel = OGCameraControls.ACTION.ZOOM;
+    }
+  }, [cameraLocked]);
 
   return (
     <Canvas3
@@ -25,15 +40,13 @@ export default function Canvas() {
     >
       <HighlightProvider>
         <ControlsProvider controlsRef={controlsRef}>
-          <OrbitControls
+          <CameraControls
             maxDistance={1.75}
             minDistance={0.5}
-            enablePan={false}
-            //
             maxPolarAngle={Math.PI / 2 + 0.1}
             ref={controlsRef}
           />
-          {/* <SoftShadows samples={40} /> */}
+
           <Stats />
           <Scene />
         </ControlsProvider>

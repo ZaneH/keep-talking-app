@@ -1,13 +1,13 @@
 import { useCursor, useGLTF } from "@react-three/drei";
 import { useState } from "react";
-import { useGameStore } from "../store/use-game-store";
 import { useControls } from "./controls-provider";
+import { useGameStore } from "../hooks/use-game-store";
 // import { materials } from "./materials";
 
 export default function Table() {
   const { nodes, materials } = useGLTF("/table-room.glb") as any;
   const controls = useControls();
-  const { setSelectedModule, zoomState, setZoomState } = useGameStore();
+  const { zoomState, reset } = useGameStore();
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -21,12 +21,13 @@ export default function Table() {
         }
 
         e.stopPropagation();
-        setZoomState("idle");
-        setSelectedModule(undefined);
-        const orbitalControls = controls.current;
-        orbitalControls.object.position.set(0, 0, 10);
-        orbitalControls.target.set(0, 0, 0);
+        reset();
         setIsHovered(false);
+        const camControls = controls.current;
+        if (!camControls) return;
+
+        camControls.setPosition(0, 0, 1.5);
+        camControls.setTarget(0, 0, 0);
       }}
       onPointerEnter={(e) => {
         if (zoomState === "module-view") {
