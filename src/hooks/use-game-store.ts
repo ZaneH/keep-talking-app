@@ -18,7 +18,7 @@ interface GameActions {
     _position: THREE.Vector3,
     _controls: OGCameraControls
   ) => void;
-  reset: () => void;
+  reset: (controls: OGCameraControls | null) => void;
   lockCamera: () => void;
   unlockCamera: () => void;
 }
@@ -39,16 +39,21 @@ export const useGameStore = create<GameState & GameActions>()((set) => ({
       cameraLocked: true,
     });
     if (controls) {
-      controls.setPosition(position.x, position.y, position.z + 0.1);
-      controls.setTarget(position.x, position.y, position.z);
+      controls.setPosition(position.x, position.y, position.z + 0.1, true);
+      controls.setTarget(position.x, position.y, position.z, true);
     }
   },
-  reset: () =>
+  reset: (controls) => {
     set({
       selectedModuleId: undefined,
       zoomState: "idle",
       cameraLocked: false,
-    }),
+    });
+    if (controls) {
+      controls.setPosition(0, 0, 1.5, true);
+      controls.setTarget(0, 0, 0, true);
+    }
+  },
   lockCamera: () => set({ cameraLocked: true }),
   unlockCamera: () => set({ cameraLocked: false }),
 }));
