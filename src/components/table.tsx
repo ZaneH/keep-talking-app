@@ -16,18 +16,11 @@ export default function Table() {
   return (
     <group
       onClick={(e) => {
-        if (zoomState !== "module-view") {
-          return;
+        if (zoomState === "module-view") {
+          e.stopPropagation();
+          reset(controls.current);
+          setIsHovered(false);
         }
-
-        e.stopPropagation();
-        reset();
-        setIsHovered(false);
-        const camControls = controls.current;
-        if (!camControls) return;
-
-        camControls.setPosition(0, 0, 1.5);
-        camControls.setTarget(0, 0, 0);
       }}
       onPointerEnter={(e) => {
         if (zoomState === "module-view") {
