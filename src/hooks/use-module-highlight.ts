@@ -1,7 +1,7 @@
-import React, { useRef, useEffect } from "react";
+import React, { useEffect } from "react";
+import * as THREE from "three";
 import { useHighlight } from "../components/highlight-provider";
 import { useGameStore } from "./use-game-store";
-import * as THREE from "three";
 
 interface UseModuleHighlightProps {
   id: string;
