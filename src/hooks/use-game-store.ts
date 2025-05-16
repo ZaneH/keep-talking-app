@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import * as THREE from "three";
 import type OGCameraControls from "camera-controls";
+import * as THREE from "three";
+import { create } from "zustand";
 
 type GamePhase = "idle" | "module-view";
 
@@ -14,9 +14,9 @@ interface GameActions {
   setSelectedModule: (_moduleId?: string) => void;
   setZoomState: (_state: GamePhase) => void;
   zoomToModule: (
-    moduleId: string,
-    position: THREE.Vector3,
-    controls: OGCameraControls
+    _moduleId: string,
+    _position: THREE.Vector3,
+    _controls: OGCameraControls
   ) => void;
   reset: () => void;
   lockCamera: () => void;
