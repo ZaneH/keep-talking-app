@@ -18,7 +18,7 @@ interface GameActions {
     _position: THREE.Vector3,
     _controls: OGCameraControls
   ) => void;
-  reset: (controls: OGCameraControls | null) => void;
+  reset: (_controls: OGCameraControls | null) => void;
   lockCamera: () => void;
   unlockCamera: () => void;
 }
