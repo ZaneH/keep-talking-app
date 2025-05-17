@@ -7,10 +7,33 @@ import BigButtonModule from "./modules/big-button-module";
 import ClockModule from "./modules/clock-module";
 import SimpleWiresModule from "./modules/simple-wires-module";
 
+const ZOOM_DISTANCE = 0.2;
+
 export default function Bomb() {
   const { nodes, materials } = useGLTF("/bomb.glb") as any;
   const { zoomToModule, selectedModuleId } = useGameStore();
   const controlsRef = useControls();
+
+  function onModuleClick(selected: THREE.Object3D[]) {
+    if (!selected || !selected[0]) return;
+
+    const module = getModuleRoot(selected[0]);
+    const moduleId = module.userData["id"];
+    if (selectedModuleId === moduleId) {
+      return;
+    }
+
+    const pos = module.getWorldPosition(new THREE.Vector3());
+    const camControls = controlsRef.current;
+    if (!camControls) return;
+
+    // Zoom to the module
+    zoomToModule(
+      moduleId,
+      new THREE.Vector3(pos.x, pos.y, pos.z + ZOOM_DISTANCE),
+      camControls
+    );
+  }
 
   return (
     <>
@@ -72,27 +95,7 @@ export default function Bomb() {
           />
         </mesh>
       </group>
-      <Select
-        onChangePointerUp={(selected) => {
-          if (!selected || !selected[0]) return;
-
-          const module = getModuleRoot(selected[0]);
-          const moduleId = module.userData["id"];
-          if (selectedModuleId === moduleId) {
-            return;
-          }
-
-          const pos = module.getWorldPosition(new THREE.Vector3());
-          const camControls = controlsRef.current;
-          if (!camControls) return;
-
-          zoomToModule(
-            moduleId,
-            new THREE.Vector3(pos.x, pos.y, pos.z + 0.4),
-            camControls
-          );
-        }}
-      >
+      <Select onChangePointerUp={onModuleClick}>
         <ClockModule />
         <BigButtonModule />
         <SimpleWiresModule />
