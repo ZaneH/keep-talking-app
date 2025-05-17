@@ -32,7 +32,6 @@ export default function Canvas() {
 
   return (
     <Canvas3
-      frameloop="demand"
       shadows
       gl={{
         antialias: true,
@@ -47,9 +46,9 @@ export default function Canvas() {
         <ControlsProvider controlsRef={controlsRef}>
           <CameraControls
             maxDistance={1.75}
-            minDistance={0.5}
+            minDistance={0.75}
             maxPolarAngle={Math.PI / 2 + 0.1}
-            maxZoom={2}
+            maxZoom={1.5}
             minZoom={0.8}
             ref={controlsRef}
             truckSpeed={0}

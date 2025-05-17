@@ -2,6 +2,7 @@ import { useRef } from "react";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import Module from "./module";
+import { InteractiveMesh } from "../interactive-mesh";
 
 export default function SimpleWiresModule({ id = "simplewires" }) {
   const { nodes, materials } = useModuleModel("simpleWires");
@@ -141,7 +142,7 @@ export default function SimpleWiresModule({ id = "simplewires" }) {
             scale={0.482}
           />
         </mesh>
-        <mesh
+        <InteractiveMesh
           castShadow
           receiveShadow
           geometry={nodes.Wire1.geometry}
@@ -150,7 +151,7 @@ export default function SimpleWiresModule({ id = "simplewires" }) {
           rotation={[0, 0, -1.328]}
           scale={-0.05}
         />
-        <mesh
+        <InteractiveMesh
           castShadow
           receiveShadow
           geometry={nodes.Wire2.geometry}
@@ -159,7 +160,7 @@ export default function SimpleWiresModule({ id = "simplewires" }) {
           rotation={[0, 0, -1.328]}
           scale={-0.05}
         />
-        <mesh
+        <InteractiveMesh
           castShadow
           receiveShadow
           geometry={nodes.Wire3.geometry}
@@ -168,7 +169,7 @@ export default function SimpleWiresModule({ id = "simplewires" }) {
           rotation={[0, 0, -1.328]}
           scale={-0.05}
         />
-        <mesh
+        <InteractiveMesh
           castShadow
           receiveShadow
           geometry={nodes.Wire4.geometry}
@@ -177,7 +178,7 @@ export default function SimpleWiresModule({ id = "simplewires" }) {
           rotation={[0, 0, -1.328]}
           scale={-0.05}
         />
-        <mesh
+        <InteractiveMesh
           castShadow
           receiveShadow
           geometry={nodes.Wire5.geometry}
@@ -186,7 +187,7 @@ export default function SimpleWiresModule({ id = "simplewires" }) {
           rotation={[0, 0, -1.328]}
           scale={-0.05}
         />
-        <mesh
+        <InteractiveMesh
           castShadow
           receiveShadow
           geometry={nodes.Wire6.geometry}
