@@ -1,10 +1,11 @@
-import { useCursor, useGLTF } from "@react-three/drei";
+import { useCursor } from "@react-three/drei";
 import { useState } from "react";
-import { useControls } from "./controls-provider";
 import { useGameStore } from "../hooks/use-game-store";
+import { useModuleModel } from "../hooks/use-module-model";
+import { useControls } from "./controls-provider";
 
 export default function Table() {
-  const { nodes, materials } = useGLTF("/table-room.glb") as any;
+  const { nodes, materials } = useModuleModel("table");
   const controls = useControls();
   const { zoomState, reset } = useGameStore();
 
@@ -138,5 +139,3 @@ export default function Table() {
     </group>
   );
 }
-
-useGLTF.preload("/table-room.glb");
