@@ -19,8 +19,6 @@ interface GameActions {
     _controls: OGCameraControls
   ) => void;
   reset: (_controls: OGCameraControls | null) => void;
-  lockCamera: () => void;
-  unlockCamera: () => void;
 }
 
 export const useGameStore = create<GameState & GameActions>()((set) => ({
@@ -54,6 +52,4 @@ export const useGameStore = create<GameState & GameActions>()((set) => ({
       controls.setTarget(0, 0, 0, true);
     }
   },
-  lockCamera: () => set({ cameraLocked: true }),
-  unlockCamera: () => set({ cameraLocked: false }),
 }));
