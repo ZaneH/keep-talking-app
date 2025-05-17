@@ -100,8 +100,3 @@ export default function Bomb() {
     </>
   );
 }
-
-useGLTF.preload("/bomb.glb");
-useGLTF.preload("/clock-module.glb");
-useGLTF.preload("/big-button-module.glb");
-useGLTF.preload("/simple-wires-module.glb");
