@@ -49,18 +49,8 @@ export default function Canvas() {
             maxPolarAngle={Math.PI / 2 + 0.1}
             maxZoom={2}
             minZoom={0.8}
-            mouseButtons={{
-              right: OGCameraControls.ACTION.NONE,
-              middle: OGCameraControls.ACTION.NONE,
-              left: OGCameraControls.ACTION.ROTATE,
-              wheel: OGCameraControls.ACTION.ZOOM,
-            }}
-            touches={{
-              one: OGCameraControls.ACTION.TOUCH_ROTATE,
-              two: OGCameraControls.ACTION.TOUCH_ZOOM,
-              three: OGCameraControls.ACTION.NONE,
-            }}
             ref={controlsRef}
+            truckSpeed={0}
           />
 
           <Stats />
