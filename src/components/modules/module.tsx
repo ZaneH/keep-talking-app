@@ -1,5 +1,10 @@
 import { useCursor } from "@react-three/drei";
 import { useState } from "react";
+import type { ModuleModels } from "../../hooks/use-module-model";
+
+export interface ModuleProps {
+  id?: keyof typeof ModuleModels;
+}
 
 export default function Module({
   id,

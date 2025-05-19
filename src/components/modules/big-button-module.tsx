@@ -1,10 +1,10 @@
 import { useRef } from "react";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
-import Module from "./module";
+import Module, { type ModuleProps } from "./module";
 
-export default function BigButtonModule({ id = "bigbutton" }) {
-  const { nodes, materials } = useModuleModel("bigButton");
+export default function BigButtonModule({ id = "big-button" }: ModuleProps) {
+  const { nodes, materials } = useModuleModel(id);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id, meshRef });
 
@@ -42,9 +42,35 @@ export default function BigButtonModule({ id = "bigbutton" }) {
         <mesh
           castShadow
           receiveShadow
-          geometry={nodes.Light003.geometry}
+          geometry={nodes.Cover.geometry}
+          material={materials.ClearPlastic}
+          position={[0, 0.079, 0.031]}
+          scale={[0.077, 0.077, 0.079]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.Hinge.geometry}
+          material={materials["Silver Dark"]}
+          position={[0, 0.077, 0.033]}
+          rotation={[0, 0, -Math.PI / 2]}
+          scale={[0.003, 0.015, 0.003]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.LightRing.geometry}
           material={materials["Unlit light"]}
-          position={[0.054, 0.057, 0.021]}
+          position={[0.002, -0.007, 0.031]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={[1.425, 1.466, 1.425]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.Light005.geometry}
+          material={materials["Unlit light"]}
+          position={[0.061, 0.062, 0.021]}
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.011, 0.012, 0.011]}
         />
