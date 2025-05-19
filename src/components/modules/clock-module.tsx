@@ -1,6 +1,6 @@
 import { Text } from "@react-three/drei";
 import { useModuleModel } from "../../hooks/use-module-model";
-import Module from "./module";
+import Module, { type ModuleProps } from "./module";
 import { useRef } from "react";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 
@@ -22,8 +22,8 @@ function TextLabel() {
   );
 }
 
-export default function ClockModule({ id = "clock" }) {
-  const { nodes, materials } = useModuleModel("clock");
+export default function ClockModule({ id = "clock" }: ModuleProps) {
+  const { nodes, materials } = useModuleModel(id);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id, meshRef });
 

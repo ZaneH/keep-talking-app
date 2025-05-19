@@ -1,11 +1,14 @@
 import { useGLTF } from "@react-three/drei";
 
-const ModuleModels = {
+export const ModuleModels = {
   bomb: "/bomb.glb",
   clock: "/clock.glb",
-  bigButton: "/big-button.glb",
-  simpleWires: "/simple-wires.glb",
+  "big-button": "/big-button.glb",
+  "simple-wires": "/simple-wires.glb",
   table: "/table-room.glb",
+  keypad: "/keypad.glb",
+  "simon-says": "/simon-says.glb",
+  password: "/password.glb",
 };
 
 export const preloadModels = () => {
