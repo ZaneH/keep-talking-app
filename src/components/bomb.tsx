@@ -3,9 +3,14 @@ import * as THREE from "three";
 import { useGameStore } from "../hooks/use-game-store";
 import { getModuleRoot } from "../utils/node-finder";
 import { useControls } from "./controls-provider";
-import BigButtonModule from "./modules/big-button-module";
-import ClockModule from "./modules/clock-module";
-import SimpleWiresModule from "./modules/simple-wires-module";
+import {
+  BigButtonModule,
+  ClockModule,
+  KeypadModule,
+  PasswordModule,
+  SimonSaysModule,
+  SimpleWiresModule,
+} from "./modules";
 
 const ZOOM_DISTANCE = 0.2;
 
@@ -99,6 +104,9 @@ export default function Bomb() {
         <ClockModule />
         <BigButtonModule />
         <SimpleWiresModule />
+        <KeypadModule />
+        <SimonSaysModule />
+        <PasswordModule />
       </Select>
     </>
   );

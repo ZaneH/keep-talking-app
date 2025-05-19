@@ -1,8 +1,9 @@
 "use client";
 
-import { CameraControls, Stats } from "@react-three/drei";
+import { CameraControls } from "@react-three/drei";
 import { Canvas as Canvas3 } from "@react-three/fiber";
 import OGCameraControls from "camera-controls";
+import { Perf } from "r3f-perf";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useGameStore } from "../hooks/use-game-store";
@@ -54,7 +55,8 @@ export default function Canvas() {
             truckSpeed={0}
           />
 
-          <Stats />
+          {/* <Stats /> */}
+          <Perf />
           <Scene />
         </ControlsProvider>
       </HighlightProvider>
