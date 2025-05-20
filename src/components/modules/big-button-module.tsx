@@ -44,7 +44,7 @@ export default function BigButtonModule({ id = "big-button" }: ModuleProps) {
           receiveShadow
           geometry={nodes.Cover.geometry}
           material={materials.ClearPlastic}
-          position={[0, 0.079, 0.031]}
+          position={[0, 0.077, 0.033]}
           scale={[0.077, 0.077, 0.079]}
         />
         <mesh
@@ -54,7 +54,7 @@ export default function BigButtonModule({ id = "big-button" }: ModuleProps) {
           material={materials["Silver Dark"]}
           position={[0, 0.077, 0.033]}
           rotation={[0, 0, -Math.PI / 2]}
-          scale={[0.003, 0.015, 0.003]}
+          scale={[0.004, 0.017, 0.004]}
         />
         <mesh
           castShadow
@@ -72,7 +72,7 @@ export default function BigButtonModule({ id = "big-button" }: ModuleProps) {
           material={materials["Unlit light"]}
           position={[0.061, 0.062, 0.021]}
           rotation={[Math.PI / 2, 0, 0]}
-          scale={[0.011, 0.012, 0.011]}
+          scale={[0.972, 1, 0.972]}
         />
       </mesh>
     </Module>
