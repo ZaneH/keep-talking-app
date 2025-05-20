@@ -4,13 +4,13 @@ import { useModuleModel } from "../../hooks/use-module-model";
 import type { ModuleProps } from "./module";
 import Module from "./module";
 
-export default function PasswordModule({ id = "password" }: ModuleProps) {
-  const { nodes, materials } = useModuleModel(id);
+export default function PasswordModule({ name = "password" }: ModuleProps) {
+  const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
-  const { pointerHandlers } = useModuleHighlight({ id, meshRef });
+  const { pointerHandlers } = useModuleHighlight({ id: name, meshRef });
 
   return (
-    <Module id={id} position={[0, 0.827, 0.1]}>
+    <Module id={name} position={[0, 0.827, 0.1]}>
       <mesh
         castShadow
         receiveShadow

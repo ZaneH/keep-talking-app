@@ -1,23 +1,60 @@
 import { Select } from "@react-three/drei";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import { useHighlight } from "../highlight-provider";
 import { InteractiveMesh } from "../interactive-mesh";
 import Module, { type ModuleProps } from "./module";
+import { useGameStore } from "../../hooks/use-game-store";
+import { useServer } from "../server-context";
 
 export default function SimpleWiresModule({
-  id = "simple-wires",
+  moduleId,
+  name = "simple-wires",
 }: ModuleProps) {
-  const { nodes, materials } = useModuleModel(id);
+  const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
-  const { pointerHandlers } = useModuleHighlight({ id, meshRef });
+  const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
+  const { zoomState, sessionId, selectedBombId } = useGameStore();
+  const { sendPlayerInput } = useServer();
 
   const [cutWires, setCutWires] = useState([false, false, false, false, false]);
 
+  const onWireSelect = useCallback(
+    async (selected: THREE.Object3D[]) => {
+      if (zoomState !== "module-view") return;
+
+      if (!selected[0]) return;
+      const index = selected[0].userData.index;
+      if (cutWires[index]) return;
+
+      console.log("Sending input for wire", index);
+      const resp = await sendPlayerInput({
+        bombId: selectedBombId!,
+        sessionId: sessionId!,
+        moduleId,
+        input: {
+          oneofKind: "simpleWiresInput",
+          simpleWiresInput: {
+            wireIndex: index,
+          },
+        },
+      });
+
+      console.log({ resp });
+
+      setCutWires((prev) => {
+        const updated = [...prev];
+        updated[index] = true;
+        return updated;
+      });
+    },
+    [zoomState, selectedBombId, sessionId, moduleId]
+  );
+
   return (
-    <Module id={id} position={[-0.195, 0.629, 0.1]}>
+    <Module id={moduleId} position={[-0.195, 0.629, 0.1]}>
       <mesh
         castShadow
         receiveShadow
@@ -149,18 +186,7 @@ export default function SimpleWiresModule({
             scale={0.482}
           />
         </mesh>
-        <Select
-          onChangePointerUp={(selected) => {
-            if (!selected[0]) return;
-            const index = selected[0].userData.index;
-            if (cutWires[index]) return;
-            setCutWires((prev) => {
-              const updated = [...prev];
-              updated[index] = true;
-              return updated;
-            });
-          }}
-        >
+        <Select onChangePointerUp={onWireSelect}>
           <group>
             <CuttableWire
               index={0}

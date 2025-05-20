@@ -10,6 +10,7 @@ import { UnknownFieldHandler } from "@protobuf-ts/runtime";
 import type { PartialMessage } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
+import { SimpleWiresState } from "./simple_wires_module";
 /**
  * @generated from protobuf message modules.ModulePosition
  */
@@ -45,6 +46,20 @@ export interface Module {
      * @generated from protobuf field: bool solved = 4;
      */
     solved: boolean;
+    /**
+     * @generated from protobuf oneof: state
+     */
+    state: {
+        oneofKind: "simpleWires";
+        /**
+         * @generated from protobuf field: modules.SimpleWiresState simple_wires = 5;
+         */
+        simpleWires: SimpleWiresState; // PasswordState password = 6;
+        // BigButtonState big_button = 7;
+        // SimonSaysState simon_says = 8;
+    } | {
+        oneofKind: undefined;
+    };
 }
 /**
  * @generated from protobuf enum modules.Module.ModuleType
@@ -140,7 +155,8 @@ class Module$Type extends MessageType<Module> {
         super("modules.Module", [
             { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "type", kind: "enum", T: () => ["modules.Module.ModuleType", Module_ModuleType] },
-            { no: 4, name: "solved", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 4, name: "solved", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 5, name: "simple_wires", kind: "message", oneof: "state", T: () => SimpleWiresState }
         ]);
     }
     create(value?: PartialMessage<Module>): Module {
@@ -148,6 +164,7 @@ class Module$Type extends MessageType<Module> {
         message.id = "";
         message.type = 0;
         message.solved = false;
+        message.state = { oneofKind: undefined };
         if (value !== undefined)
             reflectionMergePartial<Module>(this, message, value);
         return message;
@@ -165,6 +182,12 @@ class Module$Type extends MessageType<Module> {
                     break;
                 case /* bool solved */ 4:
                     message.solved = reader.bool();
+                    break;
+                case /* modules.SimpleWiresState simple_wires */ 5:
+                    message.state = {
+                        oneofKind: "simpleWires",
+                        simpleWires: SimpleWiresState.internalBinaryRead(reader, reader.uint32(), options, (message.state as any).simpleWires)
+                    };
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -187,6 +210,9 @@ class Module$Type extends MessageType<Module> {
         /* bool solved = 4; */
         if (message.solved !== false)
             writer.tag(4, WireType.Varint).bool(message.solved);
+        /* modules.SimpleWiresState simple_wires = 5; */
+        if (message.state.oneofKind === "simpleWires")
+            SimpleWiresState.internalBinaryWrite(message.state.simpleWires, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
