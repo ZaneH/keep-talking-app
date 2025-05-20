@@ -151,13 +151,19 @@ export default function SimpleWiresModule({
         </mesh>
         <Select
           onChangePointerUp={(selected) => {
-            // if (selected.length > 0 && !cutWire6) {
-            //   setCutWire6(true);
-            // }
+            if (!selected[0]) return;
+            const index = selected[0].userData.index;
+            if (cutWires[index]) return;
+            setCutWires((prev) => {
+              const updated = [...prev];
+              updated[index] = true;
+              return updated;
+            });
           }}
         >
           <group>
             <CuttableWire
+              index={0}
               isCut={cutWires[0]}
               uncutWire={
                 <mesh
@@ -184,6 +190,7 @@ export default function SimpleWiresModule({
             />
 
             <CuttableWire
+              index={1}
               isCut={cutWires[1]}
               uncutWire={
                 <mesh
@@ -210,6 +217,7 @@ export default function SimpleWiresModule({
             />
 
             <CuttableWire
+              index={2}
               isCut={cutWires[2]}
               uncutWire={
                 <mesh
@@ -236,6 +244,7 @@ export default function SimpleWiresModule({
             />
 
             <CuttableWire
+              index={3}
               isCut={cutWires[3]}
               uncutWire={
                 <mesh
@@ -262,6 +271,7 @@ export default function SimpleWiresModule({
             />
 
             <CuttableWire
+              index={4}
               isCut={cutWires[4]}
               uncutWire={
                 <mesh
@@ -287,6 +297,7 @@ export default function SimpleWiresModule({
               }
             />
             <CuttableWire
+              index={5}
               isCut={cutWires[5]}
               uncutWire={
                 <InteractiveMesh
@@ -325,10 +336,12 @@ export default function SimpleWiresModule({
 }
 
 const CuttableWire = ({
+  index,
   uncutWire,
   cutWire,
   isCut,
 }: {
+  index: number;
   uncutWire: React.ReactNode;
   cutWire: React.ReactNode;
   isCut: boolean;
@@ -347,7 +360,11 @@ const CuttableWire = ({
       {isCut ? (
         <mesh {...(cutWire as any).props} ref={wireRef} />
       ) : (
-        <InteractiveMesh {...(uncutWire as any).props} ref={wireRef} />
+        <InteractiveMesh
+          {...(uncutWire as any).props}
+          ref={wireRef}
+          userData={{ index }}
+        />
       )}
     </group>
   );
