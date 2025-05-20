@@ -3,13 +3,13 @@ import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import Module, { type ModuleProps } from "./module";
 
-export default function BigButtonModule({ id = "big-button" }: ModuleProps) {
-  const { nodes, materials } = useModuleModel(id);
+export default function BigButtonModule({ name = "big-button" }: ModuleProps) {
+  const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
-  const { pointerHandlers } = useModuleHighlight({ id, meshRef });
+  const { pointerHandlers } = useModuleHighlight({ id: name, meshRef });
 
   return (
-    <Module id={id} position={[0.195, 0.629, 0.1]}>
+    <Module id={name} position={[0.195, 0.629, 0.1]}>
       <mesh
         castShadow
         receiveShadow
