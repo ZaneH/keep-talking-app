@@ -1,35 +1,86 @@
 import { Select } from "@react-three/drei";
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import type { SimpleWiresState } from "../../generated/proto/simple_wires_module";
+import { useGameStore } from "../../hooks/use-game-store";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import { useHighlight } from "../highlight-provider";
 import { InteractiveMesh } from "../interactive-mesh";
-import Module, { type ModuleProps } from "./module";
-import { useGameStore } from "../../hooks/use-game-store";
 import { useServer } from "../server-context";
+import { CustomMaterials } from "./custom-materials";
+import Module, { type ModuleProps } from "./module";
+
+const WIRE_COLOR_TO_MATERIAL: Record<string, string> = {
+  RED: "WireRed",
+  BLUE: "BlueWire",
+  YELLOW: "WireYellow",
+  BLACK: "BlackWire",
+  WHITE: "WhiteWire",
+  ORANGE: "OrangeWire",
+  GREEN: "GreenWire",
+  PINK: "PinkWire",
+};
+
+type ThreeNumbers = [number, number, number];
 
 export default function SimpleWiresModule({
   moduleId,
   name = "simple-wires",
-}: ModuleProps) {
+  state,
+}: ModuleProps & {
+  state?: SimpleWiresState;
+}) {
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
   const { zoomState, sessionId, selectedBombId } = useGameStore();
   const { sendPlayerInput } = useServer();
+  const [isSolved, setIsSolved] = useState(false);
 
-  const [cutWires, setCutWires] = useState([false, false, false, false, false]);
+  const [wireConfig, setWireConfig] = useState<{
+    wires: Array<{
+      color: string;
+      cut: boolean;
+      visible: boolean;
+    }>;
+  }>({ wires: [] });
+
+  useEffect(() => {
+    if (state?.wires) {
+      const newWireConfig = Array(6)
+        .fill(null)
+        .map(() => ({
+          color: "NONE",
+          cut: false,
+          visible: false,
+        }));
+
+      state.wires.forEach((wire, idx) => {
+        if (idx < 6) {
+          newWireConfig[wire.index] = {
+            color: wire.wireColor,
+            cut: wire.isCut || false,
+            visible: true,
+          };
+        }
+      });
+
+      setWireConfig({ wires: newWireConfig });
+    }
+  }, [state]);
 
   const onWireSelect = useCallback(
     async (selected: THREE.Object3D[]) => {
+      if (isSolved) return;
       if (zoomState !== "module-view") return;
 
       if (!selected[0]) return;
       const index = selected[0].userData.index;
-      if (cutWires[index]) return;
+      console.log({ index });
+      if (!wireConfig.wires[index].visible || wireConfig.wires[index].cut)
+        return;
 
-      console.log("Sending input for wire", index);
       const resp = await sendPlayerInput({
         bombId: selectedBombId!,
         sessionId: sessionId!,
@@ -42,16 +93,51 @@ export default function SimpleWiresModule({
         },
       });
 
-      console.log({ resp });
+      if (resp?.solved) {
+        setIsSolved(true);
+      }
 
-      setCutWires((prev) => {
-        const updated = [...prev];
-        updated[index] = true;
-        return updated;
+      setWireConfig((prev) => {
+        const newWires = [...prev.wires];
+        newWires[index] = { ...newWires[index], cut: true };
+        return { wires: newWires };
       });
     },
-    [zoomState, selectedBombId, sessionId, moduleId]
+    [zoomState, selectedBombId, sessionId, moduleId, wireConfig]
   );
+
+  const wirePositions = [
+    {
+      position: [-0.057, -0.011, 0.05],
+      normal: "Wire1Normal",
+      cut: "Wire1Cut",
+    },
+    {
+      position: [-0.034, -0.008, 0.037],
+      normal: "Wire2Normal",
+      cut: "Wire2Cut",
+    },
+    {
+      position: [-0.016, -0.008, 0.037],
+      normal: "Wire3Normal",
+      cut: "Wire3Cut",
+    },
+    {
+      position: [0.006, -0.008, 0.037],
+      normal: "Wire4Normal",
+      cut: "Wire4Cut",
+    },
+    {
+      position: [0.023, -0.008, 0.037],
+      normal: "Wire5Normal",
+      cut: "Wire5Cut",
+    },
+    {
+      position: [0.04, -0.008, 0.037],
+      normal: "Wire6Normal",
+      cut: "Wire6Cut",
+    },
+  ];
 
   return (
     <Module id={moduleId} position={[-0.195, 0.629, 0.1]}>
@@ -69,16 +155,16 @@ export default function SimpleWiresModule({
           receiveShadow
           geometry={nodes.BigStrip.geometry}
           material={materials["Plastic Dark"]}
-          position={[0.051, -0.055, 0.021]}
-          rotation={[-Math.PI, 0, Math.PI / 2]}
-          scale={-1}
+          position={[-0.001, -0.055, 0.021]}
+          rotation={[0, 0, -Math.PI / 2]}
         >
           <mesh
             castShadow
             receiveShadow
             geometry={nodes.Plug1001.geometry}
             material={materials["Plastic Light"]}
-            position={[0.001, 0.002, 0.013]}
+            position={[-0.001, -0.053, 0.013]}
+            rotation={[0, 0, -Math.PI]}
             scale={0.482}
           />
           <mesh
@@ -86,7 +172,8 @@ export default function SimpleWiresModule({
             receiveShadow
             geometry={nodes.Plug2001.geometry}
             material={materials["Plastic Light"]}
-            position={[0.001, -0.019, 0.013]}
+            position={[-0.001, -0.032, 0.013]}
+            rotation={[0, 0, -Math.PI]}
             scale={0.482}
           />
           <mesh
@@ -94,7 +181,8 @@ export default function SimpleWiresModule({
             receiveShadow
             geometry={nodes.Plug3001.geometry}
             material={materials["Plastic Light"]}
-            position={[0.001, -0.041, 0.013]}
+            position={[-0.001, -0.01, 0.013]}
+            rotation={[0, 0, -Math.PI]}
             scale={0.482}
           />
           <mesh
@@ -102,7 +190,8 @@ export default function SimpleWiresModule({
             receiveShadow
             geometry={nodes.Plug4001.geometry}
             material={materials["Plastic Light"]}
-            position={[0.001, -0.062, 0.013]}
+            position={[-0.001, 0.011, 0.013]}
+            rotation={[0, 0, -Math.PI]}
             scale={0.482}
           />
           <mesh
@@ -110,7 +199,8 @@ export default function SimpleWiresModule({
             receiveShadow
             geometry={nodes.Plug5001.geometry}
             material={materials["Plastic Light"]}
-            position={[0.001, -0.084, 0.013]}
+            position={[-0.001, 0.033, 0.013]}
+            rotation={[0, 0, -Math.PI]}
             scale={0.482}
           />
           <mesh
@@ -118,7 +208,8 @@ export default function SimpleWiresModule({
             receiveShadow
             geometry={nodes.Plug6001.geometry}
             material={materials["Plastic Light"]}
-            position={[0.001, -0.105, 0.013]}
+            position={[-0.001, 0.055, 0.013]}
+            rotation={[0, 0, -Math.PI]}
             scale={0.482}
           />
         </mesh>
@@ -127,17 +218,15 @@ export default function SimpleWiresModule({
           receiveShadow
           geometry={nodes.SmallStrip.geometry}
           material={materials["Plastic Dark"]}
-          position={[0.051, 0.031, 0.021]}
-          rotation={[-Math.PI, 0, Math.PI / 2]}
-          scale={-1}
+          position={[-0.011, 0.031, 0.021]}
+          rotation={[0, 0, -Math.PI / 2]}
         >
           <mesh
             castShadow
             receiveShadow
             geometry={nodes.Plug1.geometry}
             material={materials["Plastic Light"]}
-            position={[0, -0.017, 0.013]}
-            rotation={[0, 0, Math.PI]}
+            position={[0, -0.043, 0.013]}
             scale={0.482}
           />
           <mesh
@@ -145,8 +234,7 @@ export default function SimpleWiresModule({
             receiveShadow
             geometry={nodes.Plug2.geometry}
             material={materials["Plastic Light"]}
-            position={[0, -0.035, 0.013]}
-            rotation={[0, 0, Math.PI]}
+            position={[0, -0.026, 0.013]}
             scale={0.482}
           />
           <mesh
@@ -154,8 +242,7 @@ export default function SimpleWiresModule({
             receiveShadow
             geometry={nodes.Plug3.geometry}
             material={materials["Plastic Light"]}
-            position={[0, -0.052, 0.013]}
-            rotation={[0, 0, Math.PI]}
+            position={[0, -0.008, 0.013]}
             scale={0.482}
           />
           <mesh
@@ -163,8 +250,7 @@ export default function SimpleWiresModule({
             receiveShadow
             geometry={nodes.Plug4.geometry}
             material={materials["Plastic Light"]}
-            position={[0, -0.07, 0.013]}
-            rotation={[0, 0, Math.PI]}
+            position={[0, 0.01, 0.013]}
             scale={0.482}
           />
           <mesh
@@ -172,8 +258,7 @@ export default function SimpleWiresModule({
             receiveShadow
             geometry={nodes.Plug5.geometry}
             material={materials["Plastic Light"]}
-            position={[0, -0.088, 0.013]}
-            rotation={[0, 0, Math.PI]}
+            position={[0, 0.027, 0.013]}
             scale={0.482}
           />
           <mesh
@@ -181,177 +266,50 @@ export default function SimpleWiresModule({
             receiveShadow
             geometry={nodes.Plug6.geometry}
             material={materials["Plastic Light"]}
-            position={[0, -0.105, 0.013]}
-            rotation={[0, 0, Math.PI]}
+            position={[0, 0.045, 0.013]}
             scale={0.482}
           />
         </mesh>
+
         <Select onChangePointerUp={onWireSelect}>
           <group>
-            <CuttableWire
-              index={0}
-              isCut={cutWires[0]}
-              uncutWire={
-                <mesh
-                  castShadow
-                  receiveShadow
-                  geometry={nodes.Wire1Normal.geometry}
-                  material={materials.WireRed}
-                  position={[0.04, -0.008, 0.037]}
-                  rotation={[Math.PI, 0, -1.36]}
-                  scale={0.05}
-                />
-              }
-              cutWire={
-                <mesh
-                  castShadow
-                  receiveShadow
-                  geometry={nodes.Wire1Cut.geometry}
-                  material={materials.WireRed}
-                  position={[0.04, -0.008, 0.037]}
-                  rotation={[Math.PI, 0, -1.36]}
-                  scale={0.05}
-                />
-              }
-            />
-
-            <CuttableWire
-              index={1}
-              isCut={cutWires[1]}
-              uncutWire={
-                <mesh
-                  castShadow
-                  receiveShadow
-                  geometry={nodes.Wire2Normal.geometry}
-                  material={materials.WireYellow}
-                  position={[0.023, -0.008, 0.037]}
-                  rotation={[Math.PI, 0, -1.36]}
-                  scale={0.05}
-                />
-              }
-              cutWire={
-                <mesh
-                  castShadow
-                  receiveShadow
-                  geometry={nodes.Wire2Cut.geometry}
-                  material={materials.WireYellow}
-                  position={[0.023, -0.008, 0.037]}
-                  rotation={[Math.PI, 0, -1.36]}
-                  scale={0.05}
-                />
-              }
-            />
-
-            <CuttableWire
-              index={2}
-              isCut={cutWires[2]}
-              uncutWire={
-                <mesh
-                  castShadow
-                  receiveShadow
-                  geometry={nodes.Wire3Normal.geometry}
-                  material={materials.BlueWire}
-                  position={[0.006, -0.008, 0.037]}
-                  rotation={[Math.PI, 0, -1.36]}
-                  scale={0.05}
-                />
-              }
-              cutWire={
-                <mesh
-                  castShadow
-                  receiveShadow
-                  geometry={nodes.Wire3Cut.geometry}
-                  material={materials.BlueWire}
-                  position={[0.006, -0.008, 0.037]}
-                  rotation={[Math.PI, 0, -1.36]}
-                  scale={0.05}
-                />
-              }
-            />
-
-            <CuttableWire
-              index={3}
-              isCut={cutWires[3]}
-              uncutWire={
-                <mesh
-                  castShadow
-                  receiveShadow
-                  geometry={nodes.Wire4Normal.geometry}
-                  material={materials.BlackWire}
-                  position={[-0.016, -0.008, 0.037]}
-                  rotation={[Math.PI, 0, -1.36]}
-                  scale={0.05}
-                />
-              }
-              cutWire={
-                <mesh
-                  castShadow
-                  receiveShadow
-                  geometry={nodes.Wire4Cut.geometry}
-                  material={materials.BlackWire}
-                  position={[-0.016, -0.008, 0.037]}
-                  rotation={[Math.PI, 0, -1.36]}
-                  scale={0.05}
-                />
-              }
-            />
-
-            <CuttableWire
-              index={4}
-              isCut={cutWires[4]}
-              uncutWire={
-                <mesh
-                  castShadow
-                  receiveShadow
-                  geometry={nodes.Wire5Normal.geometry}
-                  material={materials.PinkWire}
-                  position={[-0.034, -0.008, 0.037]}
-                  rotation={[Math.PI, 0, -1.36]}
-                  scale={0.05}
-                />
-              }
-              cutWire={
-                <mesh
-                  castShadow
-                  receiveShadow
-                  geometry={nodes.Wire5Cut.geometry}
-                  material={materials.PinkWire}
-                  position={[-0.034, -0.008, 0.037]}
-                  rotation={[Math.PI, 0, -1.36]}
-                  scale={0.05}
-                />
-              }
-            />
-            <CuttableWire
-              index={5}
-              isCut={cutWires[5]}
-              uncutWire={
-                <InteractiveMesh
-                  castShadow
-                  receiveShadow
-                  geometry={nodes.Wire6Normal.geometry}
-                  material={materials.OrangeWire}
-                  position={[-0.057, -0.011, 0.05]}
-                />
-              }
-              cutWire={
-                <mesh
-                  castShadow
-                  receiveShadow
-                  geometry={nodes.Wire6Cut.geometry}
-                  material={materials.OrangeWire}
-                  position={[-0.057, -0.011, 0.05]}
-                />
-              }
-            />
+            {wireConfig.wires.map(
+              (wire, index) =>
+                wire.visible && (
+                  <CuttableWire
+                    key={index}
+                    index={index}
+                    isCut={wire.cut}
+                    uncutWire={
+                      <mesh
+                        castShadow
+                        receiveShadow
+                        geometry={nodes[wirePositions[index].normal].geometry}
+                        material={materials[WIRE_COLOR_TO_MATERIAL[wire.color]]}
+                        position={wirePositions[index].position as ThreeNumbers}
+                      />
+                    }
+                    cutWire={
+                      <mesh
+                        castShadow
+                        receiveShadow
+                        geometry={nodes[wirePositions[index].cut].geometry}
+                        material={materials[WIRE_COLOR_TO_MATERIAL[wire.color]]}
+                        position={wirePositions[index].position as ThreeNumbers}
+                      />
+                    }
+                  />
+                )
+            )}
           </group>
         </Select>
 
         <mesh
           castShadow
-          receiveShadow
           geometry={nodes.Light002.geometry}
-          material={materials["Unlit light"]}
+          material={
+            isSolved ? CustomMaterials.GreenLight : materials["Unlit light"]
+          }
           position={[0.061, 0.062, 0.021]}
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}

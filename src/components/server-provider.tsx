@@ -1,11 +1,5 @@
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect } from "react";
 import { GameServiceClient } from "../generated/proto/game.client";
 import type { PlayerInput } from "../generated/proto/player";
 import { useGameStore } from "../hooks/use-game-store";
@@ -56,7 +50,8 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
     async (input: PlayerInput) => {
       if (!sessionId) return;
       const response = await gameService.sendInput(input);
-      console.log(response.response);
+
+      return response.response;
     },
     [sessionId]
   );

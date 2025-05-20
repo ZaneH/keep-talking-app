@@ -1,10 +1,12 @@
 import { createContext, useContext } from "react";
-import type { PlayerInput } from "../generated/proto/player";
+import type { PlayerInput, PlayerInputResult } from "../generated/proto/player";
 
 interface ServerContextType {
   createGameSession: () => Promise<void>;
   exitGameSession: () => Promise<void>;
-  sendPlayerInput: (input: PlayerInput) => Promise<void>;
+  sendPlayerInput: (
+    input: PlayerInput
+  ) => Promise<PlayerInputResult | undefined>;
   getBombs: () => Promise<void>;
 }
 

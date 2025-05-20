@@ -84,9 +84,13 @@ export interface PlayerInputResult {
      */
     moduleId: string;
     /**
-     * @generated from protobuf field: bool success = 2;
+     * @generated from protobuf field: bool strike = 2;
      */
-    success: boolean;
+    strike: boolean;
+    /**
+     * @generated from protobuf field: bool solved = 3;
+     */
+    solved: boolean;
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class CreateGameRequest$Type extends MessageType<CreateGameRequest> {
@@ -282,13 +286,15 @@ class PlayerInputResult$Type extends MessageType<PlayerInputResult> {
     constructor() {
         super("player.PlayerInputResult", [
             { no: 1, name: "module_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "success", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 2, name: "strike", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 3, name: "solved", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<PlayerInputResult>): PlayerInputResult {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.moduleId = "";
-        message.success = false;
+        message.strike = false;
+        message.solved = false;
         if (value !== undefined)
             reflectionMergePartial<PlayerInputResult>(this, message, value);
         return message;
@@ -301,8 +307,11 @@ class PlayerInputResult$Type extends MessageType<PlayerInputResult> {
                 case /* string module_id */ 1:
                     message.moduleId = reader.string();
                     break;
-                case /* bool success */ 2:
-                    message.success = reader.bool();
+                case /* bool strike */ 2:
+                    message.strike = reader.bool();
+                    break;
+                case /* bool solved */ 3:
+                    message.solved = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -319,9 +328,12 @@ class PlayerInputResult$Type extends MessageType<PlayerInputResult> {
         /* string module_id = 1; */
         if (message.moduleId !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.moduleId);
-        /* bool success = 2; */
-        if (message.success !== false)
-            writer.tag(2, WireType.Varint).bool(message.success);
+        /* bool strike = 2; */
+        if (message.strike !== false)
+            writer.tag(2, WireType.Varint).bool(message.strike);
+        /* bool solved = 3; */
+        if (message.solved !== false)
+            writer.tag(3, WireType.Varint).bool(message.solved);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
