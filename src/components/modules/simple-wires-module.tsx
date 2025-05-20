@@ -12,9 +12,9 @@ import { CustomMaterials } from "./custom-materials";
 import Module, { type ModuleProps } from "./module";
 
 const WIRE_COLOR_TO_MATERIAL: Record<string, string> = {
-  RED: "WireRed",
+  RED: "RedWire",
   BLUE: "BlueWire",
-  YELLOW: "WireYellow",
+  YELLOW: "YellowWire",
   BLACK: "BlackWire",
   WHITE: "WhiteWire",
   ORANGE: "OrangeWire",
@@ -308,7 +308,7 @@ export default function SimpleWiresModule({
           castShadow
           geometry={nodes.Light002.geometry}
           material={
-            isSolved ? CustomMaterials.GreenLight : materials["Unlit light"]
+            isSolved ? materials["GreenLight"] : materials["Unlit light"]
           }
           position={[0.061, 0.062, 0.021]}
           rotation={[Math.PI / 2, 0, 0]}
