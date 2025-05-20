@@ -1,6 +1,7 @@
 import type OGCameraControls from "camera-controls";
 import * as THREE from "three";
 import { create } from "zustand";
+import type { Bomb } from "../generated/proto/bomb";
 
 type GamePhase = "idle" | "module-view";
 
@@ -8,11 +9,17 @@ interface GameState {
   selectedModuleId?: string;
   zoomState: GamePhase;
   cameraLocked: boolean;
+  sessionId?: string;
+  bombs: Bomb[];
+  selectedBombId?: string;
 }
 
 interface GameActions {
   setSelectedModule: (_moduleId?: string) => void;
   setZoomState: (_state: GamePhase) => void;
+  setSessionId: (_sessionId?: string) => void;
+  setBombs: (_bombs: Bomb[]) => void;
+  setSelectedBombId: (_bombId?: string) => void;
   zoomToModule: (
     _moduleId: string,
     _position: THREE.Vector3,
@@ -26,10 +33,16 @@ export const useGameStore = create<GameState & GameActions>()((set) => ({
   selectedModuleId: undefined,
   zoomState: "idle",
   cameraLocked: false,
+  sessionId: undefined,
+  bombs: [],
+  selectedBombId: undefined,
 
   // Actions
   setSelectedModule: (module) => set({ selectedModuleId: module }),
   setZoomState: (state) => set({ zoomState: state }),
+  setSessionId: (sessionId) => set({ sessionId }),
+  setBombs: (bombs) => set({ bombs }),
+  setSelectedBombId: (bombId) => set({ selectedBombId: bombId }),
   zoomToModule: (moduleId, position, controls) => {
     set({
       selectedModuleId: moduleId,

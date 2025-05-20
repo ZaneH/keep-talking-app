@@ -3,7 +3,8 @@ import { useState } from "react";
 import type { ModuleModels } from "../../hooks/use-module-model";
 
 export interface ModuleProps {
-  id?: keyof typeof ModuleModels;
+  moduleId: string;
+  name?: keyof typeof ModuleModels;
 }
 
 export default function Module({

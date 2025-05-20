@@ -6,9 +6,12 @@ import {
   EffectComposer,
   Outline,
 } from "@react-three/postprocessing";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import type { Bomb as BombType } from "../generated/proto/bomb";
+import { useGameStore } from "../hooks/use-game-store";
 import Bomb from "./bomb";
 import { useHighlight } from "./highlight-provider";
+import { useServer } from "./server-context";
 import Table from "./table";
 
 export default function Scene() {
@@ -18,17 +21,12 @@ export default function Scene() {
   const lightRef4 = useRef<any>(null);
   const lightRef5 = useRef<any>(null);
   const { selected } = useHighlight();
+  const { bombs } = useGameStore();
+  const { createGameSession } = useServer();
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const transport = new GrpcWebFetchTransport({
-  //       baseUrl: "http://localhost:8080",
-  //     });
-  //     const gameService = new GameServiceClient(transport);
-  //     const response = await gameService.createGame({});
-  //     console.log(response.response);
-  //   })();
-  // }, []);
+  useEffect(() => {
+    createGameSession();
+  }, []);
 
   // useHelper(lightRef, DirectionalLightHelper);
   // useHelper(lightRef2, DirectionalLightHelper);
@@ -105,11 +103,13 @@ export default function Scene() {
         />
       </group>
       <group position={[0, -0.8, 0]}>
-        <Bomb />
+        {bombs.map((bomb: BombType) => {
+          return <Bomb key={bomb.id} bombId={bomb.id} modules={bomb.modules} />;
+        })}
         <Table />
       </group>
 
-      <Environment preset="night" />
+      <Environment files="/dikhololo_night_1k.hdr" />
       <EffectComposer autoClear={false}>
         {/* <DepthOfField focusDistance={0.01} focalLength={0.1} bokehScale={2} /> */}
         <BrightnessContrast contrast={0.15} />

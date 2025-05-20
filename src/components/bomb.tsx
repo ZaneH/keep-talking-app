@@ -1,5 +1,6 @@
 import { Select, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
+import { Module_ModuleType, type Module } from "../generated/proto/modules";
 import { useGameStore } from "../hooks/use-game-store";
 import { getModuleRoot } from "../utils/node-finder";
 import { useControls } from "./controls-provider";
@@ -13,7 +14,12 @@ import {
 
 const ZOOM_DISTANCE = 0.2;
 
-export default function Bomb() {
+interface BombProps {
+  bombId: string;
+  modules: { [key: string]: Module };
+}
+
+export default function Bomb({ bombId: _bombId, modules }: BombProps) {
   const { nodes, materials } = useGLTF("/bomb.glb") as any;
   const { zoomToModule, selectedModuleId } = useGameStore();
   const controlsRef = useControls();
@@ -42,6 +48,7 @@ export default function Bomb() {
   return (
     <>
       <group
+        name="Shell"
         dispose={null}
         position={[0, 0.73, 0]}
         onPointerEnter={(e) => e.stopPropagation()}
@@ -100,13 +107,26 @@ export default function Bomb() {
         </mesh>
       </group>
       <Select onChangePointerUp={onModuleClick}>
-        <ClockModule />
-        <BigButtonModule />
-        <SimpleWiresModule />
-        <KeypadModule />
-        <SimonSaysModule />
-        {/* <PasswordModule /> */}
+        {Object.entries(modules).map(([moduleId, module]) => {
+          console.log({ module });
+          return renderModule(moduleId, module);
+        })}
       </Select>
     </>
   );
+}
+
+function renderModule(key: string, module: Module) {
+  switch (module.type) {
+    case Module_ModuleType.BIG_BUTTON:
+      return <BigButtonModule key={key} moduleId={module.id} />;
+    case Module_ModuleType.SIMPLE_WIRES:
+      return <SimpleWiresModule key={key} moduleId={module.id} />;
+    // case Module_ModuleType.KEYPAD:
+    //   return <KeypadModule />;
+    case Module_ModuleType.SIMON_SAYS:
+      return <SimonSaysModule key={key} moduleId={module.id} />;
+    default:
+      return null;
+  }
 }
