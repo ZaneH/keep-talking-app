@@ -109,7 +109,7 @@ export default function Scene() {
         <Table />
       </group>
 
-      <Environment preset="night" background blur={0.8} />
+      <Environment preset="night" />
       <EffectComposer autoClear={false}>
         {/* <DepthOfField focusDistance={0.01} focalLength={0.1} bokehScale={2} /> */}
         <BrightnessContrast contrast={0.15} />

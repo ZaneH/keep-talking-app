@@ -86,45 +86,49 @@ export default function KeypadModule({ id = "keypad" }: ModuleProps) {
         <mesh
           castShadow
           receiveShadow
+          geometry={nodes.LitBL.geometry}
+          material={materials["Backlight.Dark"]}
+          position={[-0.044, -0.064, 0.035]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={[0.972, 1, 0.972]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.LitBR.geometry}
+          material={materials["Backlight.Dark"]}
+          position={[0.018, -0.064, 0.035]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={[0.972, 1, 0.972]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.LitTL.geometry}
+          material={materials["Backlight.Dark"]}
+          position={[-0.044, -0.003, 0.035]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={[0.972, 1, 0.972]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.LitTR.geometry}
+          material={materials["Backlight.Dark"]}
+          position={[0.018, -0.003, 0.035]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={[0.972, 1, 0.972]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
           geometry={nodes.Light006.geometry}
           material={materials["Unlit light"]}
           position={[0.061, 0.062, 0.021]}
           rotation={[Math.PI / 2, 0, 0]}
-          scale={[0.011, 0.012, 0.011]}
+          scale={[0.972, 1, 0.972]}
         />
       </mesh>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.Plane.geometry}
-        material={materials["Backlight.Dark"]}
-        position={[-0.046, -0.003, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.Plane001.geometry}
-        material={materials["Backlight.Dark"]}
-        position={[-0.046, -0.066, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.Plane002.geometry}
-        material={materials["Backlight.Dark"]}
-        position={[0.018, -0.066, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.Plane003.geometry}
-        material={materials["Backlight.Dark"]}
-        position={[0.018, -0.003, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-      />
     </Module>
   );
 }
