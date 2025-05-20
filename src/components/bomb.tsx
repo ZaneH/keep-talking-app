@@ -121,7 +121,17 @@ function renderModule(key: string, module: Module) {
     case Module_ModuleType.BIG_BUTTON:
       return <BigButtonModule key={key} moduleId={module.id} />;
     case Module_ModuleType.SIMPLE_WIRES:
-      return <SimpleWiresModule key={key} moduleId={module.id} />;
+      return (
+        <SimpleWiresModule
+          key={key}
+          moduleId={module.id}
+          state={
+            module.state.oneofKind === "simpleWires"
+              ? module.state?.simpleWires
+              : undefined
+          }
+        />
+      );
     // case Module_ModuleType.KEYPAD:
     //   return <KeypadModule />;
     case Module_ModuleType.SIMON_SAYS:

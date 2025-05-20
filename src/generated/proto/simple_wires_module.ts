@@ -40,6 +40,10 @@ export interface Wire {
      * @generated from protobuf field: bool is_cut = 2;
      */
     isCut: boolean;
+    /**
+     * @generated from protobuf field: int32 index = 3;
+     */
+    index: number;
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class SimpleWiresInput$Type extends MessageType<SimpleWiresInput> {
@@ -140,13 +144,15 @@ class Wire$Type extends MessageType<Wire> {
     constructor() {
         super("modules.Wire", [
             { no: 1, name: "wire_color", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "is_cut", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 2, name: "is_cut", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 3, name: "index", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
         ]);
     }
     create(value?: PartialMessage<Wire>): Wire {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.wireColor = "";
         message.isCut = false;
+        message.index = 0;
         if (value !== undefined)
             reflectionMergePartial<Wire>(this, message, value);
         return message;
@@ -161,6 +167,9 @@ class Wire$Type extends MessageType<Wire> {
                     break;
                 case /* bool is_cut */ 2:
                     message.isCut = reader.bool();
+                    break;
+                case /* int32 index */ 3:
+                    message.index = reader.int32();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -180,6 +189,9 @@ class Wire$Type extends MessageType<Wire> {
         /* bool is_cut = 2; */
         if (message.isCut !== false)
             writer.tag(2, WireType.Varint).bool(message.isCut);
+        /* int32 index = 3; */
+        if (message.index !== 0)
+            writer.tag(3, WireType.Varint).int32(message.index);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
