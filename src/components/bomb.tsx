@@ -7,7 +7,6 @@ import {
   BigButtonModule,
   ClockModule,
   KeypadModule,
-  PasswordModule,
   SimonSaysModule,
   SimpleWiresModule,
 } from "./modules";
@@ -106,7 +105,7 @@ export default function Bomb() {
         <SimpleWiresModule />
         <KeypadModule />
         <SimonSaysModule />
-        <PasswordModule />
+        {/* <PasswordModule /> */}
       </Select>
     </>
   );
