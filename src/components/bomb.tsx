@@ -119,7 +119,17 @@ export default function Bomb({ bombId: _bombId, modules }: BombProps) {
 function renderModule(key: string, module: Module) {
   switch (module.type) {
     case Module_ModuleType.BIG_BUTTON:
-      return <BigButtonModule key={key} moduleId={module.id} />;
+      return (
+        <BigButtonModule
+          key={key}
+          moduleId={module.id}
+          state={
+            module.state.oneofKind === "bigButton"
+              ? module.state?.bigButton
+              : undefined
+          }
+        />
+      );
     case Module_ModuleType.SIMPLE_WIRES:
       return (
         <SimpleWiresModule
