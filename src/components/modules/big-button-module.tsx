@@ -1,15 +1,23 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import Module, { type ModuleProps } from "./module";
+import type { BigButtonState } from "../../generated/proto/big_button_module";
 
-export default function BigButtonModule({ name = "big-button" }: ModuleProps) {
+export default function BigButtonModule({
+  moduleId,
+  name = "big-button",
+  state,
+}: ModuleProps & {
+  state?: BigButtonState;
+}) {
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: name, meshRef });
+  const [stripColor, setStripeColor] = useState<string>();
 
   return (
-    <Module id={name} position={[0.195, 0.629, 0.1]}>
+    <Module id={moduleId} name={name} position={[0.195, 0.629, 0.1]}>
       <mesh
         castShadow
         receiveShadow
@@ -28,6 +36,9 @@ export default function BigButtonModule({ name = "big-button" }: ModuleProps) {
             position={[0, -0.108, 0.127]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={[0.043, 0.006, 0.043]}
+            onPointerDown={() => {
+              console.log("yuh");
+            }}
           />
           <mesh
             castShadow

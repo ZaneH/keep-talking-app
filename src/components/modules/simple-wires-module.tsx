@@ -8,18 +8,18 @@ import { useModuleModel } from "../../hooks/use-module-model";
 import { useHighlight } from "../highlight-provider";
 import { InteractiveMesh } from "../interactive-mesh";
 import { useServer } from "../server-context";
-import { CustomMaterials } from "./custom-materials";
 import Module, { type ModuleProps } from "./module";
+import { Color } from "../../generated/proto/common";
 
 const WIRE_COLOR_TO_MATERIAL: Record<string, string> = {
-  RED: "RedWire",
-  BLUE: "BlueWire",
-  YELLOW: "YellowWire",
-  BLACK: "BlackWire",
-  WHITE: "WhiteWire",
-  ORANGE: "OrangeWire",
-  GREEN: "GreenWire",
-  PINK: "PinkWire",
+  [Color.RED]: "RedWire",
+  [Color.BLUE]: "BlueWire",
+  [Color.YELLOW]: "YellowWire",
+  [Color.BLACK]: "BlackWire",
+  [Color.WHITE]: "WhiteWire",
+  [Color.ORANGE]: "OrangeWire",
+  [Color.GREEN]: "GreenWire",
+  [Color.PINK]: "PinkWire",
 };
 
 type ThreeNumbers = [number, number, number];
@@ -40,7 +40,7 @@ export default function SimpleWiresModule({
 
   const [wireConfig, setWireConfig] = useState<{
     wires: Array<{
-      color: string;
+      color: Color;
       cut: boolean;
       visible: boolean;
     }>;
@@ -51,7 +51,7 @@ export default function SimpleWiresModule({
       const newWireConfig = Array(6)
         .fill(null)
         .map(() => ({
-          color: "NONE",
+          color: Color.RED,
           cut: false,
           visible: false,
         }));
