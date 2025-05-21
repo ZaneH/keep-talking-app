@@ -66,5 +66,9 @@ export enum Color {
     /**
      * @generated from protobuf enum value: PINK = 7;
      */
-    PINK = 7
+    PINK = 7,
+    /**
+     * @generated from protobuf enum value: UNKNOWN = 99;
+     */
+    UNKNOWN = 99
 }
