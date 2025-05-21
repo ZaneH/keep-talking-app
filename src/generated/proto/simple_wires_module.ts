@@ -10,6 +10,7 @@ import { UnknownFieldHandler } from "@protobuf-ts/runtime";
 import type { PartialMessage } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
+import { Color } from "./common";
 /**
  * @generated from protobuf message modules.SimpleWiresInput
  */
@@ -33,9 +34,9 @@ export interface SimpleWiresState {
  */
 export interface Wire {
     /**
-     * @generated from protobuf field: string wire_color = 1;
+     * @generated from protobuf field: common.Color wire_color = 1;
      */
-    wireColor: string;
+    wireColor: Color;
     /**
      * @generated from protobuf field: bool is_cut = 2;
      */
@@ -143,14 +144,14 @@ export const SimpleWiresState = new SimpleWiresState$Type();
 class Wire$Type extends MessageType<Wire> {
     constructor() {
         super("modules.Wire", [
-            { no: 1, name: "wire_color", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 1, name: "wire_color", kind: "enum", T: () => ["common.Color", Color] },
             { no: 2, name: "is_cut", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 3, name: "index", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
         ]);
     }
     create(value?: PartialMessage<Wire>): Wire {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.wireColor = "";
+        message.wireColor = 0;
         message.isCut = false;
         message.index = 0;
         if (value !== undefined)
@@ -162,8 +163,8 @@ class Wire$Type extends MessageType<Wire> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string wire_color */ 1:
-                    message.wireColor = reader.string();
+                case /* common.Color wire_color */ 1:
+                    message.wireColor = reader.int32();
                     break;
                 case /* bool is_cut */ 2:
                     message.isCut = reader.bool();
@@ -183,9 +184,9 @@ class Wire$Type extends MessageType<Wire> {
         return message;
     }
     internalBinaryWrite(message: Wire, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string wire_color = 1; */
-        if (message.wireColor !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.wireColor);
+        /* common.Color wire_color = 1; */
+        if (message.wireColor !== 0)
+            writer.tag(1, WireType.Varint).int32(message.wireColor);
         /* bool is_cut = 2; */
         if (message.isCut !== false)
             writer.tag(2, WireType.Varint).bool(message.isCut);
