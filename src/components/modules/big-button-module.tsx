@@ -7,7 +7,9 @@ import { Text, useAnimations } from "@react-three/drei";
 import * as THREE from "three";
 import { pbColorToHex } from "../../utils/pbcolor-to-hex";
 import type { BigButtonState } from "../../generated/proto/big_button_module.pb";
-import { Color } from "../../generated/proto/common.pb";
+import { Color, PressType } from "../../generated/proto/common.pb";
+import { GameService } from "../../services/api";
+import { CustomMaterials } from "./custom-materials";
 
 export default function BigButtonModule({
   moduleId,
@@ -20,13 +22,18 @@ export default function BigButtonModule({
   const { nodes, materials, animations } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { actions, mixer } = useAnimations(animations, coverRef);
-  const { pointerHandlers } = useModuleHighlight({ id: name, meshRef });
-  // const [stripColor, setStripeColor] = useState<string>();
-  const { selectedModuleId } = useGameStore();
+  const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
+  const [stripColor, setStripColor] = useState<Color>();
+  const { sessionId, selectedBombId, selectedModuleId, zoomState } =
+    useGameStore();
   const [isCoverOpen, setIsCoverOpen] = useState(false);
   const [prevAction, setPrevAction] = useState<any>(null);
+  const [pressDownTime, setPressDownTime] = useState(0);
+  const [longPressTimeout, setLongPressTimeout] = useState<number>();
+  const [isSolved, setIsSolved] = useState(false);
 
   useEffect(() => {
+    setStripColor(undefined);
     if (prevAction) {
       prevAction.fadeOut(0);
     }
@@ -42,6 +49,7 @@ export default function BigButtonModule({
         setIsCoverOpen(true);
       }
     } else {
+      // Leaving the module, close the cover, etc.
       const action = actions?.CloseAction;
       if (action && isCoverOpen) {
         action.clampWhenFinished = true;
@@ -61,11 +69,63 @@ export default function BigButtonModule({
     });
   }, [selectedModuleId]);
 
+  const onPointerDown = () => {
+    if (isSolved) return;
+    if (zoomState !== "module-view") return;
+
+    setPressDownTime(Date.now());
+
+    const timeout = setTimeout(async () => {
+      const response = await GameService.SendInput({
+        sessionId,
+        bombId: selectedBombId,
+        moduleId,
+        bigButtonInput: {
+          pressType: PressType.HOLD,
+        },
+      });
+
+      setStripColor(response.bigButtonInputResult?.stripColor);
+    }, 500);
+
+    setLongPressTimeout(timeout);
+  };
+
+  const onPointerUp = async () => {
+    if (isSolved) return;
+    if (zoomState !== "module-view") return;
+
+    clearTimeout(longPressTimeout);
+    setStripColor(undefined);
+
+    const pressDuration = Date.now() - pressDownTime;
+    const response = await GameService.SendInput({
+      sessionId,
+      bombId: selectedBombId,
+      moduleId,
+      bigButtonInput: {
+        pressType: pressDuration > 500 ? PressType.RELEASE : PressType.TAP,
+      },
+    });
+
+    if (response.solved) {
+      setIsSolved(true);
+    }
+  };
+
   const buttonColor: THREE.MeshStandardMaterial =
     materials["Button Red"].clone();
   buttonColor.color = new THREE.Color(
     pbColorToHex(state?.buttonColor || Color.UNKNOWN)
   );
+
+  if (stripColor) {
+    CustomMaterials.RingLight.color = new THREE.Color(pbColorToHex(stripColor));
+    CustomMaterials.RingLight.emissive = new THREE.Color(
+      pbColorToHex(stripColor)
+    );
+    CustomMaterials.RingLight.emissiveIntensity = 0.5;
+  }
 
   return (
     <Module id={moduleId} name={name} position={[0.195, 0.629, 0.1]}>
@@ -87,16 +147,12 @@ export default function BigButtonModule({
             position={[0, -0.108, 0.127]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={[0.043, 0.006, 0.043]}
-            onPointerDown={() => {
-              console.log("Pointer down");
-            }}
-            onPointerUp={() => {
-              console.log("Pointer up");
-            }}
+            onPointerDown={onPointerDown}
+            onPointerUp={onPointerUp}
           />
           <Text
             position={[0, -0.108, 0.1332]}
-            fontSize={0.018}
+            fontSize={0.012}
             fontWeight={600}
             color={
               state?.buttonColor === Color.YELLOW ||
@@ -140,7 +196,9 @@ export default function BigButtonModule({
           castShadow
           receiveShadow
           geometry={nodes.LightRing.geometry}
-          material={materials["Unlit light"]}
+          material={
+            !!stripColor ? CustomMaterials.RingLight : materials["Unlit light"]
+          }
           position={[0.002, -0.007, 0.031]}
           rotation={[Math.PI / 2, 0, 0]}
           scale={[1.425, 1.466, 1.425]}
@@ -149,7 +207,9 @@ export default function BigButtonModule({
           castShadow
           receiveShadow
           geometry={nodes.Light005.geometry}
-          material={materials["Unlit light"]}
+          material={
+            isSolved ? CustomMaterials.GreenLight : materials["Unlit light"]
+          }
           position={[0.061, 0.062, 0.021]}
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}

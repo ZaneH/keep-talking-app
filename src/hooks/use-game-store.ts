@@ -15,7 +15,6 @@ interface GameState {
 }
 
 interface GameActions {
-  setSelectedModule: (_moduleId?: string) => void;
   setZoomState: (_state: GamePhase) => void;
   setSessionId: (_sessionId?: string) => void;
   setBombs: (_bombs: Bomb[]) => void;
@@ -38,7 +37,6 @@ export const useGameStore = create<GameState & GameActions>()((set) => ({
   selectedBombId: undefined,
 
   // Actions
-  setSelectedModule: (module) => set({ selectedModuleId: module }),
   setZoomState: (state) => set({ zoomState: state }),
   setSessionId: (sessionId) => set({ sessionId }),
   setBombs: (bombs) => set({ bombs }),

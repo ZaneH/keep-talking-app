@@ -3,10 +3,13 @@ import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import Module, { type ModuleProps } from "./module";
 
-export default function SimonSaysModule({ name = "simon-says" }: ModuleProps) {
+export default function SimonSaysModule({
+  moduleId,
+  name = "simon-says",
+}: ModuleProps) {
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
-  const { pointerHandlers } = useModuleHighlight({ id: name, meshRef });
+  const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
 
   return (
     <Module id={name} position={[-0.195, 0.827, 0.1]}>

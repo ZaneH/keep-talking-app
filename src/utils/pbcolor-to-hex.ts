@@ -1,6 +1,6 @@
 import { Color } from "../generated/proto/common.pb";
 
-export function pbColorToHex(color: Color): number {
+export function pbColorToHex(color?: Color): number {
   switch (color) {
     case Color.BLACK:
       return 0x000000;

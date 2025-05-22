@@ -34,8 +34,12 @@ type BasePlayerInput = {
 export type PlayerInput = BasePlayerInput
   & OneOf<{ simpleWiresInput: ModulesSimple_wires_module.SimpleWiresInput; passwordInput: ModulesPassword_module.PasswordInput; bigButtonInput: ModulesBig_button_module.BigButtonInput; simonSaysInput: ModulesSimon_says_module.SimonSaysInput }>
 
-export type PlayerInputResult = {
+
+type BasePlayerInputResult = {
   moduleId?: string
   strike?: boolean
   solved?: boolean
 }
+
+export type PlayerInputResult = BasePlayerInputResult
+  & OneOf<{ bigButtonInputResult: ModulesBig_button_module.BigButtonInputResult }>

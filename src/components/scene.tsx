@@ -121,8 +121,7 @@ export default function Scene() {
 
       <Environment files="/dikhololo_night_1k.hdr" />
       <EffectComposer autoClear={false}>
-        {/* <DepthOfField focusDistance={0.01} focalLength={0.1} bokehScale={2} /> */}
-        <BrightnessContrast contrast={0.15} />
+        <BrightnessContrast contrast={0.18} />
         <Outline
           selection={selected}
           visibleEdgeColor={"green" as any}
