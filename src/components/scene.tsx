@@ -22,7 +22,7 @@ export default function Scene() {
   const lightRef5 = useRef<any>(null);
   const { selected } = useHighlight();
   const { bombs } = useGameStore();
-  const { setSessionId, setBombs } = useGameStore();
+  const { setSessionId, setBombs, setSelectedBombId } = useGameStore();
 
   useEffect(() => {
     GameService.CreateGame({}).then((res) => {
@@ -33,6 +33,7 @@ export default function Scene() {
       }).then((res) => {
         console.log(res.bombs);
         setBombs(res.bombs || []);
+        setSelectedBombId(res.bombs?.[0]?.id);
       });
     });
   }, []);
