@@ -7,7 +7,7 @@ import { ServerContext } from "./server-context";
 
 export function ServerProvider({ children }: { children: React.ReactNode }) {
   const transport = new GrpcWebFetchTransport({
-    baseUrl: "http://localhost:8080",
+    baseUrl: import.meta.env.VITE_BOMB_API_URL,
   });
   const gameService = new GameServiceClient(transport);
   const { sessionId, setSessionId, setSelectedBombId, setBombs } =
