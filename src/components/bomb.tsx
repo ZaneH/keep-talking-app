@@ -3,7 +3,12 @@ import * as THREE from "three";
 import { useGameStore } from "../hooks/use-game-store";
 import { getModuleRoot } from "../utils/node-finder";
 import { useControls } from "./controls-provider";
-import { BigButtonModule, SimonSaysModule, SimpleWiresModule } from "./modules";
+import {
+  BigButtonModule,
+  ClockModule,
+  SimonSaysModule,
+  SimpleWiresModule,
+} from "./modules";
 import { ModuleModuleType, type Module } from "../generated/proto/modules.pb";
 
 const ZOOM_DISTANCE = 0.2;
@@ -127,10 +132,12 @@ function renderModule(key?: string, module?: Module) {
           state={module.simpleWires}
         />
       );
+    case ModuleModuleType.CLOCK:
+      return <ClockModule key={key} moduleId={module.id!} />;
     // case Module_ModuleType.KEYPAD:
     //   return <KeypadModule />;
-    case ModuleModuleType.SIMON_SAYS:
-      return <SimonSaysModule key={key} moduleId={module.id!} />;
+    // case ModuleModuleType.SIMON_SAYS:
+    //   return <SimonSaysModule key={key} moduleId={module.id!} />;
     default:
       return null;
   }
