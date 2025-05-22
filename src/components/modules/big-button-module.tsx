@@ -3,7 +3,7 @@ import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import Module, { type ModuleProps } from "./module";
 import { useGameStore } from "../../hooks/use-game-store";
-import { useAnimations } from "@react-three/drei";
+import { Text, useAnimations } from "@react-three/drei";
 import * as THREE from "three";
 import { pbColorToHex } from "../../utils/pbcolor-to-hex";
 import type { BigButtonState } from "../../generated/proto/big_button_module.pb";
@@ -90,7 +90,23 @@ export default function BigButtonModule({
             onPointerDown={() => {
               console.log("Pointer down");
             }}
+            onPointerUp={() => {
+              console.log("Pointer up");
+            }}
           />
+          <Text
+            position={[0, -0.108, 0.1332]}
+            fontSize={0.018}
+            fontWeight={600}
+            color={
+              state?.buttonColor === Color.YELLOW ||
+              state?.buttonColor === Color.WHITE
+                ? "black"
+                : "white"
+            }
+          >
+            {state?.label?.toUpperCase()}
+          </Text>
           <mesh
             castShadow
             receiveShadow
