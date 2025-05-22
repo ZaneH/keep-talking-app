@@ -42,4 +42,4 @@ type BasePlayerInputResult = {
 }
 
 export type PlayerInputResult = BasePlayerInputResult
-  & OneOf<{ bigButtonInputResult: ModulesBig_button_module.BigButtonInputResult }>
+  & OneOf<{ bigButtonInputResult: ModulesBig_button_module.BigButtonInputResult; simonSaysInputResult: ModulesSimon_says_module.SimonSaysInputResult }>
