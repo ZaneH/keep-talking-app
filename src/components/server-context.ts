@@ -5,7 +5,7 @@ interface ServerContextType {
   createGameSession: () => Promise<void>;
   exitGameSession: () => Promise<void>;
   sendPlayerInput: (
-    input: PlayerInput
+    _input: PlayerInput
   ) => Promise<PlayerInputResult | undefined>;
   getBombs: () => Promise<void>;
 }
