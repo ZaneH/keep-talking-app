@@ -144,8 +144,14 @@ function renderModule(key?: string, module?: Module) {
       );
     // case Module_ModuleType.KEYPAD:
     //   return <KeypadModule />;
-    // case ModuleModuleType.SIMON_SAYS:
-    //   return <SimonSaysModule key={key} moduleId={module.id!} />;
+    case ModuleModuleType.SIMON_SAYS:
+      return (
+        <SimonSaysModule
+          key={key}
+          moduleId={module.id!}
+          position={module.position}
+        />
+      );
     default:
       return null;
   }
