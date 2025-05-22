@@ -1,8 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import Module, { type ModuleProps } from "./module";
 import type { BigButtonState } from "../../generated/proto/big_button_module";
+import { useGameStore } from "../../hooks/use-game-store";
+import { useAnimations } from "@react-three/drei";
+import * as THREE from "three";
 
 export default function BigButtonModule({
   moduleId,
@@ -11,10 +14,50 @@ export default function BigButtonModule({
 }: ModuleProps & {
   state?: BigButtonState;
 }) {
-  const { nodes, materials } = useModuleModel(name);
+  const coverRef = useRef<THREE.Mesh>(null);
+  const { nodes, materials, animations } = useModuleModel(name);
   const meshRef = useRef<any>(null);
+  const { actions, mixer } = useAnimations(animations, coverRef);
   const { pointerHandlers } = useModuleHighlight({ id: name, meshRef });
   const [stripColor, setStripeColor] = useState<string>();
+  const { selectedModuleId } = useGameStore();
+  const [isCoverOpen, setIsCoverOpen] = useState(false);
+  const [prevAction, setPrevAction] = useState<any>(null);
+
+  useEffect(() => {
+    if (prevAction) {
+      prevAction.fadeOut(0);
+    }
+
+    // Flip up cover
+    if (moduleId === selectedModuleId) {
+      const action = actions?.OpenAction;
+      if (action) {
+        action.clampWhenFinished = true;
+        action.setLoop(THREE.LoopOnce, 1);
+        action.timeScale = 1;
+        action.reset().play();
+        setIsCoverOpen(true);
+      }
+    } else {
+      const action = actions?.CloseAction;
+      if (action && isCoverOpen) {
+        action.clampWhenFinished = true;
+        action.setLoop(THREE.LoopOnce, 1);
+        action.timeScale = 1;
+        action.reset().play();
+        setIsCoverOpen(false);
+      }
+    }
+
+    mixer.addEventListener("finished", (e: any) => {
+      if (e.action === actions?.OpenAction) {
+        setPrevAction(actions?.OpenAction);
+      } else if (e.action === actions?.CloseAction) {
+        setPrevAction(actions?.CloseAction);
+      }
+    });
+  }, [selectedModuleId]);
 
   return (
     <Module id={moduleId} name={name} position={[0.195, 0.629, 0.1]}>
@@ -37,7 +80,7 @@ export default function BigButtonModule({
             rotation={[Math.PI / 2, 0, 0]}
             scale={[0.043, 0.006, 0.043]}
             onPointerDown={() => {
-              console.log("yuh");
+              console.log("Pointer down");
             }}
           />
           <mesh
@@ -51,6 +94,8 @@ export default function BigButtonModule({
           />
         </group>
         <mesh
+          name="Cover"
+          ref={coverRef}
           castShadow
           receiveShadow
           geometry={nodes.Cover.geometry}
