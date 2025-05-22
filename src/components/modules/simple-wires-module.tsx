@@ -280,6 +280,7 @@ export default function SimpleWiresModule({
                     key={index}
                     index={index}
                     isCut={wire.cut}
+                    disabled={isSolved}
                     uncutWire={
                       <mesh
                         castShadow
@@ -332,11 +333,13 @@ const CuttableWire = ({
   uncutWire,
   cutWire,
   isCut,
+  disabled,
 }: {
   index: number;
   uncutWire: React.ReactNode;
   cutWire: React.ReactNode;
   isCut: boolean;
+  disabled: boolean;
 }) => {
   const wireRef = useRef<THREE.Mesh>(null);
   const { unhighlight } = useHighlight();
@@ -355,6 +358,7 @@ const CuttableWire = ({
         <InteractiveMesh
           {...(uncutWire as any).props}
           ref={wireRef}
+          disabled={disabled}
           userData={{ index }}
         />
       )}

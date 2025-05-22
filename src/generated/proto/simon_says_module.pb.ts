@@ -8,3 +8,7 @@ import * as CommonCommon from "./common.pb"
 export type SimonSaysInput = {
   color?: CommonCommon.Color
 }
+
+export type SimonSaysInputResult = {
+  nextSequence?: CommonCommon.Color[]
+}

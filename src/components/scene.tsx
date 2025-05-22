@@ -15,34 +15,33 @@ import { useHighlight } from "./highlight-provider";
 import Table from "./table";
 
 export default function Scene() {
-  const lightRef = useRef<any>(null);
-  // const lightRef2 = useRef<any>(null);
-  const lightRef3 = useRef<any>(null);
-  const lightRef4 = useRef<any>(null);
-  const lightRef5 = useRef<any>(null);
   const { selected } = useHighlight();
   const { bombs } = useGameStore();
   const { setSessionId, setBombs, setSelectedBombId } = useGameStore();
+  const isSessionFetched = useRef<boolean>(false);
 
   useEffect(() => {
-    GameService.CreateGame({}).then((res) => {
-      setSessionId(res.sessionId);
+    if (isSessionFetched.current) return;
+    isSessionFetched.current = true;
 
-      GameService.GetBombs({
-        sessionId: res.sessionId,
-      }).then((res) => {
-        console.log(res.bombs);
-        setBombs(res.bombs || []);
-        setSelectedBombId(res.bombs?.[0]?.id);
+    GameService.CreateGame({})
+      .then((res) => {
+        setSessionId(res.sessionId);
+
+        GameService.GetBombs({
+          sessionId: res.sessionId,
+        }).then((res) => {
+          console.log({ bombs: res.bombs });
+
+          setBombs(res.bombs || []);
+          setSelectedBombId(res.bombs?.[0]?.id);
+        });
+      })
+      .catch((err) => {
+        console.error("Error fetching session:", err);
+        isSessionFetched.current = false;
       });
-    });
   }, []);
-
-  // useHelper(lightRef, DirectionalLightHelper);
-  // useHelper(lightRef2, DirectionalLightHelper);
-  // useHelper(lightRef3, RectAreaLightHelper, "blue");
-  // useHelper(lightRef4, RectAreaLightHelper, "green");
-  // useHelper(lightRef5, RectAreaLightHelper, "red");
 
   return (
     <>
@@ -53,7 +52,6 @@ export default function Scene() {
           intensity={0.3}
           castShadow
           shadow-normalBias={0.05}
-          ref={lightRef}
         />
         <directionalLight
           position={[1, 1.9, 1.1]}
@@ -61,16 +59,7 @@ export default function Scene() {
           intensity={0.75}
           castShadow
           shadow-normalBias={0.05}
-          ref={lightRef5}
         />
-        {/* <directionalLight
-          position={[-0.9, 1.9, -1.0]}
-          intensity={0.8}
-          scale={[0.5, 0.5, 0.5]}
-          castShadow
-          shadow-normalBias={0.05}
-          ref={lightRef2}
-        /> */}
         <ambientLight intensity={0.2} />
         <pointLight
           position={[0, 1.5, 0]}
@@ -78,7 +67,6 @@ export default function Scene() {
           scale={[0.5, 0.5, 0.5]}
           castShadow
           shadow-normalBias={0.05}
-          ref={lightRef3}
         />
         <rectAreaLight
           intensity={0.8}
@@ -86,7 +74,6 @@ export default function Scene() {
           height={2}
           width={3}
           rotation={[Math.PI / -3, Math.PI / 8, Math.PI / 8]}
-          ref={lightRef3}
         />
         <rectAreaLight
           intensity={0.7}
@@ -94,22 +81,13 @@ export default function Scene() {
           height={0.8}
           width={3}
           rotation={[Math.PI / 2.3, Math.PI / -1.2, Math.PI / 2]}
-          ref={lightRef5}
         />
-        {/* <rectAreaLight
-          intensity={4}
-          position={[0, 0, 4]}
-          height={2}
-          width={3}
-          rotation={[Math.PI / 1.1, Math.PI / -1.2, 0]}
-        /> */}
         <rectAreaLight
           intensity={1.2}
           position={[1, 1.9, -1]}
           height={1}
           width={1}
           rotation={[Math.PI / 2, Math.PI, Math.PI / 2]}
-          ref={lightRef4}
         />
       </group>
       <group position={[0, -0.8, 0]}>
