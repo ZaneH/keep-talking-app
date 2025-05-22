@@ -19,7 +19,7 @@ export default function Module({
 
   return (
     <group
-      userData={{ id }}
+      userData={{ moduleId: id }}
       dispose={null}
       name="module"
       onPointerEnter={(e) => {
