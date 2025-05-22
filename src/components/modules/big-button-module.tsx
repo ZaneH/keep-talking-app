@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import Module, { type ModuleProps } from "./module";
-import type { BigButtonState } from "../../generated/proto/big_button_module";
 import { useGameStore } from "../../hooks/use-game-store";
 import { useAnimations } from "@react-three/drei";
 import * as THREE from "three";
 import { pbColorToHex } from "../../utils/pbcolor-to-hex";
-import { Color } from "../../generated/proto/common";
+import type { BigButtonState } from "../../generated/proto/big_button_module.pb";
+import { Color } from "../../generated/proto/common.pb";
 
 export default function BigButtonModule({
   moduleId,

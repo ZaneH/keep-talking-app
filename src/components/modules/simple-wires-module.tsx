@@ -1,15 +1,15 @@
 import { Select } from "@react-three/drei";
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import type { SimpleWiresState } from "../../generated/proto/simple_wires_module";
 import { useGameStore } from "../../hooks/use-game-store";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import { useHighlight } from "../highlight-provider";
 import { InteractiveMesh } from "../interactive-mesh";
-import { useServer } from "../server-context";
 import Module, { type ModuleProps } from "./module";
-import { Color } from "../../generated/proto/common";
+import { Color } from "../../generated/proto/common.pb";
+import type { SimpleWiresState } from "../../generated/proto/simple_wires_module.pb";
+import { GameService } from "../../services/api";
 
 const WIRE_COLOR_TO_MATERIAL: Record<string, string> = {
   [Color.RED]: "RedWire",
@@ -35,7 +35,6 @@ export default function SimpleWiresModule({
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
   const { zoomState, sessionId, selectedBombId } = useGameStore();
-  const { sendPlayerInput } = useServer();
   const [isSolved, setIsSolved] = useState(false);
 
   const [wireConfig, setWireConfig] = useState<{
@@ -56,14 +55,12 @@ export default function SimpleWiresModule({
           visible: false,
         }));
 
-      state.wires.forEach((wire, idx) => {
-        if (idx < 6) {
-          newWireConfig[wire.index] = {
-            color: wire.wireColor,
-            cut: wire.isCut || false,
-            visible: true,
-          };
-        }
+      state.wires.forEach((wire, _) => {
+        newWireConfig[wire.index!] = {
+          color: wire.wireColor!,
+          cut: wire.isCut || false,
+          visible: true,
+        };
       });
 
       setWireConfig({ wires: newWireConfig });
@@ -81,15 +78,12 @@ export default function SimpleWiresModule({
       if (!wireConfig.wires[index].visible || wireConfig.wires[index].cut)
         return;
 
-      const resp = await sendPlayerInput({
+      const resp = await GameService.SendInput({
         bombId: selectedBombId!,
         sessionId: sessionId!,
         moduleId,
-        input: {
-          oneofKind: "simpleWiresInput",
-          simpleWiresInput: {
-            wireIndex: index,
-          },
+        simpleWiresInput: {
+          wireIndex: index,
         },
       });
 

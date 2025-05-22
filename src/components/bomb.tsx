@@ -1,16 +1,16 @@
 import { Select, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import { Module_ModuleType, type Module } from "../generated/proto/modules";
 import { useGameStore } from "../hooks/use-game-store";
 import { getModuleRoot } from "../utils/node-finder";
 import { useControls } from "./controls-provider";
 import { BigButtonModule, SimonSaysModule, SimpleWiresModule } from "./modules";
+import { ModuleModuleType, type Module } from "../generated/proto/modules.pb";
 
 const ZOOM_DISTANCE = 0.2;
 
 interface BombProps {
-  bombId: string;
-  modules: { [key: string]: Module };
+  bombId?: string;
+  modules?: { [key: string]: Module };
 }
 
 export default function Bomb({ bombId: _bombId, modules }: BombProps) {
@@ -101,7 +101,7 @@ export default function Bomb({ bombId: _bombId, modules }: BombProps) {
         </mesh>
       </group>
       <Select onChangePointerUp={onModuleClick}>
-        {Object.entries(modules).map(([moduleId, module]) => {
+        {Object.entries(modules || {}).map(([moduleId, module]) => {
           return renderModule(moduleId, module);
         })}
       </Select>
@@ -109,36 +109,28 @@ export default function Bomb({ bombId: _bombId, modules }: BombProps) {
   );
 }
 
-function renderModule(key: string, module: Module) {
-  switch (module.type) {
-    case Module_ModuleType.BIG_BUTTON:
+function renderModule(key?: string, module?: Module) {
+  switch (module?.type) {
+    case ModuleModuleType.BIG_BUTTON:
       return (
         <BigButtonModule
           key={key}
-          moduleId={module.id}
-          state={
-            module.state.oneofKind === "bigButton"
-              ? module.state?.bigButton
-              : undefined
-          }
+          moduleId={module.id!}
+          state={module.bigButton}
         />
       );
-    case Module_ModuleType.SIMPLE_WIRES:
+    case ModuleModuleType.SIMPLE_WIRES:
       return (
         <SimpleWiresModule
           key={key}
-          moduleId={module.id}
-          state={
-            module.state.oneofKind === "simpleWires"
-              ? module.state?.simpleWires
-              : undefined
-          }
+          moduleId={module.id!}
+          state={module.simpleWires}
         />
       );
     // case Module_ModuleType.KEYPAD:
     //   return <KeypadModule />;
-    case Module_ModuleType.SIMON_SAYS:
-      return <SimonSaysModule key={key} moduleId={module.id} />;
+    case ModuleModuleType.SIMON_SAYS:
+      return <SimonSaysModule key={key} moduleId={module.id!} />;
     default:
       return null;
   }
