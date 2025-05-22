@@ -1,7 +1,7 @@
 import type OGCameraControls from "camera-controls";
 import * as THREE from "three";
 import { create } from "zustand";
-import type { Bomb } from "../generated/proto/bomb";
+import type { Bomb } from "../generated/proto/bomb.pb";
 
 type GamePhase = "idle" | "module-view";
 
