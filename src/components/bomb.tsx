@@ -4,13 +4,7 @@ import { Module_ModuleType, type Module } from "../generated/proto/modules";
 import { useGameStore } from "../hooks/use-game-store";
 import { getModuleRoot } from "../utils/node-finder";
 import { useControls } from "./controls-provider";
-import {
-  BigButtonModule,
-  ClockModule,
-  KeypadModule,
-  SimonSaysModule,
-  SimpleWiresModule,
-} from "./modules";
+import { BigButtonModule, SimonSaysModule, SimpleWiresModule } from "./modules";
 
 const ZOOM_DISTANCE = 0.2;
 
