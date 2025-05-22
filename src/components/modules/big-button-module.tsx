@@ -6,6 +6,8 @@ import type { BigButtonState } from "../../generated/proto/big_button_module";
 import { useGameStore } from "../../hooks/use-game-store";
 import { useAnimations } from "@react-three/drei";
 import * as THREE from "three";
+import { pbColorToHex } from "../../utils/pbcolor-to-hex";
+import { Color } from "../../generated/proto/common";
 
 export default function BigButtonModule({
   moduleId,
@@ -59,6 +61,12 @@ export default function BigButtonModule({
     });
   }, [selectedModuleId]);
 
+  const buttonColor: THREE.MeshStandardMaterial =
+    materials["Button Red"].clone();
+  buttonColor.color = new THREE.Color(
+    pbColorToHex(state?.buttonColor || Color.UNKNOWN)
+  );
+
   return (
     <Module id={moduleId} name={name} position={[0.195, 0.629, 0.1]}>
       <mesh
@@ -75,7 +83,7 @@ export default function BigButtonModule({
             castShadow
             receiveShadow
             geometry={nodes.ButtonHead.geometry}
-            material={materials["Button Red"]}
+            material={buttonColor}
             position={[0, -0.108, 0.127]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={[0.043, 0.006, 0.043]}
@@ -87,7 +95,7 @@ export default function BigButtonModule({
             castShadow
             receiveShadow
             geometry={nodes.ButtonShaft.geometry}
-            material={materials["Button Red"]}
+            material={buttonColor}
             position={[0, -0.108, 0.113]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={[0.032, 0.011, 0.032]}
