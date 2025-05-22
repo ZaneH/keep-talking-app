@@ -1,4 +1,4 @@
-import { Color } from "../generated/proto/common";
+import { Color } from "../generated/proto/common.pb";
 
 export function pbColorToHex(color: Color): number {
   switch (color) {
