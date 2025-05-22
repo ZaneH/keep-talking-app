@@ -18,6 +18,7 @@ type OneOf<T> =
 
 export enum ModuleModuleType {
   UNKNOWN = "UNKNOWN",
+  CLOCK = "CLOCK",
   SIMPLE_WIRES = "SIMPLE_WIRES",
   PASSWORD = "PASSWORD",
   BIG_BUTTON = "BIG_BUTTON",
