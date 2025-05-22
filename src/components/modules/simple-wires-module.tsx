@@ -42,6 +42,7 @@ export default function SimpleWiresModule({
       color: Color;
       cut: boolean;
       visible: boolean;
+      position: number;
     }>;
   }>({ wires: [] });
 
@@ -53,14 +54,18 @@ export default function SimpleWiresModule({
           color: Color.RED,
           cut: false,
           visible: false,
+          position: 0,
         }));
 
-      state.wires.forEach((wire, _) => {
-        newWireConfig[wire.index!] = {
-          color: wire.wireColor!,
-          cut: wire.isCut || false,
-          visible: true,
-        };
+      state.wires.forEach((wire, idx) => {
+        if (wire.position !== undefined) {
+          newWireConfig[idx] = {
+            color: wire.wireColor!,
+            cut: wire.isCut || false,
+            visible: true,
+            position: wire.position,
+          };
+        }
       });
 
       setWireConfig({ wires: newWireConfig });
@@ -278,18 +283,26 @@ export default function SimpleWiresModule({
                       <mesh
                         castShadow
                         receiveShadow
-                        geometry={nodes[wirePositions[index].normal].geometry}
+                        geometry={
+                          nodes[wirePositions[wire.position].normal].geometry
+                        }
                         material={materials[WIRE_COLOR_TO_MATERIAL[wire.color]]}
-                        position={wirePositions[index].position as ThreeNumbers}
+                        position={
+                          wirePositions[wire.position].position as ThreeNumbers
+                        }
                       />
                     }
                     cutWire={
                       <mesh
                         castShadow
                         receiveShadow
-                        geometry={nodes[wirePositions[index].cut].geometry}
+                        geometry={
+                          nodes[wirePositions[wire.position].cut].geometry
+                        }
                         material={materials[WIRE_COLOR_TO_MATERIAL[wire.color]]}
-                        position={wirePositions[index].position as ThreeNumbers}
+                        position={
+                          wirePositions[wire.position].position as ThreeNumbers
+                        }
                       />
                     }
                   />

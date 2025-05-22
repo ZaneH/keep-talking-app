@@ -16,5 +16,5 @@ export type SimpleWiresState = {
 export type Wire = {
   wireColor?: CommonCommon.Color
   isCut?: boolean
-  index?: number
+  position?: number
 }
