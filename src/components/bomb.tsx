@@ -122,6 +122,7 @@ function renderModule(key?: string, module?: Module) {
           key={key}
           moduleId={module.id!}
           state={module.bigButton}
+          position={module.position}
         />
       );
     case ModuleModuleType.SIMPLE_WIRES:
@@ -130,10 +131,17 @@ function renderModule(key?: string, module?: Module) {
           key={key}
           moduleId={module.id!}
           state={module.simpleWires}
+          position={module.position}
         />
       );
     case ModuleModuleType.CLOCK:
-      return <ClockModule key={key} moduleId={module.id!} />;
+      return (
+        <ClockModule
+          key={key}
+          moduleId={module.id!}
+          position={module.position}
+        />
+      );
     // case Module_ModuleType.KEYPAD:
     //   return <KeypadModule />;
     // case ModuleModuleType.SIMON_SAYS:

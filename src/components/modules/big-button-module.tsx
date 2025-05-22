@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
-import Module, { type ModuleProps } from "./module";
+import Module, { type BaseModuleProps } from "./module";
 import { useGameStore } from "../../hooks/use-game-store";
 import { Text, useAnimations } from "@react-three/drei";
 import * as THREE from "three";
@@ -14,8 +14,9 @@ import { CustomMaterials } from "./custom-materials";
 export default function BigButtonModule({
   moduleId,
   name = "big-button",
+  position,
   state,
-}: ModuleProps & {
+}: BaseModuleProps & {
   state?: BigButtonState;
 }) {
   const coverRef = useRef<THREE.Mesh>(null);
@@ -128,7 +129,7 @@ export default function BigButtonModule({
   }
 
   return (
-    <Module id={moduleId} name={name} position={[0.195, 0.629, 0.1]}>
+    <Module id={moduleId} position={position}>
       <mesh
         castShadow
         receiveShadow

@@ -6,7 +6,7 @@ import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import { useHighlight } from "../highlight-provider";
 import { InteractiveMesh } from "../interactive-mesh";
-import Module, { type ModuleProps } from "./module";
+import Module, { type BaseModuleProps } from "./module";
 import { Color } from "../../generated/proto/common.pb";
 import type { SimpleWiresState } from "../../generated/proto/simple_wires_module.pb";
 import { GameService } from "../../services/api";
@@ -27,8 +27,9 @@ type ThreeNumbers = [number, number, number];
 export default function SimpleWiresModule({
   moduleId,
   name = "simple-wires",
+  position,
   state,
-}: ModuleProps & {
+}: BaseModuleProps & {
   state?: SimpleWiresState;
 }) {
   const { nodes, materials } = useModuleModel(name);
@@ -139,7 +140,7 @@ export default function SimpleWiresModule({
   ];
 
   return (
-    <Module id={moduleId} position={[-0.195, 0.629, 0.1]}>
+    <Module id={moduleId} position={position}>
       <mesh
         castShadow
         receiveShadow
