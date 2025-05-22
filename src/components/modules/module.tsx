@@ -12,8 +12,8 @@ export interface BaseModuleProps {
 interface ModuleProps {
   id: string;
   children: React.ReactNode;
-  onPointerEnter?: (e: any) => void;
-  onPointerLeave?: (e: any) => void;
+  onPointerEnter?: (_e: any) => void;
+  onPointerLeave?: (_e: any) => void;
   position?: ModulePosition;
 }
 

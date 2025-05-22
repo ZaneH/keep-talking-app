@@ -27,6 +27,8 @@ interface GameActions {
   reset: (_controls: OGCameraControls | null) => void;
 }
 
+const CAMERA_ZOOM_OFFSET = 0.28;
+
 export const useGameStore = create<GameState & GameActions>()((set) => ({
   // State
   selectedModuleId: undefined,
@@ -48,7 +50,12 @@ export const useGameStore = create<GameState & GameActions>()((set) => ({
       cameraLocked: true,
     });
     if (controls) {
-      controls.setPosition(position.x, position.y, position.z + 0.1, true);
+      controls.setPosition(
+        position.x,
+        position.y,
+        position.z + CAMERA_ZOOM_OFFSET,
+        true
+      );
       controls.setTarget(position.x, position.y, position.z, true);
     }
   },
