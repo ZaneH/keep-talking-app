@@ -9,6 +9,10 @@ export type BigButtonInput = {
   pressType?: CommonCommon.PressType
 }
 
+export type BigButtonInputResult = {
+  stripColor?: CommonCommon.Color
+}
+
 export type BigButtonState = {
   buttonColor?: CommonCommon.Color
   label?: string
