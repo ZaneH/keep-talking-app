@@ -28,7 +28,7 @@ export default function Bomb({ bombId: _bombId, modules }: BombProps) {
     if (!selected || !selected[0]) return;
 
     const module = getModuleRoot(selected[0]);
-    const moduleId = module.userData["id"];
+    const moduleId = module.userData["moduleId"];
     if (selectedModuleId === moduleId) {
       return;
     }
@@ -108,7 +108,6 @@ export default function Bomb({ bombId: _bombId, modules }: BombProps) {
       </group>
       <Select onChangePointerUp={onModuleClick}>
         {Object.entries(modules).map(([moduleId, module]) => {
-          console.log({ module });
           return renderModule(moduleId, module);
         })}
       </Select>
