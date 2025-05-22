@@ -42,8 +42,10 @@ export interface Module {
      */
     type: Module_ModuleType;
     /**
-     * ModulePosition position = 3;
-     *
+     * @generated from protobuf field: modules.ModulePosition position = 3;
+     */
+    position?: ModulePosition;
+    /**
      * @generated from protobuf field: bool solved = 4;
      */
     solved: boolean;
@@ -162,6 +164,7 @@ class Module$Type extends MessageType<Module> {
         super("modules.Module", [
             { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "type", kind: "enum", T: () => ["modules.Module.ModuleType", Module_ModuleType] },
+            { no: 3, name: "position", kind: "message", T: () => ModulePosition },
             { no: 4, name: "solved", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 5, name: "simple_wires", kind: "message", oneof: "state", T: () => SimpleWiresState },
             { no: 7, name: "big_button", kind: "message", oneof: "state", T: () => BigButtonState }
@@ -187,6 +190,9 @@ class Module$Type extends MessageType<Module> {
                     break;
                 case /* modules.Module.ModuleType type */ 2:
                     message.type = reader.int32();
+                    break;
+                case /* modules.ModulePosition position */ 3:
+                    message.position = ModulePosition.internalBinaryRead(reader, reader.uint32(), options, message.position);
                     break;
                 case /* bool solved */ 4:
                     message.solved = reader.bool();
@@ -221,6 +227,9 @@ class Module$Type extends MessageType<Module> {
         /* modules.Module.ModuleType type = 2; */
         if (message.type !== 0)
             writer.tag(2, WireType.Varint).int32(message.type);
+        /* modules.ModulePosition position = 3; */
+        if (message.position)
+            ModulePosition.internalBinaryWrite(message.position, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
         /* bool solved = 4; */
         if (message.solved !== false)
             writer.tag(4, WireType.Varint).bool(message.solved);
