@@ -3,9 +3,8 @@ import { GameService as OriginalGameService } from "../generated/proto/game.pb";
 import * as PlayerPlayer from "../generated/proto/player.pb";
 import * as SessionSession from "../generated/proto/session.pb";
 
-// Default API configuration
 const defaultConfig: InitReq = {
-  pathPrefix: "http://localhost:8081",
+  pathPrefix: import.meta.env.VITE_BOMB_API_URL,
 };
 
 export class GameService {
