@@ -1,5 +1,4 @@
-import { Select } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import { useCallback, useRef, useState } from "react";
 import * as THREE from "three";
 import { useGameStore } from "../../hooks/use-game-store";
@@ -16,17 +15,18 @@ export default function SimonSaysModule({
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
   const { zoomState } = useGameStore();
-  const [isAnimating, setIsAnimating] = useState(false);
 
-  const [mixer, setMixer] = useState<THREE.AnimationMixer | undefined>();
+  const isAnimating = useRef<boolean>(false);
+
+  const mixer = useRef<THREE.AnimationMixer | undefined>(undefined);
 
   const onSimonSaysClick = useCallback(
-    (selected: THREE.Object3D[]) => {
+    (event: ThreeEvent<PointerEvent>) => {
       if (zoomState !== "module-view") return;
-      if (!selected.length) return;
-      if (isAnimating) return;
+      if (!event.object) return;
+      if (isAnimating.current) return;
 
-      const selectedMesh: any = selected[0];
+      const selectedMesh: any = event.object;
       const selectedMaterial = selectedMesh.material;
 
       const clonedMaterial = selectedMaterial.clone();
@@ -61,29 +61,29 @@ export default function SimonSaysModule({
         intensityKF,
       ]);
 
-      if (mixer) {
-        mixer.stopAllAction();
+      if (mixer.current) {
+        mixer.current.stopAllAction();
       }
 
       const newMixer = new THREE.AnimationMixer(clonedMaterial);
       const action = newMixer.clipAction(clip);
       action.reset().play();
-      setIsAnimating(true);
+      isAnimating.current = true;
       action.setLoop(THREE.LoopOnce, 1);
       action.clampWhenFinished = true;
       action.timeScale = 1;
-      setMixer(newMixer);
+      mixer.current = newMixer;
 
       newMixer.addEventListener("finished", () => {
         selectedMesh.material = selectedMaterial;
         newMixer.stopAllAction();
-        setIsAnimating(false);
+        isAnimating.current = false;
       });
     },
     [zoomState, mixer, isAnimating]
   );
 
-  useFrame((_state, delta) => mixer?.update(delta));
+  useFrame((_state, delta) => mixer?.current?.update(delta));
 
   return (
     <Module id={moduleId} position={position}>
@@ -96,42 +96,44 @@ export default function SimonSaysModule({
         ref={meshRef}
         {...pointerHandlers}
       >
-        <Select onChangePointerUp={onSimonSaysClick}>
-          <group>
-            <mesh
-              castShadow
-              receiveShadow
-              geometry={nodes.SimonSaysPatternD.geometry}
-              material={materials.GreenLight}
-              position={[0, -0.035, 0.032]}
-              scale={1.062}
-            />
-            <mesh
-              castShadow
-              receiveShadow
-              geometry={nodes.SimonSaysPatternL.geometry}
-              material={materials.RedLight}
-              position={[-0.034, 0, 0.032]}
-              scale={1.062}
-            />
-            <mesh
-              castShadow
-              receiveShadow
-              geometry={nodes.SimonSaysPatternR.geometry}
-              material={materials.YellowLight}
-              position={[0.034, 0, 0.032]}
-              scale={1.062}
-            />
-            <mesh
-              castShadow
-              receiveShadow
-              geometry={nodes.SimonSaysPatternU.geometry}
-              material={materials.BlueLight}
-              position={[0, 0.035, 0.032]}
-              scale={1.062}
-            />
-          </group>
-        </Select>
+        <group>
+          <mesh
+            castShadow
+            receiveShadow
+            geometry={nodes.SimonSaysPatternD.geometry}
+            material={materials.GreenLight}
+            position={[0, -0.035, 0.032]}
+            scale={1.062}
+            onPointerUp={onSimonSaysClick}
+          />
+          <mesh
+            castShadow
+            receiveShadow
+            geometry={nodes.SimonSaysPatternL.geometry}
+            material={materials.RedLight}
+            position={[-0.034, 0, 0.032]}
+            scale={1.062}
+            onPointerUp={onSimonSaysClick}
+          />
+          <mesh
+            castShadow
+            receiveShadow
+            geometry={nodes.SimonSaysPatternR.geometry}
+            material={materials.YellowLight}
+            position={[0.034, 0, 0.032]}
+            scale={1.062}
+            onPointerUp={onSimonSaysClick}
+          />
+          <mesh
+            castShadow
+            receiveShadow
+            geometry={nodes.SimonSaysPatternU.geometry}
+            material={materials.BlueLight}
+            position={[0, 0.035, 0.032]}
+            scale={1.062}
+            onPointerUp={onSimonSaysClick}
+          />
+        </group>
         <mesh
           castShadow
           receiveShadow
