@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState } from "react";
-import useModuleHighlight from "../../hooks/use-module-highlight";
-import { useModuleModel } from "../../hooks/use-module-model";
-import Module, { type BaseModuleProps } from "./module";
-import { useGameStore } from "../../hooks/use-game-store";
 import { Text, useAnimations } from "@react-three/drei";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { pbColorToHex } from "../../utils/pbcolor-to-hex";
 import type { BigButtonState } from "../../generated/proto/big_button_module.pb";
 import { Color, PressType } from "../../generated/proto/common.pb";
+import { useGameStore } from "../../hooks/use-game-store";
+import useModuleHighlight from "../../hooks/use-module-highlight";
+import { useModuleModel } from "../../hooks/use-module-model";
 import { GameService } from "../../services/api";
+import { pbColorToHex } from "../../utils/pbcolor-to-hex";
 import { CustomMaterials } from "./custom-materials";
+import Module, { type BaseModuleProps } from "./module";
 
 export default function BigButtonModule({
   moduleId,
@@ -70,9 +70,9 @@ export default function BigButtonModule({
     });
   }, [selectedModuleId]);
 
-  const onPointerDown = () => {
+  const onPointerDown = useCallback(() => {
     if (isSolved) return;
-    if (zoomState !== "module-view") return;
+    if (selectedModuleId !== moduleId) return;
 
     setPressDownTime(Date.now());
 
@@ -90,7 +90,14 @@ export default function BigButtonModule({
     }, 500);
 
     setLongPressTimeout(timeout);
-  };
+  }, [
+    selectedModuleId,
+    moduleId,
+    sessionId,
+    selectedBombId,
+    isSolved,
+    state?.buttonColor,
+  ]);
 
   const onPointerUp = async () => {
     if (isSolved) return;

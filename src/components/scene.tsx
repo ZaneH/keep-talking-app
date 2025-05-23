@@ -92,7 +92,21 @@ export default function Scene() {
       </group>
       <group position={[0, -0.8, 0]}>
         {bombs.map((bomb: BombType) => {
-          return <Bomb key={bomb.id} bombId={bomb.id} modules={bomb.modules} />;
+          return (
+            <Bomb
+              key={bomb.id}
+              bombId={bomb.id}
+              modules={bomb.modules}
+              startedAt={bomb.startedAt}
+              timerDuration={bomb.timerDuration}
+              batteries={bomb.batteries}
+              serialNumber={bomb.serialNumber}
+              strikeCount={bomb.strikeCount}
+              maxStrikes={bomb.maxStrikes}
+              ports={bomb.ports}
+              indicators={bomb.indicators}
+            />
+          );
         })}
         <Table />
       </group>
