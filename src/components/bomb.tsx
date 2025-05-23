@@ -10,15 +10,25 @@ import {
   SimpleWiresModule,
 } from "./modules";
 import { ModuleModuleType, type Module } from "../generated/proto/modules.pb";
+import type { Indicator, Port } from "../generated/proto/bomb.pb";
+import BombProvider from "./bomb-provider";
 
 const ZOOM_DISTANCE = 0.2;
 
 interface BombProps {
   bombId?: string;
   modules?: { [key: string]: Module };
+  startedAt?: number;
+  timerDuration?: number;
+  batteries?: number;
+  serialNumber?: string;
+  strikeCount?: number;
+  maxStrikes?: number;
+  ports?: Port[];
+  indicators?: { [key: string]: Indicator };
 }
 
-export default function Bomb({ bombId: _bombId, modules }: BombProps) {
+export default function Bomb({ modules, startedAt, timerDuration }: BombProps) {
   const { nodes, materials } = useGLTF("/bomb.glb") as any;
   const { zoomToModule, selectedModuleId } = useGameStore();
   const controlsRef = useControls();
@@ -105,11 +115,13 @@ export default function Bomb({ bombId: _bombId, modules }: BombProps) {
           />
         </mesh>
       </group>
-      <Select onChangePointerUp={onModuleClick}>
-        {Object.entries(modules || {}).map(([moduleId, module]) => {
-          return renderModule(moduleId, module);
-        })}
-      </Select>
+      <BombProvider startedAt={startedAt} timerDuration={timerDuration}>
+        <Select onChangePointerUp={onModuleClick}>
+          {Object.entries(modules || {}).map(([moduleId, module]) => {
+            return renderModule(moduleId, module);
+          })}
+        </Select>
+      </BombProvider>
     </>
   );
 }

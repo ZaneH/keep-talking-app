@@ -1,5 +1,5 @@
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import * as THREE from "three";
 import { useGameStore } from "../../hooks/use-game-store";
 import useModuleHighlight from "../../hooks/use-module-highlight";
@@ -14,7 +14,7 @@ export default function SimonSaysModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
-  const { zoomState } = useGameStore();
+  const { zoomState, selectedModuleId } = useGameStore();
 
   const isAnimating = useRef<boolean>(false);
 
@@ -22,7 +22,7 @@ export default function SimonSaysModule({
 
   const onSimonSaysClick = useCallback(
     (event: ThreeEvent<PointerEvent>) => {
-      if (zoomState !== "module-view") return;
+      if (selectedModuleId !== moduleId) return;
       if (!event.object) return;
       if (isAnimating.current) return;
 
@@ -80,7 +80,7 @@ export default function SimonSaysModule({
         isAnimating.current = false;
       });
     },
-    [zoomState, mixer, isAnimating]
+    [zoomState, mixer, isAnimating, selectedModuleId]
   );
 
   useFrame((_state, delta) => mixer?.current?.update(delta));

@@ -1,15 +1,15 @@
-import { Select } from "@react-three/drei";
+import type { ThreeEvent } from "@react-three/fiber";
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { Color } from "../../generated/proto/common.pb";
+import type { SimpleWiresState } from "../../generated/proto/simple_wires_module.pb";
 import { useGameStore } from "../../hooks/use-game-store";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
+import { GameService } from "../../services/api";
 import { useHighlight } from "../highlight-provider";
 import { InteractiveMesh } from "../interactive-mesh";
 import Module, { type BaseModuleProps } from "./module";
-import { Color } from "../../generated/proto/common.pb";
-import type { SimpleWiresState } from "../../generated/proto/simple_wires_module.pb";
-import { GameService } from "../../services/api";
 
 const WIRE_COLOR_TO_MATERIAL: Record<string, string> = {
   [Color.RED]: "RedWire",
@@ -35,7 +35,8 @@ export default function SimpleWiresModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
-  const { zoomState, sessionId, selectedBombId } = useGameStore();
+  const { zoomState, sessionId, selectedBombId, selectedModuleId } =
+    useGameStore();
   const [isSolved, setIsSolved] = useState(false);
 
   const [wireConfig, setWireConfig] = useState<{
@@ -74,15 +75,17 @@ export default function SimpleWiresModule({
   }, [state]);
 
   const onWireSelect = useCallback(
-    async (selected: THREE.Object3D[]) => {
+    async (event: ThreeEvent<PointerEvent>) => {
       if (isSolved) return;
-      if (zoomState !== "module-view") return;
+      if (selectedModuleId !== moduleId) return;
 
-      if (!selected[0]) return;
-      const index = selected[0].userData.index;
-      console.log({ index });
-      if (!wireConfig.wires[index].visible || wireConfig.wires[index].cut)
+      const object = event.object;
+      if (!object) return;
+
+      const index = object.userData.index;
+      if (!wireConfig.wires[index].visible || wireConfig.wires[index].cut) {
         return;
+      }
 
       const resp = await GameService.SendInput({
         bombId: selectedBombId!,
@@ -103,7 +106,14 @@ export default function SimpleWiresModule({
         return { wires: newWires };
       });
     },
-    [zoomState, selectedBombId, sessionId, moduleId, wireConfig]
+    [
+      zoomState,
+      selectedBombId,
+      sessionId,
+      moduleId,
+      wireConfig,
+      selectedModuleId,
+    ]
   );
 
   const wirePositions = [
@@ -271,47 +281,46 @@ export default function SimpleWiresModule({
           />
         </mesh>
 
-        <Select onChangePointerUp={onWireSelect}>
-          <group>
-            {wireConfig.wires.map(
-              (wire, index) =>
-                wire.visible && (
-                  <CuttableWire
-                    key={index}
-                    index={index}
-                    isCut={wire.cut}
-                    disabled={isSolved}
-                    uncutWire={
-                      <mesh
-                        castShadow
-                        receiveShadow
-                        geometry={
-                          nodes[wirePositions[wire.position].normal].geometry
-                        }
-                        material={materials[WIRE_COLOR_TO_MATERIAL[wire.color]]}
-                        position={
-                          wirePositions[wire.position].position as ThreeNumbers
-                        }
-                      />
-                    }
-                    cutWire={
-                      <mesh
-                        castShadow
-                        receiveShadow
-                        geometry={
-                          nodes[wirePositions[wire.position].cut].geometry
-                        }
-                        material={materials[WIRE_COLOR_TO_MATERIAL[wire.color]]}
-                        position={
-                          wirePositions[wire.position].position as ThreeNumbers
-                        }
-                      />
-                    }
-                  />
-                )
-            )}
-          </group>
-        </Select>
+        <group>
+          {wireConfig.wires.map(
+            (wire, index) =>
+              wire.visible && (
+                <CuttableWire
+                  key={index}
+                  index={index}
+                  isCut={wire.cut}
+                  disabled={isSolved}
+                  uncutWire={
+                    <mesh
+                      castShadow
+                      receiveShadow
+                      geometry={
+                        nodes[wirePositions[wire.position].normal].geometry
+                      }
+                      material={materials[WIRE_COLOR_TO_MATERIAL[wire.color]]}
+                      position={
+                        wirePositions[wire.position].position as ThreeNumbers
+                      }
+                      onPointerUp={onWireSelect}
+                    />
+                  }
+                  cutWire={
+                    <mesh
+                      castShadow
+                      receiveShadow
+                      geometry={
+                        nodes[wirePositions[wire.position].cut].geometry
+                      }
+                      material={materials[WIRE_COLOR_TO_MATERIAL[wire.color]]}
+                      position={
+                        wirePositions[wire.position].position as ThreeNumbers
+                      }
+                    />
+                  }
+                />
+              )
+          )}
+        </group>
 
         <mesh
           castShadow

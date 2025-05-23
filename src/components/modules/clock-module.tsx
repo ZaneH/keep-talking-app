@@ -1,18 +1,36 @@
 import { Text } from "@react-three/drei";
-import { useModuleModel } from "../../hooks/use-module-model";
-import Module, { type BaseModuleProps } from "./module";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import useModuleHighlight from "../../hooks/use-module-highlight";
+import { useModuleModel } from "../../hooks/use-module-model";
+import { useBomb } from "../bomb-context";
+import Module, { type BaseModuleProps } from "./module";
+import { useFrame } from "@react-three/fiber";
 
 function TextLabel() {
+  const { startedAt, timerDuration } = useBomb();
+  const [timeString, setTimeString] = useState("05:00");
+
+  useFrame(() => {
+    const now = Math.floor(Date.now() / 1000);
+    const timeLeft = Math.max((startedAt ?? 0) + (timerDuration ?? 0) - now, 0);
+
+    const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+    const seconds = String(timeLeft % 60).padStart(2, "0");
+    const newTimeString = `${minutes}:${seconds}`;
+
+    if (newTimeString !== timeString) {
+      setTimeString(newTimeString);
+    }
+  });
+
   return (
     <Text
       fontSize={0.05}
-      position={[0, 0.033, 0.034]}
+      position={[0, 0.0372, 0.034]}
       color={"green"}
-      font="/fonts/Seven_Segment.ttf"
+      font="/fonts/Digital7_Mono.ttf"
     >
-      00:00
+      {timeString}
       <meshStandardMaterial
         emissive={"green"}
         emissiveIntensity={3.5}
