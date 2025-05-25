@@ -11,6 +11,8 @@ import { pbColorToHex } from "../../utils/pbcolor-to-hex";
 import { CustomMaterials } from "./custom-materials";
 import Module, { type BaseModuleProps } from "./module";
 
+const HOLD_THRESHOLD_MS = 500;
+
 export default function BigButtonModule({
   moduleId,
   name = "big-button",
@@ -107,12 +109,16 @@ export default function BigButtonModule({
     setStripColor(undefined);
 
     const pressDuration = Date.now() - pressDownTime;
+    const isHold = pressDuration > HOLD_THRESHOLD_MS;
     const response = await GameService.SendInput({
       sessionId,
       bombId: selectedBombId,
       moduleId,
       bigButtonInput: {
-        pressType: pressDuration > 500 ? PressType.RELEASE : PressType.TAP,
+        pressType: isHold ? PressType.RELEASE : PressType.TAP,
+        releaseTimestamp: isHold
+          ? Math.round(Date.now() / 1000).toString()
+          : undefined,
       },
     });
 
