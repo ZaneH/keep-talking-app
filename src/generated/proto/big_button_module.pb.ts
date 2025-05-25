@@ -7,6 +7,7 @@
 import * as CommonCommon from "./common.pb"
 export type BigButtonInput = {
   pressType?: CommonCommon.PressType
+  releaseTimestamp?: string
 }
 
 export type BigButtonInputResult = {
