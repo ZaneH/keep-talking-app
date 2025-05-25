@@ -133,7 +133,7 @@ function renderModule(key?: string, module?: Module) {
         <BigButtonModule
           key={key}
           moduleId={module.id!}
-          state={module.bigButton}
+          state={module.bigButtonState}
           position={module.position}
         />
       );
@@ -142,7 +142,7 @@ function renderModule(key?: string, module?: Module) {
         <SimpleWiresModule
           key={key}
           moduleId={module.id!}
-          state={module.simpleWires}
+          state={module.simpleWiresState}
           position={module.position}
         />
       );
@@ -161,6 +161,7 @@ function renderModule(key?: string, module?: Module) {
         <SimonSaysModule
           key={key}
           moduleId={module.id!}
+          state={module.simonSaysState}
           position={module.position}
         />
       );

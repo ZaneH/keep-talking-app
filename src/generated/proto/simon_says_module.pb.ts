@@ -9,6 +9,11 @@ export type SimonSaysInput = {
   color?: CommonCommon.Color
 }
 
+export type SimonSaysState = {
+  currentSequence?: CommonCommon.Color[]
+}
+
 export type SimonSaysInputResult = {
-  nextSequence?: CommonCommon.Color[]
+  hasFinishedSeq?: boolean
+  displaySequence?: CommonCommon.Color[]
 }

@@ -1,36 +1,63 @@
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import * as THREE from "three";
+import { Color } from "../../generated/proto/common.pb";
+import type { SimonSaysState } from "../../generated/proto/simon_says_module.pb";
 import { useGameStore } from "../../hooks/use-game-store";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
+import { GameService } from "../../services/api";
+import { CustomMaterials } from "./custom-materials";
 import Module, { type BaseModuleProps } from "./module";
+
+const globalSimonClock = new THREE.Clock();
+globalSimonClock.start();
+
+const FLASH_DURATION = 0.3; // seconds
+const SEQUENCE_DELAY = 0.75; // seconds between flashes
+const SEQUENCE_PAUSE = 2.0; // seconds between sequences
 
 export default function SimonSaysModule({
   moduleId,
   name = "simon-says",
+  state,
   position,
-}: BaseModuleProps) {
+}: BaseModuleProps & {
+  state?: SimonSaysState;
+}) {
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
-  const { zoomState, selectedModuleId } = useGameStore();
+  const { zoomState, selectedModuleId, sessionId, selectedBombId } =
+    useGameStore();
+  const mixer = useRef<THREE.AnimationMixer | undefined>(undefined);
+  const [isSolved, setIsSolved] = useState<boolean>(false);
 
+  // Keep track of flash animation to prevent funky clicks
   const isAnimating = useRef<boolean>(false);
 
-  const mixer = useRef<THREE.AnimationMixer | undefined>(undefined);
+  // Tracks the visible state of the module (sequence of colors)
+  const [currentSequence, setCurrentSequence] = useState(
+    state?.currentSequence || []
+  );
 
-  const onSimonSaysClick = useCallback(
-    (event: ThreeEvent<PointerEvent>) => {
-      if (selectedModuleId !== moduleId) return;
-      if (!event.object) return;
-      if (isAnimating.current) return;
+  // Track whether we should be in auto-demonstration mode
+  const sequencePosition = useRef<number>(0);
+  const [showingSequence, setShowingSequence] = useState(true);
 
-      const selectedMesh: any = event.object;
-      const selectedMaterial = selectedMesh.material;
+  const lastFlashedIndex = useRef<number>(-1);
 
-      const clonedMaterial = selectedMaterial.clone();
-      selectedMesh.material = clonedMaterial;
+  const redButtonRef = useRef<THREE.Mesh>(null);
+  const greenButtonRef = useRef<THREE.Mesh>(null);
+  const yellowButtonRef = useRef<THREE.Mesh>(null);
+  const blueButtonRef = useRef<THREE.Mesh>(null);
+
+  const createFlashingAnimation = useCallback(
+    (targetMesh: THREE.Mesh, selectedMaterial: THREE.Material) => {
+      if (isAnimating.current) return null;
+
+      const clonedMaterial = (selectedMaterial as any).clone();
+      targetMesh.material = clonedMaterial;
 
       const originalColor: THREE.Color = clonedMaterial.color;
       const { r, g, b } = originalColor;
@@ -75,15 +102,137 @@ export default function SimonSaysModule({
       mixer.current = newMixer;
 
       newMixer.addEventListener("finished", () => {
-        selectedMesh.material = selectedMaterial;
+        targetMesh.material = selectedMaterial;
         newMixer.stopAllAction();
         isAnimating.current = false;
       });
+
+      return newMixer;
     },
-    [zoomState, mixer, isAnimating, selectedModuleId]
+    [mixer]
   );
 
-  useFrame((_state, delta) => mixer?.current?.update(delta));
+  const onSimonSaysClick = useCallback(
+    async (event: ThreeEvent<PointerEvent>) => {
+      if (selectedModuleId !== moduleId) return;
+      if (!event.object) return;
+      if (isAnimating.current) return;
+
+      // Stop showing sequence
+      setShowingSequence(false);
+
+      const selectedMesh: any = event.object;
+      const selectedMaterial = selectedMesh.material;
+
+      createFlashingAnimation(selectedMesh, selectedMaterial);
+
+      let clickedColor: Color | undefined;
+      if (selectedMesh === redButtonRef.current) clickedColor = Color.RED;
+      else if (selectedMesh === greenButtonRef.current)
+        clickedColor = Color.GREEN;
+      else if (selectedMesh === yellowButtonRef.current)
+        clickedColor = Color.YELLOW;
+      else if (selectedMesh === blueButtonRef.current)
+        clickedColor = Color.BLUE;
+
+      const response = await GameService.SendInput({
+        sessionId,
+        bombId: selectedBombId,
+        moduleId,
+        simonSaysInput: {
+          color: clickedColor,
+        },
+      });
+
+      const { displaySequence, hasFinishedSeq } =
+        response.simonSaysInputResult || {};
+
+      if (response.solved) {
+        setIsSolved(true);
+        setShowingSequence(false);
+        return;
+      }
+
+      if (response.strike) {
+        setShowingSequence(true);
+        sequencePosition.current = 0;
+      }
+
+      if (displaySequence) {
+        setCurrentSequence(displaySequence);
+        if (hasFinishedSeq) {
+          sequencePosition.current = 0;
+          setShowingSequence(true);
+        }
+      }
+    },
+    [
+      zoomState,
+      mixer,
+      isAnimating,
+      selectedModuleId,
+      showingSequence,
+      selectedBombId,
+      moduleId,
+    ]
+  );
+
+  const flashButtonByColor = useCallback(
+    (color: Color) => {
+      let targetMesh: THREE.Mesh | null = null;
+      if (color === Color.BLUE) targetMesh = blueButtonRef.current;
+      else if (color === Color.GREEN) targetMesh = greenButtonRef.current;
+      else if (color === Color.RED) targetMesh = redButtonRef.current;
+      else if (color === Color.YELLOW) targetMesh = yellowButtonRef.current;
+
+      if (!targetMesh || isAnimating.current) return;
+
+      const selectedMaterial = targetMesh.material as any;
+      createFlashingAnimation(targetMesh, selectedMaterial);
+    },
+    [createFlashingAnimation]
+  );
+
+  useFrame((_, delta) => {
+    // Update animation mixer
+    mixer.current?.update(delta);
+
+    // If we're not in demonstration mode or the sequence is empty, don't proceed
+    if (!showingSequence || currentSequence.length === 0) return;
+
+    // Get elapsed time from the global clock
+    const elapsedTime = globalSimonClock.getElapsedTime();
+
+    // Calculate the total cycle time for the entire sequence plus pause
+    const fullCycleTime =
+      currentSequence.length * SEQUENCE_DELAY + SEQUENCE_PAUSE;
+    const normalizedTime = elapsedTime % fullCycleTime;
+
+    // Only process during the sequence demonstration part of the cycle
+    if (normalizedTime < currentSequence.length * SEQUENCE_DELAY) {
+      // Calculate which step in the sequence we should be showing
+      const currentIndex = Math.floor(normalizedTime / SEQUENCE_DELAY);
+      const timeInStep = normalizedTime % SEQUENCE_DELAY;
+
+      // Flash the button if we're in the flash phase and not already animating
+      if (timeInStep < FLASH_DURATION && !isAnimating.current) {
+        // Only flash if this is a new index (prevent flashing the same button twice)
+        if (currentIndex !== lastFlashedIndex.current) {
+          const colorToFlash = currentSequence[currentIndex];
+          flashButtonByColor(colorToFlash);
+
+          // Update the last flashed index
+          lastFlashedIndex.current = currentIndex;
+        }
+      } else if (timeInStep >= FLASH_DURATION) {
+        // Reset the last flashed index when we're outside the flash phase
+        // This ensures we'll flash again when we come back to this index
+        if (currentIndex === lastFlashedIndex.current) {
+          lastFlashedIndex.current = -1;
+        }
+      }
+    }
+  });
 
   return (
     <Module id={moduleId} position={position}>
@@ -105,6 +254,7 @@ export default function SimonSaysModule({
             position={[0, -0.035, 0.032]}
             scale={1.062}
             onPointerUp={onSimonSaysClick}
+            ref={greenButtonRef}
           />
           <mesh
             castShadow
@@ -114,6 +264,7 @@ export default function SimonSaysModule({
             position={[-0.034, 0, 0.032]}
             scale={1.062}
             onPointerUp={onSimonSaysClick}
+            ref={redButtonRef}
           />
           <mesh
             castShadow
@@ -123,6 +274,7 @@ export default function SimonSaysModule({
             position={[0.034, 0, 0.032]}
             scale={1.062}
             onPointerUp={onSimonSaysClick}
+            ref={yellowButtonRef}
           />
           <mesh
             castShadow
@@ -132,13 +284,16 @@ export default function SimonSaysModule({
             position={[0, 0.035, 0.032]}
             scale={1.062}
             onPointerUp={onSimonSaysClick}
+            ref={blueButtonRef}
           />
         </group>
         <mesh
           castShadow
           receiveShadow
           geometry={nodes.Light003.geometry}
-          material={materials["Unlit light"]}
+          material={
+            isSolved ? CustomMaterials.GreenLight : materials["Unlit light"]
+          }
           position={[0.062, 0.064, 0.021]}
           rotation={[Math.PI / 2, 0, 0]}
         />

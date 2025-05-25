@@ -5,6 +5,7 @@
 */
 
 import * as ModulesBig_button_module from "./big_button_module.pb"
+import * as ModulesSimon_says_module from "./simon_says_module.pb"
 import * as ModulesSimple_wires_module from "./simple_wires_module.pb"
 
 type Absent<T, K extends keyof T> = { [k in Exclude<keyof T, K>]?: undefined };
@@ -40,4 +41,4 @@ type BaseModule = {
 }
 
 export type Module = BaseModule
-  & OneOf<{ simpleWires: ModulesSimple_wires_module.SimpleWiresState; bigButton: ModulesBig_button_module.BigButtonState }>
+  & OneOf<{ simpleWiresState: ModulesSimple_wires_module.SimpleWiresState; bigButtonState: ModulesBig_button_module.BigButtonState; simonSaysState: ModulesSimon_says_module.SimonSaysState }>

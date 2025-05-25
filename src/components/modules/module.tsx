@@ -35,6 +35,8 @@ export default function Module({
   const yOffset = 0.827;
   const zOffset = 0.1;
 
+  const rotationY = position?.face === 1 ? Math.PI : 0;
+
   const { col, row, face } = position || {};
   if (col === undefined || row === undefined || face === undefined) {
     console.warn("Module position is not well defined");
@@ -48,6 +50,7 @@ export default function Module({
         yOffset - yFactor * row,
         face === 0 ? zOffset : -zOffset,
       ]}
+      rotation={[0, rotationY, 0]}
       userData={{ moduleId: id }}
       dispose={null}
       name="module"
