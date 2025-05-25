@@ -59,9 +59,9 @@ export default function SimpleWiresModule({
           position: 0,
         }));
 
-      state.wires.forEach((wire, idx) => {
+      state.wires.forEach((wire, _) => {
         if (wire.position !== undefined) {
-          newWireConfig[idx] = {
+          newWireConfig[wire.position] = {
             color: wire.wireColor!,
             cut: wire.isCut || false,
             visible: true,
@@ -82,8 +82,11 @@ export default function SimpleWiresModule({
       const object = event.object;
       if (!object) return;
 
-      const index = object.userData.index;
-      if (!wireConfig.wires[index].visible || wireConfig.wires[index].cut) {
+      const position = object.userData.position;
+      if (
+        !wireConfig.wires[position].visible ||
+        wireConfig.wires[position].cut
+      ) {
         return;
       }
 
@@ -92,7 +95,7 @@ export default function SimpleWiresModule({
         sessionId: sessionId!,
         moduleId,
         simpleWiresInput: {
-          wireIndex: index,
+          wirePosition: position,
         },
       });
 
@@ -102,7 +105,7 @@ export default function SimpleWiresModule({
 
       setWireConfig((prev) => {
         const newWires = [...prev.wires];
-        newWires[index] = { ...newWires[index], cut: true };
+        newWires[position] = { ...newWires[position], cut: true };
         return { wires: newWires };
       });
     },
@@ -283,11 +286,11 @@ export default function SimpleWiresModule({
 
         <group>
           {wireConfig.wires.map(
-            (wire, index) =>
+            (wire, _) =>
               wire.visible && (
                 <CuttableWire
-                  key={index}
-                  index={index}
+                  key={wire.position}
+                  position={wire.position}
                   isCut={wire.cut}
                   disabled={isSolved}
                   uncutWire={
@@ -338,13 +341,13 @@ export default function SimpleWiresModule({
 }
 
 const CuttableWire = ({
-  index,
+  position,
   uncutWire,
   cutWire,
   isCut,
   disabled,
 }: {
-  index: number;
+  position: number;
   uncutWire: React.ReactNode;
   cutWire: React.ReactNode;
   isCut: boolean;
@@ -368,7 +371,7 @@ const CuttableWire = ({
           {...(uncutWire as any).props}
           ref={wireRef}
           disabled={disabled}
-          userData={{ index }}
+          userData={{ position }}
         />
       )}
     </group>
