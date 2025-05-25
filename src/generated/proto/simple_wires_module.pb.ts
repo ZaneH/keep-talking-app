@@ -6,7 +6,7 @@
 
 import * as CommonCommon from "./common.pb"
 export type SimpleWiresInput = {
-  wireIndex?: number
+  wirePosition?: number
 }
 
 export type SimpleWiresState = {
