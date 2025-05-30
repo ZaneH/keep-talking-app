@@ -55,7 +55,6 @@ export default function Canvas() {
             truckSpeed={0}
           />
 
-          {/* <Stats /> */}
           <Perf />
           <Scene />
         </ControlsProvider>

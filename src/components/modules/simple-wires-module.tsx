@@ -56,7 +56,7 @@ export default function SimpleWiresModule({
           color: Color.RED,
           cut: false,
           visible: false,
-          position: 0,
+          position: -1,
         }));
 
       state.wires.forEach((wire, _) => {
@@ -116,7 +116,8 @@ export default function SimpleWiresModule({
       moduleId,
       wireConfig,
       selectedModuleId,
-    ]
+      isSolved,
+    ],
   );
 
   const wirePositions = [
@@ -321,7 +322,7 @@ export default function SimpleWiresModule({
                     />
                   }
                 />
-              )
+              ),
           )}
         </group>
 
