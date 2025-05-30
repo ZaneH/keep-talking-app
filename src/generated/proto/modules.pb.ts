@@ -5,6 +5,7 @@
 */
 
 import * as ModulesBig_button_module from "./big_button_module.pb"
+import * as ModulesPassword_module from "./password_module.pb"
 import * as ModulesSimon_says_module from "./simon_says_module.pb"
 import * as ModulesSimple_wires_module from "./simple_wires_module.pb"
 
@@ -41,4 +42,4 @@ type BaseModule = {
 }
 
 export type Module = BaseModule
-  & OneOf<{ simpleWiresState: ModulesSimple_wires_module.SimpleWiresState; bigButtonState: ModulesBig_button_module.BigButtonState; simonSaysState: ModulesSimon_says_module.SimonSaysState }>
+  & OneOf<{ simpleWiresState: ModulesSimple_wires_module.SimpleWiresState; passwordState: ModulesPassword_module.PasswordState; bigButtonState: ModulesBig_button_module.BigButtonState; simonSaysState: ModulesSimon_says_module.SimonSaysState }>

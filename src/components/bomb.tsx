@@ -160,6 +160,7 @@ function renderModule(key?: string, module?: Module) {
         <PasswordModule
           key={key}
           moduleId={module.id!}
+          state={module.passwordState}
           position={module.position}
         />
       );
