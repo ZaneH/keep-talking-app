@@ -28,3 +28,11 @@ type BasePasswordInput = {
 
 export type PasswordInput = BasePasswordInput
   & OneOf<{ letterChange: LetterChange; submit: PasswordSubmit }>
+
+export type PasswordInputResult = {
+  passwordState?: PasswordState
+}
+
+export type PasswordState = {
+  letters?: string
+}
