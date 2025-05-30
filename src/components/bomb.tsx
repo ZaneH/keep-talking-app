@@ -6,6 +6,7 @@ import { useControls } from "./controls-provider";
 import {
   BigButtonModule,
   ClockModule,
+  PasswordModule,
   SimonSaysModule,
   SimpleWiresModule,
 } from "./modules";
@@ -50,7 +51,7 @@ export default function Bomb({ modules, startedAt, timerDuration }: BombProps) {
     zoomToModule(
       moduleId,
       new THREE.Vector3(pos.x, pos.y, pos.z + ZOOM_DISTANCE),
-      camControls
+      camControls,
     );
   }
 
@@ -149,6 +150,14 @@ function renderModule(key?: string, module?: Module) {
     case ModuleModuleType.CLOCK:
       return (
         <ClockModule
+          key={key}
+          moduleId={module.id!}
+          position={module.position}
+        />
+      );
+    case ModuleModuleType.PASSWORD:
+      return (
+        <PasswordModule
           key={key}
           moduleId={module.id!}
           position={module.position}
