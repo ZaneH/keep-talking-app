@@ -41,7 +41,7 @@ export default function Scene() {
         console.error("Error fetching session:", err);
         isSessionFetched.current = false;
       });
-  }, []);
+  }, [setSessionId, setBombs, setSelectedBombId, isSessionFetched]);
 
   return (
     <>
