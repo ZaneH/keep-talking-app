@@ -11,7 +11,11 @@ import { pbColorToHex } from "../../utils/pbcolor-to-hex";
 import { CustomMaterials } from "./custom-materials";
 import Module, { type BaseModuleProps } from "./module";
 
-const HOLD_THRESHOLD_MS = 500;
+const LETTER_SPACING = 0;
+const FONT_WEIGHT = 500;
+const FONT_SIZE = 0.0135;
+const HOLD_THRESHOLD_MS = 250;
+const TEXT_OFFSET = 0.1332;
 
 export default function BigButtonModule({
   moduleId,
@@ -130,13 +134,13 @@ export default function BigButtonModule({
   const buttonColor: THREE.MeshStandardMaterial =
     materials["Button Red"].clone();
   buttonColor.color = new THREE.Color(
-    pbColorToHex(state?.buttonColor || Color.UNKNOWN)
+    pbColorToHex(state?.buttonColor || Color.UNKNOWN),
   );
 
   if (stripColor) {
     CustomMaterials.RingLight.color = new THREE.Color(pbColorToHex(stripColor));
     CustomMaterials.RingLight.emissive = new THREE.Color(
-      pbColorToHex(stripColor)
+      pbColorToHex(stripColor),
     );
     CustomMaterials.RingLight.emissiveIntensity = 0.5;
   }
@@ -165,9 +169,10 @@ export default function BigButtonModule({
             onPointerUp={onPointerUp}
           />
           <Text
-            position={[0, -0.108, 0.1332]}
-            fontSize={0.012}
-            fontWeight={600}
+            position={[0, -0.108, TEXT_OFFSET]}
+            fontSize={FONT_SIZE}
+            letterSpacing={LETTER_SPACING}
+            fontWeight={FONT_WEIGHT}
             color={
               state?.buttonColor === Color.YELLOW ||
               state?.buttonColor === Color.WHITE

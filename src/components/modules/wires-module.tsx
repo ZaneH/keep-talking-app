@@ -2,7 +2,7 @@ import type { ThreeEvent } from "@react-three/fiber";
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Color } from "../../generated/proto/common.pb";
-import type { SimpleWiresState } from "../../generated/proto/simple_wires_module.pb";
+import type { WiresState } from "../../generated/proto/wires_module.pb";
 import { useGameStore } from "../../hooks/use-game-store";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
@@ -30,7 +30,7 @@ export default function SimpleWiresModule({
   position,
   state,
 }: BaseModuleProps & {
-  state?: SimpleWiresState;
+  state?: WiresState;
 }) {
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
@@ -94,7 +94,7 @@ export default function SimpleWiresModule({
         bombId: selectedBombId!,
         sessionId: sessionId!,
         moduleId,
-        simpleWiresInput: {
+        wiresInput: {
           wirePosition: position,
         },
       });
@@ -117,7 +117,7 @@ export default function SimpleWiresModule({
       wireConfig,
       selectedModuleId,
       isSolved,
-    ],
+    ]
   );
 
   const wirePositions = [
@@ -322,7 +322,7 @@ export default function SimpleWiresModule({
                     />
                   }
                 />
-              ),
+              )
           )}
         </group>
 

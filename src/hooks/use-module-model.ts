@@ -9,6 +9,7 @@ export const ModuleModels = {
   keypad: "/keypad.glb",
   "simon-says": "/simon-says.glb",
   password: "/password.glb",
+  "whos-on-first": "/whos-on-first.glb",
 };
 
 export const preloadModels = () => {
