@@ -7,8 +7,9 @@
 import * as ModulesBig_button_module from "./big_button_module.pb"
 import * as ModulesKeypad_module from "./keypad_module.pb"
 import * as ModulesPassword_module from "./password_module.pb"
-import * as ModulesSimon_says_module from "./simon_says_module.pb"
-import * as ModulesSimple_wires_module from "./simple_wires_module.pb"
+import * as ModulesSimon_module from "./simon_module.pb"
+import * as ModulesWhos_on_first_module from "./whos_on_first_module.pb"
+import * as ModulesWires_module from "./wires_module.pb"
 
 type Absent<T, K extends keyof T> = { [k in Exclude<keyof T, K>]?: undefined };
 type OneOf<T> =
@@ -22,11 +23,12 @@ type OneOf<T> =
 export enum ModuleModuleType {
   UNKNOWN = "UNKNOWN",
   CLOCK = "CLOCK",
-  SIMPLE_WIRES = "SIMPLE_WIRES",
+  WIRES = "WIRES",
   PASSWORD = "PASSWORD",
   BIG_BUTTON = "BIG_BUTTON",
-  SIMON_SAYS = "SIMON_SAYS",
+  SIMON = "SIMON",
   KEYPAD = "KEYPAD",
+  WHOS_ON_FIRST = "WHOS_ON_FIRST",
 }
 
 export type ModulePosition = {
@@ -44,4 +46,4 @@ type BaseModule = {
 }
 
 export type Module = BaseModule
-  & OneOf<{ simpleWiresState: ModulesSimple_wires_module.SimpleWiresState; passwordState: ModulesPassword_module.PasswordState; bigButtonState: ModulesBig_button_module.BigButtonState; simonSaysState: ModulesSimon_says_module.SimonSaysState; keypadState: ModulesKeypad_module.KeypadState }>
+  & OneOf<{ wiresState: ModulesWires_module.WiresState; passwordState: ModulesPassword_module.PasswordState; bigButtonState: ModulesBig_button_module.BigButtonState; simonState: ModulesSimon_module.SimonState; keypadState: ModulesKeypad_module.KeypadState; whosOnFirstState: ModulesWhos_on_first_module.WhosOnFirstState }>

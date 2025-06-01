@@ -7,9 +7,10 @@ import {
   BigButtonModule,
   ClockModule,
   PasswordModule,
-  SimonSaysModule,
-  SimpleWiresModule,
+  SimonModule,
+  WiresModule,
   KeypadModule,
+  WhosOnFirstModule,
 } from "./modules";
 import { ModuleModuleType, type Module } from "../generated/proto/modules.pb";
 import type { Indicator, Port } from "../generated/proto/bomb.pb";
@@ -139,12 +140,12 @@ function renderModule(key?: string, module?: Module) {
           position={module.position}
         />
       );
-    case ModuleModuleType.SIMPLE_WIRES:
+    case ModuleModuleType.WIRES:
       return (
-        <SimpleWiresModule
+        <WiresModule
           key={key}
           moduleId={module.id!}
-          state={module.simpleWiresState}
+          state={module.wiresState}
           position={module.position}
         />
       );
@@ -174,12 +175,21 @@ function renderModule(key?: string, module?: Module) {
           position={module.position}
         />
       );
-    case ModuleModuleType.SIMON_SAYS:
+    case ModuleModuleType.SIMON:
       return (
-        <SimonSaysModule
+        <SimonModule
           key={key}
           moduleId={module.id!}
-          state={module.simonSaysState}
+          state={module.simonState}
+          position={module.position}
+        />
+      );
+    case ModuleModuleType.WHOS_ON_FIRST:
+      return (
+        <WhosOnFirstModule
+          key={key}
+          moduleId={module.id!}
+          state={module.whosOnFirstState}
           position={module.position}
         />
       );

@@ -5,11 +5,11 @@
 */
 
 import * as CommonCommon from "./common.pb"
-export type SimpleWiresInput = {
+export type WiresInput = {
   wirePosition?: number
 }
 
-export type SimpleWiresState = {
+export type WiresState = {
   wires?: Wire[]
 }
 

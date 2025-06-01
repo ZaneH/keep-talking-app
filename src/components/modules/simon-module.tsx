@@ -2,7 +2,7 @@ import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import { useCallback, useRef, useState } from "react";
 import * as THREE from "three";
 import { Color } from "../../generated/proto/common.pb";
-import type { SimonSaysState } from "../../generated/proto/simon_says_module.pb";
+import type { SimonState } from "../../generated/proto/simon_module.pb";
 import { useGameStore } from "../../hooks/use-game-store";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
@@ -23,7 +23,7 @@ export default function SimonSaysModule({
   state,
   position,
 }: BaseModuleProps & {
-  state?: SimonSaysState;
+  state?: SimonState;
 }) {
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
@@ -139,13 +139,13 @@ export default function SimonSaysModule({
         sessionId,
         bombId: selectedBombId,
         moduleId,
-        simonSaysInput: {
+        simonInput: {
           color: clickedColor,
         },
       });
 
       const { displaySequence, hasFinishedSeq } =
-        response.simonSaysInputResult || {};
+        response.simonInputResult || {};
 
       if (response.solved) {
         setIsSolved(true);

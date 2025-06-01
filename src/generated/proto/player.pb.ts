@@ -7,8 +7,9 @@
 import * as ModulesBig_button_module from "./big_button_module.pb"
 import * as ModulesKeypad_module from "./keypad_module.pb"
 import * as ModulesPassword_module from "./password_module.pb"
-import * as ModulesSimon_says_module from "./simon_says_module.pb"
-import * as ModulesSimple_wires_module from "./simple_wires_module.pb"
+import * as ModulesSimon_module from "./simon_module.pb"
+import * as ModulesWhos_on_first_module from "./whos_on_first_module.pb"
+import * as ModulesWires_module from "./wires_module.pb"
 
 type Absent<T, K extends keyof T> = { [k in Exclude<keyof T, K>]?: undefined };
 type OneOf<T> =
@@ -33,7 +34,7 @@ type BasePlayerInput = {
 }
 
 export type PlayerInput = BasePlayerInput
-  & OneOf<{ simpleWiresInput: ModulesSimple_wires_module.SimpleWiresInput; passwordInput: ModulesPassword_module.PasswordInput; bigButtonInput: ModulesBig_button_module.BigButtonInput; simonSaysInput: ModulesSimon_says_module.SimonSaysInput; keypadInput: ModulesKeypad_module.KeypadInput }>
+  & OneOf<{ wiresInput: ModulesWires_module.WiresInput; passwordInput: ModulesPassword_module.PasswordInput; bigButtonInput: ModulesBig_button_module.BigButtonInput; simonInput: ModulesSimon_module.SimonInput; keypadInput: ModulesKeypad_module.KeypadInput; whosOnFirstInput: ModulesWhos_on_first_module.WhosOnFirstInput }>
 
 
 type BasePlayerInputResult = {
@@ -43,4 +44,4 @@ type BasePlayerInputResult = {
 }
 
 export type PlayerInputResult = BasePlayerInputResult
-  & OneOf<{ bigButtonInputResult: ModulesBig_button_module.BigButtonInputResult; simonSaysInputResult: ModulesSimon_says_module.SimonSaysInputResult; passwordInputResult: ModulesPassword_module.PasswordInputResult; keypadInputResult: ModulesKeypad_module.KeypadInputResult }>
+  & OneOf<{ bigButtonInputResult: ModulesBig_button_module.BigButtonInputResult; simonInputResult: ModulesSimon_module.SimonInputResult; passwordInputResult: ModulesPassword_module.PasswordInputResult; keypadInputResult: ModulesKeypad_module.KeypadInputResult; whosOnFirstInputResult: ModulesWhos_on_first_module.WhosOnFirstInputResult }>

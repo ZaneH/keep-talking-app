@@ -5,15 +5,15 @@
 */
 
 import * as CommonCommon from "./common.pb"
-export type SimonSaysInput = {
+export type SimonInput = {
   color?: CommonCommon.Color
 }
 
-export type SimonSaysInputResult = {
+export type SimonInputResult = {
   hasFinishedSeq?: boolean
   displaySequence?: CommonCommon.Color[]
 }
 
-export type SimonSaysState = {
+export type SimonState = {
   currentSequence?: CommonCommon.Color[]
 }
