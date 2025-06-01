@@ -246,7 +246,7 @@ export default function WhosOnFirstModule({
               receiveShadow
               geometry={nodes.Step1Green.geometry}
               material={
-                stage === 1
+                (stage || 0) >= 1
                   ? CustomMaterials.GreenLight
                   : materials["Backlight.Dark"]
               }
@@ -268,7 +268,7 @@ export default function WhosOnFirstModule({
               receiveShadow
               geometry={nodes.Step2Green.geometry}
               material={
-                stage === 2
+                (stage || 0) >= 2
                   ? CustomMaterials.GreenLight
                   : materials["Backlight.Dark"]
               }
