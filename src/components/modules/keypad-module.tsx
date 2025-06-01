@@ -6,16 +6,15 @@ import {
   Symbol,
   type KeypadState,
 } from "../../generated/proto/keypad_module.pb";
-import { Text } from "@react-three/drei";
-import { pbSymbolToUnicode } from "../../utils/pb-symbol-to-unicode";
 import { GameService } from "../../services/api";
 import { useGameStore } from "../../hooks/use-game-store";
 import { CustomMaterials } from "./custom-materials";
 import { type ThreeEvent } from "@react-three/fiber";
+import { useLoader } from "@react-three/fiber";
+import { TextureLoader } from "three";
 
-const FONT_SIZE = 0.03;
-const FONT_COLOR = "#000000";
-const FONT_FAMILY = "/fonts/Inter.ttf";
+const SYMBOL_SIZE = 0.04;
+const SYMBOL_OPACITY = 0.9;
 
 export default function KeypadModule({
   moduleId,
@@ -29,6 +28,13 @@ export default function KeypadModule({
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
   const { selectedModuleId, selectedBombId, sessionId } = useGameStore();
+  const [i1, i2, i3, i4] = useLoader(TextureLoader, [
+    `/symbols/${state?.displayedSymbols?.[0]}.png`,
+    `/symbols/${state?.displayedSymbols?.[1]}.png`,
+    `/symbols/${state?.displayedSymbols?.[2]}.png`,
+    `/symbols/${state?.displayedSymbols?.[3]}.png`,
+  ]);
+
   const [isSolved, setIsSolved] = useState<boolean>(false);
 
   const [litState, setLitState] = useState<boolean[]>([
@@ -91,46 +97,38 @@ export default function KeypadModule({
         ref={meshRef}
         {...pointerHandlers}
       >
-        <Text
-          fontSize={FONT_SIZE}
-          color={FONT_COLOR}
-          font={FONT_FAMILY}
+        <mesh
           position={[0.017, -0.041, 0.036]}
+          onClick={onKeypadClick}
           userData={{ symbol: state?.displayedSymbols?.[0] }}
-          onClick={onKeypadClick}
         >
-          {pbSymbolToUnicode(state?.displayedSymbols?.[0])}
-        </Text>
-        <Text
-          fontSize={FONT_SIZE}
-          color={FONT_COLOR}
-          font={FONT_FAMILY}
+          <planeGeometry args={[SYMBOL_SIZE, SYMBOL_SIZE]} />
+          <meshBasicMaterial map={i1} transparent opacity={SYMBOL_OPACITY} />
+        </mesh>
+        <mesh
           position={[-0.044, -0.041, 0.036]}
+          onClick={onKeypadClick}
           userData={{ symbol: state?.displayedSymbols?.[1] }}
-          onClick={onKeypadClick}
         >
-          {pbSymbolToUnicode(state?.displayedSymbols?.[1])}
-        </Text>
-        <Text
-          fontSize={FONT_SIZE}
-          color={FONT_COLOR}
-          font={FONT_FAMILY}
+          <planeGeometry args={[SYMBOL_SIZE, SYMBOL_SIZE]} />
+          <meshBasicMaterial map={i2} transparent opacity={SYMBOL_OPACITY} />
+        </mesh>
+        <mesh
           position={[-0.044, 0.02, 0.036]}
+          onClick={onKeypadClick}
           userData={{ symbol: state?.displayedSymbols?.[2] }}
-          onClick={onKeypadClick}
         >
-          {pbSymbolToUnicode(state?.displayedSymbols?.[2])}
-        </Text>
-        <Text
-          fontSize={FONT_SIZE}
-          color={FONT_COLOR}
-          font={FONT_FAMILY}
+          <planeGeometry args={[SYMBOL_SIZE, SYMBOL_SIZE]} />
+          <meshBasicMaterial map={i3} transparent opacity={SYMBOL_OPACITY} />
+        </mesh>
+        <mesh
           position={[0.017, 0.02, 0.036]}
-          userData={{ symbol: state?.displayedSymbols?.[3] }}
           onClick={onKeypadClick}
+          userData={{ symbol: state?.displayedSymbols?.[3] }}
         >
-          {pbSymbolToUnicode(state?.displayedSymbols?.[3])}
-        </Text>
+          <planeGeometry args={[SYMBOL_SIZE, SYMBOL_SIZE]} />
+          <meshBasicMaterial map={i4} transparent opacity={SYMBOL_OPACITY} />
+        </mesh>
         <mesh
           userData={{ symbol: state?.displayedSymbols?.[0] }}
           castShadow
