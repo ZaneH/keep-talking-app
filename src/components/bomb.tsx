@@ -9,6 +9,7 @@ import {
   PasswordModule,
   SimonSaysModule,
   SimpleWiresModule,
+  KeypadModule,
 } from "./modules";
 import { ModuleModuleType, type Module } from "../generated/proto/modules.pb";
 import type { Indicator, Port } from "../generated/proto/bomb.pb";
@@ -164,8 +165,15 @@ function renderModule(key?: string, module?: Module) {
           position={module.position}
         />
       );
-    // case Module_ModuleType.KEYPAD:
-    //   return <KeypadModule />;
+    case ModuleModuleType.KEYPAD:
+      return (
+        <KeypadModule
+          key={key}
+          moduleId={module.id!}
+          state={module.keypadState}
+          position={module.position}
+        />
+      );
     case ModuleModuleType.SIMON_SAYS:
       return (
         <SimonSaysModule
