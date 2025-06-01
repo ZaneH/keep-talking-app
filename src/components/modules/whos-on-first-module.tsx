@@ -38,7 +38,7 @@ export default function WhosOnFirstModule({
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
   const { sessionId, selectedBombId, selectedModuleId } = useGameStore();
-  const [stage, setStage] = useState(state?.stage);
+  const [stage, setStage] = useState<number>(state?.stage || 0);
   const [screenWord, setScreenWord] = useState(state?.screenWord);
   const [buttons, setButtons] = useState(state?.buttonWords);
   const [isSolved, setIsSolved] = useState(false);
@@ -67,13 +67,12 @@ export default function WhosOnFirstModule({
           res.whosOnFirstInputResult?.whosOnFirstState?.buttonWords;
         const newScreenWord =
           res.whosOnFirstInputResult?.whosOnFirstState?.screenWord;
-        const newStage = res.whosOnFirstInputResult?.whosOnFirstState?.stage;
         setButtons(newButtons);
         setScreenWord(newScreenWord);
-        setStage(newStage);
       }
 
-      console.log(res);
+      const newStage = res.whosOnFirstInputResult?.whosOnFirstState?.stage;
+      setStage(newStage || 0);
     },
     [moduleId, selectedModuleId, sessionId, selectedBombId, isSolved],
   );
@@ -246,7 +245,7 @@ export default function WhosOnFirstModule({
               receiveShadow
               geometry={nodes.Step1Green.geometry}
               material={
-                (stage || 0) >= 1
+                stage >= 1
                   ? CustomMaterials.GreenLight
                   : materials["Backlight.Dark"]
               }
@@ -268,7 +267,7 @@ export default function WhosOnFirstModule({
               receiveShadow
               geometry={nodes.Step2Green.geometry}
               material={
-                (stage || 0) >= 2
+                stage >= 2
                   ? CustomMaterials.GreenLight
                   : materials["Backlight.Dark"]
               }
@@ -291,7 +290,7 @@ export default function WhosOnFirstModule({
               receiveShadow
               geometry={nodes.Step3Green.geometry}
               material={
-                (stage || 0) >= 3
+                stage >= 3
                   ? CustomMaterials.GreenLight
                   : materials["Backlight.Dark"]
               }
