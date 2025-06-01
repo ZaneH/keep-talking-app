@@ -5,6 +5,7 @@
 */
 
 import * as ModulesBig_button_module from "./big_button_module.pb"
+import * as ModulesKeypad_module from "./keypad_module.pb"
 import * as ModulesPassword_module from "./password_module.pb"
 import * as ModulesSimon_says_module from "./simon_says_module.pb"
 import * as ModulesSimple_wires_module from "./simple_wires_module.pb"
@@ -32,7 +33,7 @@ type BasePlayerInput = {
 }
 
 export type PlayerInput = BasePlayerInput
-  & OneOf<{ simpleWiresInput: ModulesSimple_wires_module.SimpleWiresInput; passwordInput: ModulesPassword_module.PasswordInput; bigButtonInput: ModulesBig_button_module.BigButtonInput; simonSaysInput: ModulesSimon_says_module.SimonSaysInput }>
+  & OneOf<{ simpleWiresInput: ModulesSimple_wires_module.SimpleWiresInput; passwordInput: ModulesPassword_module.PasswordInput; bigButtonInput: ModulesBig_button_module.BigButtonInput; simonSaysInput: ModulesSimon_says_module.SimonSaysInput; keypadInput: ModulesKeypad_module.KeypadInput }>
 
 
 type BasePlayerInputResult = {
@@ -42,4 +43,4 @@ type BasePlayerInputResult = {
 }
 
 export type PlayerInputResult = BasePlayerInputResult
-  & OneOf<{ bigButtonInputResult: ModulesBig_button_module.BigButtonInputResult; simonSaysInputResult: ModulesSimon_says_module.SimonSaysInputResult; passwordInputResult: ModulesPassword_module.PasswordInputResult }>
+  & OneOf<{ bigButtonInputResult: ModulesBig_button_module.BigButtonInputResult; simonSaysInputResult: ModulesSimon_says_module.SimonSaysInputResult; passwordInputResult: ModulesPassword_module.PasswordInputResult; keypadInputResult: ModulesKeypad_module.KeypadInputResult }>

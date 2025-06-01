@@ -5,6 +5,7 @@
 */
 
 import * as ModulesBig_button_module from "./big_button_module.pb"
+import * as ModulesKeypad_module from "./keypad_module.pb"
 import * as ModulesPassword_module from "./password_module.pb"
 import * as ModulesSimon_says_module from "./simon_says_module.pb"
 import * as ModulesSimple_wires_module from "./simple_wires_module.pb"
@@ -25,6 +26,7 @@ export enum ModuleModuleType {
   PASSWORD = "PASSWORD",
   BIG_BUTTON = "BIG_BUTTON",
   SIMON_SAYS = "SIMON_SAYS",
+  KEYPAD = "KEYPAD",
 }
 
 export type ModulePosition = {
@@ -42,4 +44,4 @@ type BaseModule = {
 }
 
 export type Module = BaseModule
-  & OneOf<{ simpleWiresState: ModulesSimple_wires_module.SimpleWiresState; passwordState: ModulesPassword_module.PasswordState; bigButtonState: ModulesBig_button_module.BigButtonState; simonSaysState: ModulesSimon_says_module.SimonSaysState }>
+  & OneOf<{ simpleWiresState: ModulesSimple_wires_module.SimpleWiresState; passwordState: ModulesPassword_module.PasswordState; bigButtonState: ModulesBig_button_module.BigButtonState; simonSaysState: ModulesSimon_says_module.SimonSaysState; keypadState: ModulesKeypad_module.KeypadState }>
