@@ -11,6 +11,7 @@ export const ModuleModels = {
   password: "/password.glb",
   "whos-on-first": "/whos-on-first.glb",
   memory: "/memory.glb",
+  morse: "/morse.glb",
 };
 
 export const preloadModels = () => {
