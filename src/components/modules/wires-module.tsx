@@ -78,9 +78,9 @@ export default function SimpleWiresModule({
     async (event: ThreeEvent<PointerEvent>) => {
       if (isSolved) return;
       if (selectedModuleId !== moduleId) return;
+      if (!event.object) return;
 
       const object = event.object;
-      if (!object) return;
 
       const position = object.userData.position;
       if (
@@ -117,7 +117,7 @@ export default function SimpleWiresModule({
       wireConfig,
       selectedModuleId,
       isSolved,
-    ]
+    ],
   );
 
   const wirePositions = [
@@ -322,7 +322,7 @@ export default function SimpleWiresModule({
                     />
                   }
                 />
-              )
+              ),
           )}
         </group>
 

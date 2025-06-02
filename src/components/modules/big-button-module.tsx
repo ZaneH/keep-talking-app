@@ -107,7 +107,7 @@ export default function BigButtonModule({
 
   const onPointerUp = async () => {
     if (isSolved) return;
-    if (zoomState !== "module-view") return;
+    if (selectedModuleId !== moduleId) return;
 
     clearTimeout(longPressTimeout);
     setStripColor(undefined);

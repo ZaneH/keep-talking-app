@@ -46,6 +46,10 @@ export default function PasswordModule({
 
   const onButtonClick = useCallback(
     async (e: ThreeEvent<MouseEvent>) => {
+      if (isSolved) return;
+      if (selectedModuleId !== moduleId) return;
+      if (!e.object) return;
+
       e.stopPropagation();
 
       let value = { direction: undefined, index: -1 } as any;
@@ -384,7 +388,9 @@ export default function PasswordModule({
           castShadow
           receiveShadow
           geometry={nodes.Light001.geometry}
-          material={isSolved ? CustomMaterials.GreenLight : materials["Unlit light"]}
+          material={
+            isSolved ? CustomMaterials.GreenLight : materials["Unlit light"]
+          }
           position={[0.061, 0.062, 0.021]}
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}
