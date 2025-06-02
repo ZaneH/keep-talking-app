@@ -38,7 +38,7 @@ export default function WhosOnFirstModule({
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
   const { sessionId, selectedBombId, selectedModuleId } = useGameStore();
-  const [stage, setStage] = useState<number>(state?.stage || 0);
+  const [stage, setStage] = useState<number>(state?.stage || 1);
   const [screenWord, setScreenWord] = useState(state?.screenWord);
   const [buttons, setButtons] = useState(state?.buttonWords);
   const [isSolved, setIsSolved] = useState(false);
@@ -72,7 +72,7 @@ export default function WhosOnFirstModule({
       }
 
       const newStage = res.whosOnFirstInputResult?.whosOnFirstState?.stage;
-      setStage(newStage || 0);
+      setStage(newStage || 1);
     },
     [moduleId, selectedModuleId, sessionId, selectedBombId, isSolved],
   );
@@ -245,7 +245,7 @@ export default function WhosOnFirstModule({
               receiveShadow
               geometry={nodes.Step1Green.geometry}
               material={
-                stage >= 1
+                stage >= 2
                   ? CustomMaterials.GreenLight
                   : materials["Backlight.Dark"]
               }
@@ -267,7 +267,7 @@ export default function WhosOnFirstModule({
               receiveShadow
               geometry={nodes.Step2Green.geometry}
               material={
-                stage >= 2
+                stage >= 3
                   ? CustomMaterials.GreenLight
                   : materials["Backlight.Dark"]
               }
@@ -290,7 +290,7 @@ export default function WhosOnFirstModule({
               receiveShadow
               geometry={nodes.Step3Green.geometry}
               material={
-                stage >= 3
+                stage >= 4
                   ? CustomMaterials.GreenLight
                   : materials["Backlight.Dark"]
               }

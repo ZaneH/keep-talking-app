@@ -15,6 +15,7 @@ import {
 import { ModuleModuleType, type Module } from "../generated/proto/modules.pb";
 import type { Indicator, Port } from "../generated/proto/bomb.pb";
 import BombProvider from "./bomb-provider";
+import MemoryModule from "./modules/memory-module";
 
 const ZOOM_DISTANCE = 0.2;
 
@@ -193,6 +194,16 @@ function renderModule(key?: string, module?: Module) {
           position={module.position}
         />
       );
+    case ModuleModuleType.MEMORY:
+      return (
+        <MemoryModule
+          key={key}
+          moduleId={module.id!}
+          state={module.memoryState}
+          position={module.position}
+        />
+      );
+
     default:
       return null;
   }

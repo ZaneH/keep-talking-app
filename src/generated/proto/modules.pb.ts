@@ -6,6 +6,7 @@
 
 import * as ModulesBig_button_module from "./big_button_module.pb"
 import * as ModulesKeypad_module from "./keypad_module.pb"
+import * as ModulesMemory_module from "./memory_module.pb"
 import * as ModulesPassword_module from "./password_module.pb"
 import * as ModulesSimon_module from "./simon_module.pb"
 import * as ModulesWhos_on_first_module from "./whos_on_first_module.pb"
@@ -29,6 +30,7 @@ export enum ModuleModuleType {
   SIMON = "SIMON",
   KEYPAD = "KEYPAD",
   WHOS_ON_FIRST = "WHOS_ON_FIRST",
+  MEMORY = "MEMORY",
 }
 
 export type ModulePosition = {
@@ -46,4 +48,4 @@ type BaseModule = {
 }
 
 export type Module = BaseModule
-  & OneOf<{ wiresState: ModulesWires_module.WiresState; passwordState: ModulesPassword_module.PasswordState; bigButtonState: ModulesBig_button_module.BigButtonState; simonState: ModulesSimon_module.SimonState; keypadState: ModulesKeypad_module.KeypadState; whosOnFirstState: ModulesWhos_on_first_module.WhosOnFirstState }>
+  & OneOf<{ wiresState: ModulesWires_module.WiresState; passwordState: ModulesPassword_module.PasswordState; bigButtonState: ModulesBig_button_module.BigButtonState; simonState: ModulesSimon_module.SimonState; keypadState: ModulesKeypad_module.KeypadState; whosOnFirstState: ModulesWhos_on_first_module.WhosOnFirstState; memoryState: ModulesMemory_module.MemoryState }>

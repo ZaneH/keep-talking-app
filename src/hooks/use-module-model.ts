@@ -10,6 +10,7 @@ export const ModuleModels = {
   "simon-says": "/simon-says.glb",
   password: "/password.glb",
   "whos-on-first": "/whos-on-first.glb",
+  memory: "/memory.glb",
 };
 
 export const preloadModels = () => {
