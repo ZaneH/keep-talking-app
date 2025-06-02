@@ -16,6 +16,7 @@ import { ModuleModuleType, type Module } from "../generated/proto/modules.pb";
 import type { Indicator, Port } from "../generated/proto/bomb.pb";
 import BombProvider from "./bomb-provider";
 import MemoryModule from "./modules/memory-module";
+import MorseModule from "./modules/morse-module";
 
 const ZOOM_DISTANCE = 0.2;
 
@@ -203,7 +204,15 @@ function renderModule(key?: string, module?: Module) {
           position={module.position}
         />
       );
-
+    case ModuleModuleType.MORSE:
+      return (
+        <MorseModule
+          key={key}
+          moduleId={module.id!}
+          state={module.morseState}
+          position={module.position}
+        />
+      );
     default:
       return null;
   }

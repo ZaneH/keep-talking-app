@@ -35,8 +35,7 @@ export default function SimpleWiresModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
-  const { zoomState, sessionId, selectedBombId, selectedModuleId } =
-    useGameStore();
+  const { sessionId, selectedBombId, selectedModuleId } = useGameStore();
   const [isSolved, setIsSolved] = useState(false);
 
   const [wireConfig, setWireConfig] = useState<{
@@ -110,7 +109,6 @@ export default function SimpleWiresModule({
       });
     },
     [
-      zoomState,
       selectedBombId,
       sessionId,
       moduleId,
