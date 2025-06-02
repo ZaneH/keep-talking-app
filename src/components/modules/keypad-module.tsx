@@ -45,6 +45,7 @@ export default function KeypadModule({
   ]);
 
   const onKeypadClick = async (event: ThreeEvent<MouseEvent>) => {
+    if (isSolved) return;
     if (selectedModuleId !== moduleId) return;
     if (!event.object) return;
 

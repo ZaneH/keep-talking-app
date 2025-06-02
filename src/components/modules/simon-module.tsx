@@ -38,7 +38,7 @@ export default function SimonSaysModule({
 
   // Tracks the visible state of the module (sequence of colors)
   const [currentSequence, setCurrentSequence] = useState(
-    state?.currentSequence || []
+    state?.currentSequence || [],
   );
 
   // Track whether we should be in auto-demonstration mode
@@ -69,17 +69,17 @@ export default function SimonSaysModule({
       const colorKF = new THREE.ColorKeyframeTrack(
         ".color",
         [0, 0.2, 0.3],
-        [r, g, b, r2, g2, b2, r, g, b]
+        [r, g, b, r2, g2, b2, r, g, b],
       );
       const emissiveKF = new THREE.ColorKeyframeTrack(
         ".emissive",
         [0, 0.2, 0.3],
-        [0, 0, 0, r2, g2, b2, 0, 0, 0]
+        [0, 0, 0, r2, g2, b2, 0, 0, 0],
       );
       const intensityKF = new THREE.NumberKeyframeTrack(
         ".emissiveIntensity",
         [0, 0.2, 0.3],
-        [0, 1.5, 0]
+        [0, 1.5, 0],
       );
 
       const clip = new THREE.AnimationClip("flash", -1, [
@@ -109,11 +109,12 @@ export default function SimonSaysModule({
 
       return newMixer;
     },
-    [mixer]
+    [mixer],
   );
 
   const onSimonSaysClick = useCallback(
     async (event: ThreeEvent<PointerEvent>) => {
+      if (isSolved) return;
       if (selectedModuleId !== moduleId) return;
       if (!event.object) return;
       if (isAnimating.current) return;
@@ -174,7 +175,7 @@ export default function SimonSaysModule({
       showingSequence,
       selectedBombId,
       moduleId,
-    ]
+    ],
   );
 
   const flashButtonByColor = useCallback(
@@ -190,7 +191,7 @@ export default function SimonSaysModule({
       const selectedMaterial = targetMesh.material as any;
       createFlashingAnimation(targetMesh, selectedMaterial);
     },
-    [createFlashingAnimation]
+    [createFlashingAnimation],
   );
 
   useFrame((_, delta) => {

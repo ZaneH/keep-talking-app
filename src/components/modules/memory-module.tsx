@@ -48,6 +48,7 @@ export default function MemoryModule({
 
   const onButtonClick = useCallback(
     async (event: ThreeEvent<MouseEvent>) => {
+      if (isSolved) return;
       if (selectedModuleId !== moduleId) return;
       if (!event.object) return;
 
