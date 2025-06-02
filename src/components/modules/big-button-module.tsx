@@ -31,8 +31,7 @@ export default function BigButtonModule({
   const { actions, mixer } = useAnimations(animations, coverRef);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
   const [stripColor, setStripColor] = useState<Color>();
-  const { sessionId, selectedBombId, selectedModuleId, zoomState } =
-    useGameStore();
+  const { sessionId, selectedBombId, selectedModuleId } = useGameStore();
   const [isCoverOpen, setIsCoverOpen] = useState(false);
   const [prevAction, setPrevAction] = useState<any>(null);
   const [pressDownTime, setPressDownTime] = useState(0);
