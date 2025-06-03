@@ -1,16 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import useModuleHighlight from "../../hooks/use-module-highlight";
-import { useModuleModel } from "../../hooks/use-module-model";
-import type { BaseModuleProps } from "./module";
-import Module from "./module";
-import type { MeshStandardMaterial } from "three";
 import { Text } from "@react-three/drei";
 import { type ThreeEvent } from "@react-three/fiber";
-import { IncrementDecrement } from "../../generated/proto/common.pb";
-import { GameService } from "../../services/api";
-import { useGameStore } from "../../hooks/use-game-store";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { NeedyVentGasState } from "../../generated/proto/needy_vent_gas_module.pb";
-import { CustomMaterials } from "./custom-materials";
+import { useGameStore } from "../../hooks/use-game-store";
+import useModuleHighlight from "../../hooks/use-module-highlight";
+import { useModuleModel } from "../../hooks/use-module-model";
+import { GameService } from "../../services/api";
+import type { BaseModuleProps } from "./module";
+import Module from "./module";
 
 const TEXT_Y_OFFSET = 0.003;
 const GREEN_TEXT_OFFSET = 0.001;
@@ -26,16 +23,16 @@ const GREEN_TEXT_ATTRS = {
   fontSize: GREEN_FONT_SIZE,
   font: GREEN_FONT_FAMILY,
   color: GREEN_FONT_COLOR,
-  position: [0, TEXT_Y_OFFSET, GREEN_TEXT_OFFSET],
-  textAlign: "center",
+  position: [0, TEXT_Y_OFFSET, GREEN_TEXT_OFFSET] as [number, number, number],
+  textAlign: "center" as any,
 };
 
 const COUNTDOWN_TEXT_ATTRS = {
   fontSize: RED_FONT_SIZE,
   font: RED_FONT_FAMILY,
   color: RED_FONT_COLOR,
-  position: [0, 0, RED_TEXT_OFFSET],
-  textAlign: "center",
+  position: [0, 0, RED_TEXT_OFFSET] as [number, number, number],
+  textAlign: "center" as any,
 };
 
 export default function NeedyVentGasModule({
