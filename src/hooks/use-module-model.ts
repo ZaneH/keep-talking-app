@@ -12,6 +12,7 @@ export const ModuleModels = {
   "whos-on-first": "/whos-on-first.glb",
   memory: "/memory.glb",
   morse: "/morse.glb",
+  "needy-vent-gas": "/needy-vent-gas.glb",
 };
 
 export const preloadModels = () => {
