@@ -112,7 +112,7 @@ export default function SimonSaysModule({
     [mixer],
   );
 
-  const onSimonSaysClick = useCallback(
+  const onButtonClick = useCallback(
     async (event: ThreeEvent<PointerEvent>) => {
       if (isSolved) return;
       if (selectedModuleId !== moduleId) return;
@@ -254,7 +254,7 @@ export default function SimonSaysModule({
             material={materials.GreenLight}
             position={[0, -0.035, 0.032]}
             scale={1.062}
-            onPointerUp={onSimonSaysClick}
+            onPointerUp={onButtonClick}
             ref={greenButtonRef}
           />
           <mesh
@@ -264,7 +264,7 @@ export default function SimonSaysModule({
             material={materials.RedLight}
             position={[-0.034, 0, 0.032]}
             scale={1.062}
-            onPointerUp={onSimonSaysClick}
+            onPointerUp={onButtonClick}
             ref={redButtonRef}
           />
           <mesh
@@ -274,7 +274,7 @@ export default function SimonSaysModule({
             material={materials.YellowLight}
             position={[0.034, 0, 0.032]}
             scale={1.062}
-            onPointerUp={onSimonSaysClick}
+            onPointerUp={onButtonClick}
             ref={yellowButtonRef}
           />
           <mesh
@@ -284,7 +284,7 @@ export default function SimonSaysModule({
             material={materials.BlueLight}
             position={[0, 0.035, 0.032]}
             scale={1.062}
-            onPointerUp={onSimonSaysClick}
+            onPointerUp={onButtonClick}
             ref={blueButtonRef}
           />
         </group>
