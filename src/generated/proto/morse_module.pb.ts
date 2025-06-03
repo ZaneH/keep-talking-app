@@ -33,5 +33,7 @@ export type MorseInputResult = {
 }
 
 export type MorseState = {
+  displayedPattern?: string
   displayedFrequency?: number
+  selectedFrequencyIndex?: number
 }
