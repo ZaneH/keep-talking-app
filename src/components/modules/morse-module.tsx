@@ -3,7 +3,6 @@ import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import type { BaseModuleProps } from "./module";
 import Module from "./module";
-import type { MeshStandardMaterial } from "three";
 import { Text } from "@react-three/drei";
 import { type ThreeEvent } from "@react-three/fiber";
 import { IncrementDecrement } from "../../generated/proto/common.pb";
@@ -13,8 +12,8 @@ import type { MorseState } from "../../generated/proto/morse_module.pb";
 import { CustomMaterials } from "./custom-materials";
 
 const TEXT_OFFSET = 0.013;
-const FONT_SIZE = 0.014;
-const FONT_FAMILY = "/fonts/Silkscreen-Regular.ttf";
+const FONT_SIZE = 0.015;
+const FONT_FAMILY = "/fonts/munro.ttf";
 const FONT_COLOR = 0xce7422;
 const SCREEN_TEXT_ATTRS = {
   font: FONT_FAMILY,
@@ -38,10 +37,23 @@ export default function MorseModule({
   const [displayedFrequency, setDisplayedFrequency] = useState(
     state?.displayedFrequency,
   );
+  const [selectedFrequencyIdx, setSelectedFrequencyIndex] = useState(
+    state?.selectedFrequencyIndex || 0,
+  );
 
   const txButtonRef = useRef<any>(null);
   const freqDownRef = useRef<any>(null);
   const freqUpRef = useRef<any>(null);
+
+  const freqSliderPositions = useMemo(() => {
+    const positions = [];
+    for (let i = 0; i <= 15; i++) {
+      positions.push([-0.048 + i * 0.0064, 0.013, 0.002]);
+    }
+    return positions;
+  }, []);
+
+  const freqSliderPos = freqSliderPositions[selectedFrequencyIdx];
 
   const onButtonClick = useCallback(
     async (event: ThreeEvent<MouseEvent>) => {
@@ -61,12 +73,7 @@ export default function MorseModule({
 
         if (res.solved) {
           setIsSolved(true);
-        } else {
-          const newFreq = res.morseInputResult?.morseState?.displayedFrequency;
-          setDisplayedFrequency(newFreq);
         }
-
-        console.log(res);
       } else if (
         event.object === freqDownRef.current ||
         event.object === freqUpRef.current
@@ -91,6 +98,8 @@ export default function MorseModule({
 
         const newFreq = res.morseInputResult?.morseState?.displayedFrequency;
         setDisplayedFrequency(newFreq);
+        const newIdx = res.morseInputResult?.morseState?.selectedFrequencyIndex;
+        setSelectedFrequencyIndex(newIdx || 0);
       }
     },
     [isSolved, selectedModuleId, moduleId, sessionId, selectedBombId],
@@ -178,7 +187,7 @@ export default function MorseModule({
             receiveShadow
             geometry={nodes.FrequencySlider.geometry}
             material={materials["Plastic.Red"]}
-            position={[-0.042, 0.013, 0.002]}
+            position={freqSliderPos as [number, number, number]}
             scale={[0.001, 0.006, 0.001]}
           />
           <mesh
@@ -210,16 +219,19 @@ export default function MorseModule({
             material={materials["Screen.Blue"]}
             position={[0, -0.011, -0.0087]}
           >
-            <Text
-              {...SCREEN_TEXT_ATTRS}
-              position={[0, 0.003, TEXT_OFFSET]}
-              scale={[1, 1, 1]}
-            >
+            <Text {...SCREEN_TEXT_ATTRS} position={[0, 0, TEXT_OFFSET]}>
               {displayedFrequency !== undefined
                 ? `${displayedFrequency.toFixed(3)} Hz`
                 : "0 Hz"}
             </Text>
           </mesh>
+          <mesh
+            castShadow
+            receiveShadow
+            geometry={nodes.MorseScreen001.geometry}
+            material={materials["Screen.Morse"]}
+            position={[0, 0.013, -0.0087]}
+          />
         </mesh>
         <mesh
           castShadow
@@ -242,7 +254,9 @@ export default function MorseModule({
           castShadow
           receiveShadow
           geometry={nodes.Light009.geometry}
-          material={materials["Unlit light"]}
+          material={
+            isSolved ? CustomMaterials.GreenLight : materials["Unlit light"]
+          }
           position={[0.061, 0.062, 0.021]}
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}
