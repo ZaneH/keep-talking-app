@@ -70,7 +70,7 @@ export default function NeedyVentGasModule({
 
   const remainingTimeSeconds = useMemo(() => {
     if (!countdownStartedAt) return undefined;
-    const elapsedSeconds = Math.floor(currentTime / 1000 - countdownStartedAt);
+    const elapsedSeconds = Math.ceil(currentTime / 1000 - countdownStartedAt);
     return Math.max(0, 30 - elapsedSeconds);
   }, [countdownStartedAt, currentTime]);
 
