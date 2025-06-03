@@ -101,16 +101,13 @@ export default function MemoryModule({
         >
           <group position={[0, 0, -0.003]}>
             <mesh
+              name="MemoryButton"
+              userData={{ buttonIndex: 0 }}
               castShadow
               receiveShadow
               geometry={nodes.MemoryC1.geometry}
               material={materials.TanButton}
               position={[-0.042, 0, 0]}
-              onClick={onButtonClick}
-              name="MemoryButton"
-              userData={{
-                buttonIndex: 0,
-              }}
             >
               <Text
                 {...CHOICE_LABEL_ATTRS}
@@ -120,16 +117,13 @@ export default function MemoryModule({
               </Text>
             </mesh>
             <mesh
+              name="MemoryButton"
+              userData={{ buttonIndex: 1 }}
               castShadow
               receiveShadow
               geometry={nodes.MemoryC2.geometry}
               material={materials.TanButton}
               position={[-0.014, 0, 0]}
-              onClick={onButtonClick}
-              name="MemoryButton"
-              userData={{
-                buttonIndex: 1,
-              }}
             >
               <Text
                 {...CHOICE_LABEL_ATTRS}
@@ -139,16 +133,13 @@ export default function MemoryModule({
               </Text>
             </mesh>
             <mesh
+              name="MemoryButton"
+              userData={{ buttonIndex: 2 }}
               castShadow
               receiveShadow
               geometry={nodes.MemoryC3.geometry}
               material={materials.TanButton}
               position={[0.014, 0, 0]}
-              onClick={onButtonClick}
-              name="MemoryButton"
-              userData={{
-                buttonIndex: 2,
-              }}
             >
               <Text
                 {...CHOICE_LABEL_ATTRS}
@@ -158,16 +149,13 @@ export default function MemoryModule({
               </Text>
             </mesh>
             <mesh
+              name="MemoryButton"
+              userData={{ buttonIndex: 3 }}
               castShadow
               receiveShadow
               geometry={nodes.MemoryC4.geometry}
               material={materials.TanButton}
               position={[0.042, 0, 0]}
-              onClick={onButtonClick}
-              name="MemoryButton"
-              userData={{
-                buttonIndex: 3,
-              }}
             >
               <Text
                 {...CHOICE_LABEL_ATTRS}
@@ -238,7 +226,6 @@ export default function MemoryModule({
                   : materials["Plastic.Black"]
               }
               position={[0, -0.045, 0]}
-              scale={[-0.009, -0.008, -0.015]}
             />
             <mesh
               castShadow
@@ -250,7 +237,6 @@ export default function MemoryModule({
                   : materials["Plastic.Black"]
               }
               position={[0, -0.022, 0]}
-              scale={[-0.009, -0.008, -0.015]}
             />
             <mesh
               castShadow
@@ -261,7 +247,6 @@ export default function MemoryModule({
                   ? CustomMaterials.GreenLight
                   : materials["Plastic.Black"]
               }
-              scale={[-0.009, -0.008, -0.015]}
             />
             <mesh
               castShadow
@@ -274,7 +259,6 @@ export default function MemoryModule({
               }
               position={[0, 0.022, 0]}
               rotation={[Math.PI, 0, Math.PI]}
-              scale={[0.009, 0.008, 0.015]}
             />
             <mesh
               castShadow
@@ -287,7 +271,6 @@ export default function MemoryModule({
               }
               position={[0, 0.045, 0]}
               rotation={[Math.PI, 0, Math.PI]}
-              scale={[0.009, 0.008, 0.015]}
             />
           </group>
         </mesh>
