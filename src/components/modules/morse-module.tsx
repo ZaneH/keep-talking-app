@@ -4,12 +4,13 @@ import { useModuleModel } from "../../hooks/use-module-model";
 import type { BaseModuleProps } from "./module";
 import Module from "./module";
 import { Text } from "@react-three/drei";
-import { type ThreeEvent } from "@react-three/fiber";
+import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import { IncrementDecrement } from "../../generated/proto/common.pb";
 import { GameService } from "../../services/api";
 import { useGameStore } from "../../hooks/use-game-store";
 import type { MorseState } from "../../generated/proto/morse_module.pb";
 import { CustomMaterials } from "./custom-materials";
+import * as THREE from "three";
 
 const TEXT_OFFSET = 0.013;
 const FONT_SIZE = 0.015;
@@ -20,6 +21,14 @@ const SCREEN_TEXT_ATTRS = {
   fontSize: FONT_SIZE,
   color: FONT_COLOR,
 };
+
+const DOT_DURATION = 0.3;
+const DASH_DURATION = 0.9;
+const SYMBOL_PAUSE = 0.3;
+const LETTER_PAUSE = 0.9;
+
+const globalMorseClock = new THREE.Clock();
+globalMorseClock.start();
 
 export default function MorseModule({
   moduleId,
@@ -33,7 +42,7 @@ export default function MorseModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
-  const [isSolved, setIsSolved] = useState(false);
+  const displayedPattern = state?.displayedPattern;
   const [displayedFrequency, setDisplayedFrequency] = useState(
     state?.displayedFrequency,
   );
@@ -41,9 +50,14 @@ export default function MorseModule({
     state?.selectedFrequencyIndex || 0,
   );
 
+  const [isSolved, setIsSolved] = useState(false);
+
   const txButtonRef = useRef<any>(null);
   const freqDownRef = useRef<any>(null);
   const freqUpRef = useRef<any>(null);
+
+  const tubeInnerRef = useRef<any>(null);
+  const isLightOn = useRef(false);
 
   const freqSliderPositions = useMemo(() => {
     const positions = [];
@@ -54,6 +68,95 @@ export default function MorseModule({
   }, []);
 
   const freqSliderPos = freqSliderPositions[selectedFrequencyIdx];
+
+  const patternTimings = useMemo(() => {
+    if (!displayedPattern) return [];
+
+    const timings: { duration: number; isOn: boolean }[] = [];
+
+    for (let i = 0; i < displayedPattern.length; i++) {
+      const char = displayedPattern[i];
+
+      if (char === ".") {
+        timings.push({ duration: DOT_DURATION, isOn: true });
+        timings.push({ duration: SYMBOL_PAUSE, isOn: false });
+      } else if (char === "-") {
+        timings.push({ duration: DASH_DURATION, isOn: true });
+        timings.push({ duration: SYMBOL_PAUSE, isOn: false });
+      } else if (char === " ") {
+        // Space already has the symbol pause before it, so add the difference
+        timings.push({ duration: LETTER_PAUSE - SYMBOL_PAUSE, isOn: false });
+      }
+    }
+
+    return timings;
+  }, [displayedPattern]);
+
+  const setLightState = useCallback((isOn: boolean) => {
+    if (!tubeInnerRef.current) return;
+
+    const material = tubeInnerRef.current
+      .material as THREE.MeshStandardMaterial;
+
+    if (isOn) {
+      material.emissive = new THREE.Color(0xffcc00);
+      material.emissiveIntensity = 3;
+    } else {
+      material.emissive = new THREE.Color(0x000000);
+      material.emissiveIntensity = 0.2;
+    }
+
+    isLightOn.current = isOn;
+  }, []);
+
+  useFrame(() => {
+    if (
+      !displayedPattern ||
+      patternTimings.length === 0 ||
+      !tubeInnerRef.current ||
+      isSolved
+    )
+      return;
+
+    const elapsedTime = globalMorseClock.getElapsedTime();
+
+    // Calculate total cycle time
+    const totalDuration = patternTimings.reduce(
+      (sum, timing) => sum + timing.duration,
+      0,
+    );
+
+    // Prevent division by zero
+    if (totalDuration === 0) return;
+
+    const normalizedTime = elapsedTime % totalDuration;
+
+    // Only process during the sequence part of the cycle
+    if (normalizedTime < totalDuration) {
+      // Find the current position in the sequence
+      let timeSum = 0;
+      let currentIndex = 0;
+
+      for (let i = 0; i < patternTimings.length; i++) {
+        const prevTimeSum = timeSum;
+        timeSum += patternTimings[i].duration;
+
+        if (normalizedTime >= prevTimeSum && normalizedTime < timeSum) {
+          currentIndex = i;
+          break;
+        }
+      }
+
+      // Apply the appropriate light state
+      const shouldBeOn = patternTimings[currentIndex].isOn;
+      if (isLightOn.current !== shouldBeOn) {
+        setLightState(shouldBeOn);
+      }
+    } else if (isLightOn.current) {
+      // Ensure light is off during the pause
+      setLightState(false);
+    }
+  });
 
   const onButtonClick = useCallback(
     async (event: ThreeEvent<MouseEvent>) => {
@@ -162,6 +265,7 @@ export default function MorseModule({
             material={materials["Light.Amber.001"]}
             rotation={[0, 0, -Math.PI / 2]}
             scale={[0.005, 0.013, 0.005]}
+            ref={tubeInnerRef}
           />
         </group>
         <mesh
