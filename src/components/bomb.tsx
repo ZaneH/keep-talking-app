@@ -17,6 +17,7 @@ import type { Indicator, Port } from "../generated/proto/bomb.pb";
 import BombProvider from "./bomb-provider";
 import MemoryModule from "./modules/memory-module";
 import MorseModule from "./modules/morse-module";
+import NeedyVentGasModule from "./modules/needy-vent-gas";
 
 const ZOOM_DISTANCE = 0.2;
 
@@ -210,6 +211,15 @@ function renderModule(key?: string, module?: Module) {
           key={key}
           moduleId={module.id!}
           state={module.morseState}
+          position={module.position}
+        />
+      );
+    case ModuleModuleType.NEEDY_VENT_GAS:
+      return (
+        <NeedyVentGasModule
+          key={key}
+          moduleId={module.id!}
+          state={module.needyVentGasState}
           position={module.position}
         />
       );
