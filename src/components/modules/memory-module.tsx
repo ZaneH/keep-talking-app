@@ -108,6 +108,7 @@ export default function MemoryModule({
               geometry={nodes.MemoryC1.geometry}
               material={materials.TanButton}
               position={[-0.042, 0, 0]}
+              onClick={onButtonClick}
             >
               <Text
                 {...CHOICE_LABEL_ATTRS}
@@ -124,6 +125,7 @@ export default function MemoryModule({
               geometry={nodes.MemoryC2.geometry}
               material={materials.TanButton}
               position={[-0.014, 0, 0]}
+              onClick={onButtonClick}
             >
               <Text
                 {...CHOICE_LABEL_ATTRS}
@@ -140,6 +142,7 @@ export default function MemoryModule({
               geometry={nodes.MemoryC3.geometry}
               material={materials.TanButton}
               position={[0.014, 0, 0]}
+              onClick={onButtonClick}
             >
               <Text
                 {...CHOICE_LABEL_ATTRS}
@@ -156,6 +159,7 @@ export default function MemoryModule({
               geometry={nodes.MemoryC4.geometry}
               material={materials.TanButton}
               position={[0.042, 0, 0]}
+              onClick={onButtonClick}
             >
               <Text
                 {...CHOICE_LABEL_ATTRS}
