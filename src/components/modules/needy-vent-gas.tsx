@@ -12,10 +12,13 @@ import Module from "./module";
 const TEXT_Y_OFFSET = 0.003;
 const GREEN_TEXT_OFFSET = 0.001;
 const RED_TEXT_OFFSET = 0.003;
-const GREEN_FONT_SIZE = 0.01;
+
+const GREEN_FONT_SIZE = 0.0125;
 const RED_FONT_SIZE = 0.015;
+
 const GREEN_FONT_FAMILY = "/fonts/Inter-Medium.ttf";
 const RED_FONT_FAMILY = "/fonts/Digital7_Mono.ttf";
+
 const GREEN_FONT_COLOR = 0x5b8c45;
 const RED_FONT_COLOR = 0x9e3029;
 
@@ -120,8 +123,8 @@ export default function NeedyVentGasModule({
           receiveShadow
           geometry={nodes.VentButtonN.geometry}
           material={materials["Vent.N"]}
-          position={[0.006, -0.046, 0.04]}
-          scale={[0.972, 0.972, 1]}
+          position={[0.011, -0.052, 0.046]}
+          scale={[1.218, 1.218, 1.252]}
           ref={nButtonRef}
           onClick={onButtonClick}
         />
@@ -130,29 +133,31 @@ export default function NeedyVentGasModule({
           receiveShadow
           geometry={nodes.VentButtonY.geometry}
           material={materials["Vent.Y"]}
-          position={[-0.006, -0.046, 0.04]}
-          scale={[0.972, 0.972, 1]}
-          ref={yButtonRef}
+          position={[-0.011, -0.052, 0.046]}
+          scale={[1.218, 1.218, 1.252]}
+          ref={nButtonRef}
           onClick={onButtonClick}
         />
+
         <mesh
           castShadow
           receiveShadow
           geometry={nodes.VentGasScreenBase.geometry}
           material={materials["Metal.Brass"]}
-          position={[0, -0.024, -0.001]}
-          scale={[0.067, 0.039, 0.052]}
-        />{" "}
+          position={[0, -0.016, 0.033]}
+          scale={[0.972, 0.972, 1]}
+        />
         <mesh
           castShadow
           receiveShadow
           geometry={nodes.VentGasTimerScreen.geometry}
           material={materials.Backlight}
-          position={[0, 0.03, 0.037]}
+          position={[0, 0.061, 0.037]}
+          scale={[1.169, 1.169, 1.202]}
         >
           <Text {...COUNTDOWN_TEXT_ATTRS}>{remainingTimeSeconds}</Text>
         </mesh>
-        <group position={[0, 0.031, 0.035]} scale={[0.067, 0.022, 0.041]}>
+        <group position={[0, 0.062, 0.035]} scale={[0.972, 0.972, 1]}>
           <mesh
             castShadow
             receiveShadow
@@ -165,19 +170,14 @@ export default function NeedyVentGasModule({
             geometry={nodes.Cube063_1.geometry}
             material={materials.BlueWire}
           />
-          <mesh
-            castShadow
-            receiveShadow
-            geometry={nodes.Cube063_2.geometry}
-            material={materials.Backlight}
-          />
         </group>
         <mesh
           castShadow
           receiveShadow
           geometry={nodes.VentScreen.geometry}
           material={materials.Backlight}
-          position={[0, -0.016, 0.042]}
+          position={[0, 0, 0.044]}
+          scale={[0.972, 0.972, 1]}
         >
           <Text {...GREEN_TEXT_ATTRS}>
             {displayedQuestion?.toUpperCase()}
