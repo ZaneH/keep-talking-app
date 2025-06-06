@@ -171,7 +171,6 @@ export default function PasswordModule({
           geometry={nodes.Backlight.geometry}
           material={emittingBacklight}
           position={[0, 0, 0.004]}
-          scale={[1.004, 0.918, 0.944]}
         >
           <mesh
             castShadow

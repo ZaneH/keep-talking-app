@@ -177,7 +177,7 @@ export default function KeypadModule({
           material={
             litState[0]
               ? CustomMaterials.GreenLight
-              : materials["Backlight.Dark"]
+              : materials["Plastic.Black"]
           }
           position={[0.018, -0.064, 0.035]}
           rotation={[Math.PI / 2, 0, 0]}
@@ -190,7 +190,7 @@ export default function KeypadModule({
           material={
             litState[1]
               ? CustomMaterials.GreenLight
-              : materials["Backlight.Dark"]
+              : materials["Plastic.Black"]
           }
           position={[-0.044, -0.064, 0.035]}
           rotation={[Math.PI / 2, 0, 0]}
@@ -203,7 +203,7 @@ export default function KeypadModule({
           material={
             litState[2]
               ? CustomMaterials.GreenLight
-              : materials["Backlight.Dark"]
+              : materials["Plastic.Black"]
           }
           position={[-0.044, -0.003, 0.035]}
           rotation={[Math.PI / 2, 0, 0]}
@@ -216,7 +216,7 @@ export default function KeypadModule({
           material={
             litState[3]
               ? CustomMaterials.GreenLight
-              : materials["Backlight.Dark"]
+              : materials["Plastic.Black"]
           }
           position={[0.018, -0.003, 0.035]}
           rotation={[Math.PI / 2, 0, 0]}
