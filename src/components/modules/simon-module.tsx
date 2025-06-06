@@ -252,8 +252,7 @@ export default function SimonSaysModule({
             receiveShadow
             geometry={nodes.SimonSaysPatternD.geometry}
             material={materials.GreenLight}
-            position={[0, -0.035, 0.032]}
-            scale={1.062}
+            position={[0, -0.034, 0.03]}
             onPointerUp={onButtonClick}
             ref={greenButtonRef}
           />
@@ -262,8 +261,7 @@ export default function SimonSaysModule({
             receiveShadow
             geometry={nodes.SimonSaysPatternL.geometry}
             material={materials.RedLight}
-            position={[-0.034, 0, 0.032]}
-            scale={1.062}
+            position={[-0.034, 0, 0.03]}
             onPointerUp={onButtonClick}
             ref={redButtonRef}
           />
@@ -272,8 +270,7 @@ export default function SimonSaysModule({
             receiveShadow
             geometry={nodes.SimonSaysPatternR.geometry}
             material={materials.YellowLight}
-            position={[0.034, 0, 0.032]}
-            scale={1.062}
+            position={[0.034, 0, 0.03]}
             onPointerUp={onButtonClick}
             ref={yellowButtonRef}
           />
@@ -282,8 +279,7 @@ export default function SimonSaysModule({
             receiveShadow
             geometry={nodes.SimonSaysPatternU.geometry}
             material={materials.BlueLight}
-            position={[0, 0.035, 0.032]}
-            scale={1.062}
+            position={[0, 0.034, 0.03]}
             onPointerUp={onButtonClick}
             ref={blueButtonRef}
           />

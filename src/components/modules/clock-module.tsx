@@ -6,6 +6,8 @@ import { useBomb } from "../bomb-context";
 import Module, { type BaseModuleProps } from "./module";
 import { useFrame } from "@react-three/fiber";
 
+const SCREEN_OFFSET = 0.035;
+
 function TextLabel() {
   const { startedAt, timerDuration } = useBomb();
   const [timeString, setTimeString] = useState("05:00");
@@ -26,7 +28,7 @@ function TextLabel() {
   return (
     <Text
       fontSize={0.05}
-      position={[0, 0.0372, 0.034]}
+      position={[0, 0.0372, SCREEN_OFFSET]}
       color={"green"}
       font="/fonts/Digital7_Mono.ttf"
     >
@@ -56,7 +58,7 @@ export default function ClockModule({
         castShadow
         receiveShadow
         geometry={nodes.ClockModule_1.geometry}
-        material={materials["Silver Dark"]}
+        material={materials["Silver.Dark"]}
         scale={[1.028, 1.028, 1]}
         ref={meshRef}
         {...pointerHandlers}
@@ -68,7 +70,6 @@ export default function ClockModule({
             geometry={nodes.ClockBacklight.geometry}
             material={materials.Backlight}
             position={[-0.196, -0.066, 0.077]}
-            scale={[0.856, 0.856, 1.208]}
           />
           <mesh
             castShadow
@@ -118,7 +119,6 @@ export default function ClockModule({
             geometry={nodes.XFrameBacklight.geometry}
             material={materials.Backlight}
             position={[-0.223, -0.144, 0.083]}
-            scale={0.844}
           />
           <mesh
             castShadow

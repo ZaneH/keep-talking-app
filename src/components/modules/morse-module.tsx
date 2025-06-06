@@ -292,7 +292,6 @@ export default function MorseModule({
             geometry={nodes.FrequencySlider.geometry}
             material={materials["Plastic.Red"]}
             position={freqSliderPos as [number, number, number]}
-            scale={[0.001, 0.006, 0.001]}
           />
           <mesh
             castShadow
@@ -301,7 +300,6 @@ export default function MorseModule({
             material={materials["Plastic Dark"]}
             position={[-0.06, -0.01, 0.003]}
             rotation={[Math.PI / 2, 0, 0]}
-            scale={[0.005, 0.009, 0.01]}
             ref={freqDownRef}
             onClick={onButtonClick}
           />
@@ -310,9 +308,8 @@ export default function MorseModule({
             receiveShadow
             geometry={nodes.MorseButtonR.geometry}
             material={materials["Plastic Dark"]}
-            position={[-0.06, -0.01, 0.003]}
+            position={[0.06, -0.01, 0.003]}
             rotation={[Math.PI / 2, 0, 0]}
-            scale={[0.005, 0.009, 0.01]}
             ref={freqUpRef}
             onClick={onButtonClick}
           />
