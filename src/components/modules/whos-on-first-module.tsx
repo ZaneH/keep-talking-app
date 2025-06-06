@@ -191,7 +191,7 @@ export default function WhosOnFirstModule({
           castShadow
           receiveShadow
           geometry={nodes.InputFrame.geometry}
-          material={materials.MetalGray}
+          material={materials["Metal.Dark"]}
           position={[-0.016, -0.022, 0.031]}
           scale={[0.972, 0.972, 1]}
         />
@@ -199,7 +199,7 @@ export default function WhosOnFirstModule({
           castShadow
           receiveShadow
           geometry={nodes.LCDFrame.geometry}
-          material={materials.MetalGray}
+          material={materials["Metal.Dark"]}
           position={[-0.016, 0.055, 0.027]}
           scale={[0.972, 0.972, 1]}
         />
@@ -215,7 +215,7 @@ export default function WhosOnFirstModule({
           castShadow
           receiveShadow
           geometry={nodes.LCDScreen.geometry}
-          material={materials.ScreenBlue}
+          material={materials["Screen.Blue"]}
           position={[-0.016, 0.055, 0.029]}
           scale={[0.779, 0.486, 0.742]}
         />
@@ -230,14 +230,14 @@ export default function WhosOnFirstModule({
           castShadow
           receiveShadow
           geometry={nodes.Steps.geometry}
-          material={materials.MetalGray}
+          material={materials["Metal.Dark"]}
           scale={[0.972, 0.972, 1]}
         >
           <mesh
             castShadow
             receiveShadow
             geometry={nodes.Step1Case.geometry}
-            material={materials["Backlight.Dark"]}
+            material={materials["Plastic.Black"]}
             position={[0.061, -0.045, 0.033]}
             scale={[-0.009, -0.008, -0.015]}
           >
@@ -248,7 +248,7 @@ export default function WhosOnFirstModule({
               material={
                 stage >= 2
                   ? CustomMaterials.GreenLight
-                  : materials["Backlight.Dark"]
+                  : materials["Plastic.Black"]
               }
               position={[0.002, 0, -0.007]}
               rotation={[-Math.PI, 0, -Math.PI]}
@@ -259,7 +259,7 @@ export default function WhosOnFirstModule({
             castShadow
             receiveShadow
             geometry={nodes.Step2Case.geometry}
-            material={materials["Backlight.Dark"]}
+            material={materials["Plastic.Black"]}
             position={[0.061, -0.022, 0.033]}
             scale={[-0.009, -0.008, -0.015]}
           >
@@ -270,7 +270,7 @@ export default function WhosOnFirstModule({
               material={
                 stage >= 3
                   ? CustomMaterials.GreenLight
-                  : materials["Backlight.Dark"]
+                  : materials["Plastic.Black"]
               }
               position={[0.002, 0, -0.007]}
               rotation={[-Math.PI, 0, -Math.PI]}
@@ -281,7 +281,7 @@ export default function WhosOnFirstModule({
             castShadow
             receiveShadow
             geometry={nodes.Step3Case.geometry}
-            material={materials["Backlight.Dark"]}
+            material={materials["Plastic.Black"]}
             position={[0.061, 0, 0.033]}
             rotation={[Math.PI, 0, Math.PI]}
             scale={[0.009, 0.008, 0.015]}
@@ -293,7 +293,7 @@ export default function WhosOnFirstModule({
               material={
                 stage >= 4
                   ? CustomMaterials.GreenLight
-                  : materials["Backlight.Dark"]
+                  : materials["Plastic.Black"]
               }
               position={[0, 0, -0.007]}
               scale={[105.334, 129.079, 68.463]}

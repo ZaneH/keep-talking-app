@@ -91,7 +91,6 @@ export default function Table() {
         material={materials["Orange PBSR"]}
         position={[0, 1.674, -1.674]}
         rotation={[Math.PI / 2, 0, 0]}
-        scale={[5.492, 12, 5.492]}
       />
       <mesh
         // castShadow
@@ -100,7 +99,6 @@ export default function Table() {
         material={materials["Orange PBSR"]}
         position={[0, 1.674, 1.674]}
         rotation={[Math.PI / 2, 0, Math.PI]}
-        scale={[5.492, 12, 5.492]}
       />
       <mesh
         // castShadow
@@ -109,7 +107,6 @@ export default function Table() {
         material={materials["Orange PBSR"]}
         position={[-1.674, 1.674, 0]}
         rotation={[Math.PI / 2, 0, -Math.PI / 2]}
-        scale={[5.492, 12, 5.492]}
       />
       <mesh
         // castShadow
@@ -118,7 +115,6 @@ export default function Table() {
         material={materials["Orange PBSR"]}
         position={[1.674, 1.674, 0]}
         rotation={[Math.PI / 2, 0, Math.PI / 2]}
-        scale={[5.492, 12, 5.492]}
       />
       <mesh
         castShadow
@@ -134,7 +130,6 @@ export default function Table() {
         geometry={nodes.Top.geometry}
         material={materials["Orange PBSR"]}
         position={[0, 0.449, 0]}
-        scale={0.184}
       />
     </group>
   );

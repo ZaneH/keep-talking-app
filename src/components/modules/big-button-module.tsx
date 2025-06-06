@@ -205,7 +205,7 @@ export default function BigButtonModule({
           castShadow
           receiveShadow
           geometry={nodes.Hinge.geometry}
-          material={materials["Silver Dark"]}
+          material={materials["Silver.Dark"]}
           position={[0, 0.077, 0.033]}
           rotation={[0, 0, -Math.PI / 2]}
           scale={[0.004, 0.017, 0.004]}
