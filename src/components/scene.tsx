@@ -125,8 +125,8 @@ export default function Scene() {
       </EffectComposer>
       <PerspectiveCamera
         makeDefault
-        position={[0, 0, 1.5]}
-        rotation={[-Math.PI / 8, 0, 0]}
+        position={[0, 0.2, 1.5]}
+        rotation={[-Math.PI / 20, 0, 0]}
         fov={60}
         near={0.2}
         far={50}
