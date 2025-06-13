@@ -1,5 +1,3 @@
-import type OGCameraControls from "camera-controls";
-import * as THREE from "three";
 import { create } from "zustand";
 import type { Bomb } from "../generated/proto/bomb.pb";
 
@@ -19,12 +17,8 @@ interface GameActions {
   setSessionId: (_sessionId?: string) => void;
   setBombs: (_bombs: Bomb[]) => void;
   setSelectedBombId: (_bombId?: string) => void;
-  zoomToModule: (
-    _moduleId: string,
-    _position: THREE.Vector3,
-    _controls: OGCameraControls
-  ) => void;
-  reset: (_controls: OGCameraControls | null) => void;
+  zoomToModule: (_moduleId: string) => void;
+  reset: () => void;
 }
 
 const CAMERA_ZOOM_OFFSET = 0.28;
@@ -43,31 +37,22 @@ export const useGameStore = create<GameState & GameActions>()((set) => ({
   setSessionId: (sessionId) => set({ sessionId }),
   setBombs: (bombs) => set({ bombs }),
   setSelectedBombId: (bombId) => set({ selectedBombId: bombId }),
-  zoomToModule: (moduleId, position, controls) => {
+  zoomToModule: (moduleId) => {
     set({
       selectedModuleId: moduleId,
       zoomState: "module-view",
       cameraLocked: true,
     });
-    if (controls) {
-      controls.setPosition(
-        position.x,
-        position.y,
-        position.z + CAMERA_ZOOM_OFFSET,
-        true
-      );
-      controls.setTarget(position.x, position.y, position.z, true);
-    }
+
+    // With our new approach, we don't need to move the camera
+    // The bomb rotation takes care of showing the module
   },
-  reset: (controls) => {
+  reset: () => {
     set({
       selectedModuleId: undefined,
       zoomState: "idle",
       cameraLocked: false,
     });
-    if (controls) {
-      controls.setPosition(0, 0, 1.5, true);
-      controls.setTarget(0, 0, 0, true);
-    }
+    // No camera position reset needed
   },
 }));

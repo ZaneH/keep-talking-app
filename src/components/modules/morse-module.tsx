@@ -27,6 +27,8 @@ const DASH_DURATION = 0.9;
 const SYMBOL_PAUSE = 0.3;
 const LETTER_PAUSE = 0.9;
 
+const SLIDER_FACTOR = 0.0064;
+
 const globalMorseClock = new THREE.Clock();
 globalMorseClock.start();
 
@@ -62,7 +64,7 @@ export default function MorseModule({
   const freqSliderPositions = useMemo(() => {
     const positions = [];
     for (let i = 0; i <= 15; i++) {
-      positions.push([-0.048 + i * 0.0064, 0.013, 0.002]);
+      positions.push([-0.048 + i * SLIDER_FACTOR, 0.013, 0.002]);
     }
     return positions;
   }, []);
