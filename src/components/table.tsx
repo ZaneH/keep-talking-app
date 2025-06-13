@@ -2,11 +2,9 @@ import { useCursor } from "@react-three/drei";
 import { useState } from "react";
 import { useGameStore } from "../hooks/use-game-store";
 import { useModuleModel } from "../hooks/use-module-model";
-import { useControls } from "./controls-provider";
 
 export default function Table() {
   const { nodes, materials } = useModuleModel("table");
-  const controls = useControls();
   const { zoomState, reset } = useGameStore();
 
   const [isHovered, setIsHovered] = useState(false);
@@ -18,7 +16,7 @@ export default function Table() {
       onClick={(e) => {
         if (zoomState === "module-view") {
           e.stopPropagation();
-          reset(controls.current);
+          reset();
           setIsHovered(false);
         }
       }}

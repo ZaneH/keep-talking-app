@@ -32,7 +32,7 @@ export default function Module({
   const yFactor = 0.198;
 
   const xOffset = -xFactor;
-  const yOffset = 0.827;
+  const yOffset = 0.1;
   const zOffset = 0.1;
 
   const rotationY = position?.face === 1 ? Math.PI : 0;
