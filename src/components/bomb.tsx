@@ -1,4 +1,5 @@
-import { Select, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
+import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import * as THREE from "three";
 import { useGameStore } from "../hooks/use-game-store";
 import { getModuleRoot } from "../utils/node-finder";
@@ -19,8 +20,9 @@ import MorseModule from "./modules/morse-module";
 import NeedyVentGasModule from "./modules/needy-vent-gas";
 import { useEffect, useRef, useState } from "react";
 
-const ZOOM_DISTANCE = 0.2;
+const ZOOM_DISTANCE = 0.3;
 const PICKED_UP_HEIGHT = 0.2; // Height to lift the bomb when picked up
+const PICKUP_ANIMATION_DURATION = 500; // 0.5 seconds in milliseconds
 
 interface BombProps {
   bombId?: string;
@@ -41,14 +43,40 @@ export default function Bomb({ modules, startedAt, timerDuration }: BombProps) {
   const [rotation, setRotation] = useState<[number, number, number]>([0, 0, 0]);
   const [isDragging, setIsDragging] = useState(false);
   const [isPickedUp, setIsPickedUp] = useState(false);
+  const [animatedHeight, setAnimatedHeight] = useState(0);
+  const [pickupStartTime, setPickupStartTime] = useState<number | null>(null);
   const groupRef = useRef<THREE.Group>(null);
   const previousMousePosition = useRef({ x: 0, y: 0 });
 
+  // Animate the bomb pickup/putdown
+  useFrame(() => {
+    if (pickupStartTime !== null) {
+      const elapsed = Date.now() - pickupStartTime;
+      const progress = Math.min(elapsed / PICKUP_ANIMATION_DURATION, 1);
+      
+      // Use easing function for smoother animation
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      
+      // Determine start and end heights based on pickup state
+      const startHeight = isPickedUp ? 0 : PICKED_UP_HEIGHT;
+      const endHeight = isPickedUp ? PICKED_UP_HEIGHT : 0;
+      
+      setAnimatedHeight(startHeight + (endHeight - startHeight) * easeOut);
+      
+      if (progress >= 1) {
+        setPickupStartTime(null);
+      }
+    }
+  });
+
   // Handle picking up the bomb
-  const handlePickUp = (e: THREE.Event) => {
+  const handlePickUp = (e: ThreeEvent<MouseEvent>) => {
+    console.log("handlePickUp called");
     if (!isPickedUp) {
+      console.log("Picking up bomb - starting animation");
       e.stopPropagation();
       setIsPickedUp(true);
+      setPickupStartTime(Date.now());
       // Reset position to center of view when picked up
       previousMousePosition.current.x = e.nativeEvent.clientX;
       previousMousePosition.current.y = e.nativeEvent.clientY;
@@ -57,13 +85,17 @@ export default function Bomb({ modules, startedAt, timerDuration }: BombProps) {
 
   // Handle putting down the bomb
   const handlePutDown = () => {
+    console.log("handlePutDown called");
     if (isPickedUp) {
+      console.log("Putting down bomb - starting animation");
       setIsPickedUp(false);
+      setPickupStartTime(Date.now());
       // Reset rotation when putting down
       setRotation([0, 0, 0]);
       // Reset camera if in module view
       if (selectedModuleId) {
-        reset(null);
+        console.log("Resetting camera from module view");
+        reset();
       }
     }
   };
@@ -71,14 +103,29 @@ export default function Bomb({ modules, startedAt, timerDuration }: BombProps) {
   // Handle global click to put down the bomb when clicking outside
   useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
+      console.log("Global click detected:", { 
+        isPickedUp, 
+        isDragging, 
+        selectedModuleId,
+        target: e.target
+      });
+      
       if (isPickedUp && !isDragging) {
         // Check if the click was on a canvas element
         const canvasElement = document.querySelector("canvas");
         if (!canvasElement) return;
 
-        // If the click target is the canvas itself, put the bomb down
+        // If the click target is the canvas itself, handle accordingly
         if (e.target === canvasElement) {
-          handlePutDown();
+          // If in module view, reset to picked up view
+          if (selectedModuleId) {
+            console.log("Resetting from module view to picked up view");
+            reset();
+          } else {
+            // Put the bomb down
+            console.log("Putting bomb down from global click");
+            handlePutDown();
+          }
         }
       }
     };
@@ -99,7 +146,7 @@ export default function Bomb({ modules, startedAt, timerDuration }: BombProps) {
       }
     };
 
-    const handleGlobalPointerUp = (e: PointerEvent) => {
+    const handleGlobalPointerUp = () => {
       if (isDragging) {
         setIsDragging(false);
       }
@@ -114,10 +161,10 @@ export default function Bomb({ modules, startedAt, timerDuration }: BombProps) {
       window.removeEventListener("pointermove", handleGlobalPointerMove);
       window.removeEventListener("pointerup", handleGlobalPointerUp);
     };
-  }, [isPickedUp, isDragging, selectedModuleId, rotation]);
+  }, [isPickedUp, isDragging, selectedModuleId, rotation, handlePutDown]);
 
   // Handle mouse movement for rotation
-  const handlePointerDown = (e: THREE.Event) => {
+  const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
     if (isPickedUp) {
       e.stopPropagation();
       setIsDragging(true);
@@ -126,50 +173,86 @@ export default function Bomb({ modules, startedAt, timerDuration }: BombProps) {
 
       // Capture the pointer to ensure we keep receiving events
       // Using document.body for more reliable capture
-      document.body.setPointerCapture(e.pointerId);
+      document.body.setPointerCapture(e.nativeEvent.pointerId);
     }
   };
 
-  const handlePointerMove = (e: THREE.Event) => {
-    if (isDragging && isPickedUp) {
-      const deltaX = e.nativeEvent.clientX - previousMousePosition.current.x;
-      const deltaY = e.nativeEvent.clientY - previousMousePosition.current.y;
-
-      setRotation([
-        rotation[0] + deltaY * 0.01,
-        rotation[1] + deltaX * 0.01,
-        rotation[2],
-      ]);
-
-      previousMousePosition.current.x = e.nativeEvent.clientX;
-      previousMousePosition.current.y = e.nativeEvent.clientY;
+  function onModuleClick(selected: THREE.Object3D[], event?: THREE.Event) {
+    console.log("onModuleClick called:", { 
+      selected: selected?.length, 
+      isPickedUp, 
+      selectedModuleId,
+      event: event?.type,
+      eventObject: event?.object
+    });
+    
+    if (!isPickedUp) {
+      console.log("Bomb not picked up, ignoring module click");
+      return;
     }
-  };
-
-  const handlePointerUp = (e: THREE.Event) => {
-    if (isDragging) {
-      // Release the pointer capture from document.body
-      document.body.releasePointerCapture(e.pointerId);
-      setIsDragging(false);
+    
+    // Try to get the clicked object from the event first, then from selected array
+    let clickedObject: THREE.Object3D | null = null;
+    
+    if (event?.object) {
+      clickedObject = event.object;
+      console.log("Using event object:", clickedObject);
+    } else if (selected && selected[0]) {
+      clickedObject = selected[0];
+      console.log("Using selected object:", clickedObject);
     }
-  };
+    
+    if (!clickedObject) {
+      console.log("No clicked object found");
+      return;
+    }
 
-  function onModuleClick(selected: THREE.Object3D[]) {
-    if (!selected || !selected[0] || !isPickedUp) return;
-
-    const module = getModuleRoot(selected[0]);
+    const module = getModuleRoot(clickedObject);
+    console.log("Module root found:", module);
+    console.log("Module userData:", module.userData);
+    
     const moduleId = module.userData["moduleId"];
+    console.log("Module ID:", moduleId);
+    
+    if (!moduleId) {
+      console.log("No module ID found in userData");
+      return;
+    }
+    
+    // If already viewing this module, return to normal view
     if (selectedModuleId === moduleId) {
+      console.log("Resetting from same module");
+      reset();
       return;
     }
 
     const pos = module.getWorldPosition(new THREE.Vector3());
-
+    
+    // Calculate the world position of the bomb (parent group)
+    const bombCenter = new THREE.Vector3();
+    if (groupRef.current) {
+      groupRef.current.getWorldPosition(bombCenter);
+    }
+    
+    // Calculate direction from bomb center to module
+    const direction = pos.clone().sub(bombCenter).normalize();
+    
+    // Position camera slightly further back for better view
+    const cameraPosition = pos.clone().add(direction.multiplyScalar(ZOOM_DISTANCE));
+    
+    console.log("Zooming to module:", {
+      moduleId,
+      modulePos: pos,
+      bombCenter,
+      direction,
+      cameraPosition
+    });
+    
     // Zoom to the module
     zoomToModule(
       moduleId,
-      new THREE.Vector3(pos.x, pos.y, pos.z + ZOOM_DISTANCE),
-      null, // Don't use camera controls, we're handling rotation ourselves
+      cameraPosition,
+      pos // Look at the module position
     );
 
     // Stop event propagation to prevent bomb being put down
@@ -181,7 +264,7 @@ export default function Bomb({ modules, startedAt, timerDuration }: BombProps) {
   return (
     <>
       <group
-        position={[0, isPickedUp ? 0.73 + PICKED_UP_HEIGHT : 0.73, 0]}
+        position={[0, 0.73 + animatedHeight, 0]}
         rotation={isPickedUp ? rotation : [0, 0, 0]}
         ref={groupRef}
       >
@@ -249,7 +332,24 @@ export default function Bomb({ modules, startedAt, timerDuration }: BombProps) {
           {/* Modules */}
           <BombProvider startedAt={startedAt} timerDuration={timerDuration}>
             <Select
-              onChangePointerUp={onModuleClick}
+              onChangePointerDown={(selected, event) => {
+                console.log("Select onChangePointerDown:", { 
+                  selected: selected.length, 
+                  event: event?.type 
+                });
+                if (selected.length > 0) {
+                  onModuleClick(selected, event);
+                }
+              }}
+              onChangePointerUp={(selected, event) => {
+                console.log("Select onChangePointerUp:", { 
+                  selected: selected.length, 
+                  event: event?.type 
+                });
+                if (selected.length > 0) {
+                  onModuleClick(selected, event);
+                }
+              }}
               border={isPickedUp ? "1px solid #55aaff" : "none"}
               backgroundColor={
                 isPickedUp ? "rgba(75, 160, 255, 0.1)" : "transparent"
