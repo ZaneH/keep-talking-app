@@ -1,16 +1,18 @@
 "use client";
 
 import { Environment, PerspectiveCamera } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import {
   BrightnessContrast,
   EffectComposer,
   Outline,
 } from "@react-three/postprocessing";
 import { useEffect, useRef } from "react";
+import * as THREE from "three";
 import type { Bomb as BombType } from "../generated/proto/bomb.pb";
 import { useGameStore } from "../hooks/use-game-store";
 import { GameService } from "../services/api";
-import Bomb from "./bomb";
+import Bomb from "./bomb-simple";
 import { useHighlight } from "./highlight-provider";
 import Table from "./table";
 
@@ -18,7 +20,76 @@ export default function Scene() {
   const { selected } = useHighlight();
   const { bombs } = useGameStore();
   const { setSessionId, setBombs, setSelectedBombId } = useGameStore();
+  const { cameraTargetPosition, cameraTargetLookAt } = useGameStore();
   const isSessionFetched = useRef<boolean>(false);
+  const cameraRef = useRef<THREE.PerspectiveCamera>(null);
+
+  // Default camera position and target
+  const defaultCameraPosition = new THREE.Vector3(0, 0.2, 1.5);
+  const defaultCameraLookAt = new THREE.Vector3(0, 0, 0);
+
+  // Current camera targets for smooth interpolation
+  const currentCameraPosition = useRef(defaultCameraPosition.clone());
+  const currentCameraLookAt = useRef(defaultCameraLookAt.clone());
+
+  // Animate camera movement
+  useFrame(() => {
+    if (!cameraRef.current) return;
+
+    const targetPos = cameraTargetPosition || defaultCameraPosition;
+    const targetLookAt = cameraTargetLookAt || defaultCameraLookAt;
+
+    // console.log("Camera animation frame:", {
+    //   targetPos: targetPos.toArray(),
+    //   targetLookAt: targetLookAt.toArray(),
+    //   currentPos: currentCameraPosition.current.toArray(),
+    //   currentLookAt: currentCameraLookAt.current.toArray()
+    // });
+
+    // Smooth camera position interpolation using THREE.MathUtils.damp
+    currentCameraPosition.current.x = THREE.MathUtils.damp(
+      currentCameraPosition.current.x,
+      targetPos.x,
+      4,
+      0.016,
+    );
+    currentCameraPosition.current.y = THREE.MathUtils.damp(
+      currentCameraPosition.current.y,
+      targetPos.y,
+      4,
+      0.016,
+    );
+    currentCameraPosition.current.z = THREE.MathUtils.damp(
+      currentCameraPosition.current.z,
+      targetPos.z,
+      4,
+      0.016,
+    );
+
+    // Smooth camera lookAt interpolation
+    currentCameraLookAt.current.x = THREE.MathUtils.damp(
+      currentCameraLookAt.current.x,
+      targetLookAt.x,
+      4,
+      0.016,
+    );
+    currentCameraLookAt.current.y = THREE.MathUtils.damp(
+      currentCameraLookAt.current.y,
+      targetLookAt.y,
+      4,
+      0.016,
+    );
+    currentCameraLookAt.current.z = THREE.MathUtils.damp(
+      currentCameraLookAt.current.z,
+      targetLookAt.z,
+      4,
+      0.016,
+    );
+
+    // Apply the smoothed position and lookAt
+    cameraRef.current.position.copy(currentCameraPosition.current);
+    cameraRef.current.lookAt(currentCameraLookAt.current);
+  });
 
   useEffect(() => {
     if (isSessionFetched.current) return;
@@ -124,6 +195,7 @@ export default function Scene() {
         />
       </EffectComposer>
       <PerspectiveCamera
+        ref={cameraRef}
         makeDefault
         position={[0, 0.2, 1.5]}
         rotation={[-Math.PI / 20, 0, 0]}
