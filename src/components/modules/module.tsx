@@ -15,6 +15,7 @@ interface ModuleProps {
   onPointerEnter?: (_e: any) => void;
   onPointerLeave?: (_e: any) => void;
   position?: ModulePosition;
+  onClick?: (event: any) => void;
 }
 
 export default function Module({
@@ -23,6 +24,7 @@ export default function Module({
   onPointerEnter,
   onPointerLeave,
   position,
+  onClick,
   ...props
 }: ModuleProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -61,6 +63,9 @@ export default function Module({
       onPointerLeave={(e) => {
         setIsHovered(false);
         onPointerLeave?.(e);
+      }}
+      onClick={(e) => {
+        onClick?.(e);
       }}
       {...props}
     >

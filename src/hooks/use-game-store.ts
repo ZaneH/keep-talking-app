@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import * as THREE from "three";
 import type { Bomb } from "../generated/proto/bomb.pb";
 
 type GamePhase = "idle" | "module-view";
@@ -10,6 +11,8 @@ interface GameState {
   sessionId?: string;
   bombs: Bomb[];
   selectedBombId?: string;
+  cameraTargetPosition?: THREE.Vector3;
+  cameraTargetLookAt?: THREE.Vector3;
 }
 
 interface GameActions {
@@ -17,11 +20,9 @@ interface GameActions {
   setSessionId: (_sessionId?: string) => void;
   setBombs: (_bombs: Bomb[]) => void;
   setSelectedBombId: (_bombId?: string) => void;
-  zoomToModule: (_moduleId: string) => void;
+  zoomToModule: (_moduleId: string, _position: THREE.Vector3, _lookAt: THREE.Vector3) => void;
   reset: () => void;
 }
-
-const CAMERA_ZOOM_OFFSET = 0.28;
 
 export const useGameStore = create<GameState & GameActions>()((set) => ({
   // State
@@ -31,28 +32,32 @@ export const useGameStore = create<GameState & GameActions>()((set) => ({
   sessionId: undefined,
   bombs: [],
   selectedBombId: undefined,
+  cameraTargetPosition: undefined,
+  cameraTargetLookAt: undefined,
 
   // Actions
   setZoomState: (state) => set({ zoomState: state }),
   setSessionId: (sessionId) => set({ sessionId }),
   setBombs: (bombs) => set({ bombs }),
   setSelectedBombId: (bombId) => set({ selectedBombId: bombId }),
-  zoomToModule: (moduleId) => {
+  zoomToModule: (moduleId, position, lookAt) => {
+    console.log("zoomToModule called:", { moduleId, position, lookAt });
     set({
       selectedModuleId: moduleId,
       zoomState: "module-view",
       cameraLocked: true,
+      cameraTargetPosition: position,
+      cameraTargetLookAt: lookAt,
     });
-
-    // With our new approach, we don't need to move the camera
-    // The bomb rotation takes care of showing the module
   },
   reset: () => {
+    console.log("Game store reset called");
     set({
       selectedModuleId: undefined,
       zoomState: "idle",
       cameraLocked: false,
+      cameraTargetPosition: undefined,
+      cameraTargetLookAt: undefined,
     });
-    // No camera position reset needed
   },
 }));
