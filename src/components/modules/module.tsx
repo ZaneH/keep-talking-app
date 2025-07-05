@@ -2,6 +2,7 @@ import { useCursor } from "@react-three/drei";
 import { useState } from "react";
 import type { ModulePosition } from "../../generated/proto/modules.pb";
 import type { ModuleModels } from "../../hooks/use-module-model";
+import { positionToCoords } from "../../utils/position-to-coords";
 
 export interface BaseModuleProps {
   moduleId: string;
@@ -30,29 +31,14 @@ export default function Module({
   const [isHovered, setIsHovered] = useState(false);
   useCursor(isHovered);
 
-  const xFactor = 0.195;
-  const yFactor = 0.198;
-
-  const xOffset = -xFactor;
-  const yOffset = 0.1;
-  const zOffset = 0.1;
-
-  const rotationY = position?.face === 1 ? Math.PI : 0;
-
-  const { col, row, face } = position || {};
-  if (col === undefined || row === undefined || face === undefined) {
-    console.warn("Module position is not well defined");
-    return null;
-  }
+  const { position: modulePosition, rotation } = positionToCoords(
+    position || {},
+  );
 
   return (
     <group
-      position={[
-        xOffset + xFactor * col,
-        yOffset - yFactor * row,
-        face === 0 ? zOffset : -zOffset,
-      ]}
-      rotation={[0, rotationY, 0]}
+      position={modulePosition}
+      rotation={rotation}
       userData={{ moduleId: id }}
       dispose={null}
       name="module"
