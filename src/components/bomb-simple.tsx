@@ -19,6 +19,11 @@ import MemoryModule from "./modules/memory-module";
 import MorseModule from "./modules/morse-module";
 import NeedyVentGasModule from "./modules/needy-vent-gas";
 import { positionToCoords } from "../utils/position-to-coords";
+import {
+  BOMB_HEIGHT,
+  CAMERA_DISTANCE_ZOOMED,
+  CAMERA_HEIGHT,
+} from "../utils/constants";
 
 interface Props {
   bombId?: string;
@@ -35,7 +40,7 @@ interface Props {
 
 function BombSimple({ modules, startedAt, timerDuration }: Props) {
   const { camera, scene } = useThree();
-
+  const { nodes, materials } = useModuleModel("bomb");
   const setZoomState = useGameStore((s) => s.setZoomState);
   const { zoomToModule, selectedModuleId } = useGameStore();
 
@@ -43,13 +48,10 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
   const [isDragging, setIsDragging] = useState(false);
 
   const [rotation, setRotation] = useState<[number, number, number]>([0, 0, 0]);
-
   const [animatedHeight, setAnimatedHeight] = useState(0);
 
   const lastPointerPosition = useRef<{ x: number; y: number } | null>(null);
-
   const bombRef = useRef<THREE.Group>(null);
-
   const raycaster = useRef(new THREE.Raycaster());
   const pointer = useRef(new THREE.Vector2());
 
@@ -102,7 +104,7 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
   }
 
   useFrame(() => {
-    const targetY = isPickedUp ? 1 : 0.73;
+    const targetY = isPickedUp ? 1 : BOMB_HEIGHT;
     const speed = 0.1;
     setAnimatedHeight((prev) => prev + (targetY - prev) * speed);
 
@@ -136,12 +138,11 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
         const modId = isModuleClicked(event);
         if (modId) {
           const modulePosition = modules?.[modId]?.position;
-          const { position } = positionToCoords(modulePosition!); // TODO: handle undefined position / fix type
+          const { position } = positionToCoords(modulePosition!); // TODO: Handle undefined position / fix type
           setRotation(defaultRotation);
 
-          position.z = 0.5;
-          // Add offset of picked up bomb
-          position.y += 0.25;
+          position.z = CAMERA_DISTANCE_ZOOMED;
+          position.y += CAMERA_HEIGHT;
 
           const lookAt = new THREE.Vector3(position.x, position.y, position.z);
           zoomToModule(modId, position, lookAt);
@@ -155,6 +156,7 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
           lastPointerPosition.current = { x: event.clientX, y: event.clientY };
           event.preventDefault();
         }
+
         // 3) Otherwise => clicked outside => put it down
         else {
           setIsPickedUp(false);
@@ -173,8 +175,8 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
           const rotateSpeed = 0.01;
           setRotation((prev) => {
             let [rx, ry, rz] = prev;
-            rx += dy * rotateSpeed; // rotate around X-axis
-            ry += dx * rotateSpeed; // rotate around Y-axis
+            rx += dy * rotateSpeed;
+            ry += dx * rotateSpeed;
             return [rx, ry, rz];
           });
         }
@@ -199,8 +201,6 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
     };
   }, [camera, scene, isPickedUp, isDragging, setZoomState, selectedModuleId]);
 
-  const { nodes, materials } = useModuleModel("bomb");
-
   return (
     <group ref={bombRef}>
       <mesh
@@ -210,41 +210,41 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
         material={materials.Silver}
         scale={[0.911, 1, 1]}
       >
-        <group position={[0, -0.732, 0]} scale={[1.098, 1, 1]}>
+        <group position={[0, -BOMB_HEIGHT, 0]} scale={[1.098, 1, 1]}>
           <mesh
             castShadow
             receiveShadow
             geometry={nodes.H.geometry}
             material={materials.Silver}
-            position={[0, 0.73, 0]}
+            position={[0, BOMB_HEIGHT, 0]}
           />
           <mesh
             castShadow
             receiveShadow
             geometry={nodes.H001.geometry}
             material={materials.Silver}
-            position={[0, 0.73, 0]}
+            position={[0, BOMB_HEIGHT, 0]}
           />
           <mesh
             castShadow
             receiveShadow
             geometry={nodes.H002.geometry}
             material={materials.Silver}
-            position={[0.001, 0.73, 0]}
+            position={[0.001, BOMB_HEIGHT, 0]}
           />
           <mesh
             castShadow
             receiveShadow
             geometry={nodes.V.geometry}
             material={materials.Silver}
-            position={[0.005, 0.732, 0]}
+            position={[0.005, BOMB_HEIGHT, 0]}
           />
           <mesh
             castShadow
             receiveShadow
             geometry={nodes.V003.geometry}
             material={materials.Silver}
-            position={[-0.007, 0.732, 0]}
+            position={[-0.007, BOMB_HEIGHT, 0]}
           />
         </group>
         <mesh

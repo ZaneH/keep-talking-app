@@ -24,20 +24,18 @@ export default function Module({
   children,
   onPointerEnter,
   onPointerLeave,
-  position,
+  position: modulePosition,
   onClick,
   ...props
 }: ModuleProps) {
   const [isHovered, setIsHovered] = useState(false);
   useCursor(isHovered);
 
-  const { position: modulePosition, rotation } = positionToCoords(
-    position || {},
-  );
+  const { position, rotation } = positionToCoords(modulePosition);
 
   return (
     <group
-      position={modulePosition}
+      position={position}
       rotation={rotation}
       userData={{ moduleId: id }}
       dispose={null}

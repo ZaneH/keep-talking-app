@@ -15,6 +15,7 @@ import { GameService } from "../services/api";
 import Bomb from "./bomb-simple";
 import { useHighlight } from "./highlight-provider";
 import Table from "./table";
+import { CAMERA_DISTANCE, CAMERA_HEIGHT } from "../utils/constants";
 
 export default function Scene() {
   const { selected } = useHighlight();
@@ -25,7 +26,11 @@ export default function Scene() {
   const cameraRef = useRef<THREE.PerspectiveCamera>(null);
 
   // Default camera position and target
-  const defaultCameraPosition = new THREE.Vector3(0, 0.2, 1.5);
+  const defaultCameraPosition = new THREE.Vector3(
+    0,
+    CAMERA_HEIGHT,
+    CAMERA_DISTANCE,
+  );
   const defaultCameraLookAt = new THREE.Vector3(0, 0, 0);
 
   // Current camera targets for smooth interpolation
@@ -38,13 +43,6 @@ export default function Scene() {
 
     const targetPos = cameraTargetPosition || defaultCameraPosition;
     const targetLookAt = cameraTargetLookAt || defaultCameraLookAt;
-
-    // console.log("Camera animation frame:", {
-    //   targetPos: targetPos.toArray(),
-    //   targetLookAt: targetLookAt.toArray(),
-    //   currentPos: currentCameraPosition.current.toArray(),
-    //   currentLookAt: currentCameraLookAt.current.toArray()
-    // });
 
     // Smooth camera position interpolation using THREE.MathUtils.damp
     currentCameraPosition.current.x = THREE.MathUtils.damp(
