@@ -1,11 +1,11 @@
 import * as THREE from "three";
 import type { ModulePosition } from "../generated/proto/modules.pb";
 
-export function positionToCoords(position: ModulePosition): {
+export function positionToCoords(position?: ModulePosition): {
   position: THREE.Vector3;
   rotation: THREE.Euler;
 } {
-  const { col = 0, row = 0, face = 0 } = position;
+  const { col = 0, row = 0, face = 0 } = position || {};
   const xFactor = 0.195;
   const yFactor = 0.198;
 
