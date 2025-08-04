@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import type { Indicator, Port } from "../generated/proto/bomb.pb";
 import { ModuleModuleType, type Module } from "../generated/proto/modules.pb";
@@ -42,7 +42,7 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
   const { camera, scene } = useThree();
   const { nodes, materials } = useModuleModel("bomb");
   const setZoomState = useGameStore((s) => s.setZoomState);
-  const { zoomToModule, selectedModuleId } = useGameStore();
+  const { zoomToModule, selectedModuleId, reset } = useGameStore();
 
   const [isPickedUp, setIsPickedUp] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -94,6 +94,10 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
       const obj = intersects[i].object;
       let parent = obj;
       while (parent) {
+        if (parent.name === "BombCase") {
+          return null;
+        }
+
         if (parent.userData && parent.userData.moduleId) {
           return parent.userData.moduleId as string;
         }
@@ -109,6 +113,7 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
     setAnimatedHeight((prev) => prev + (targetY - prev) * speed);
 
     if (!isPickedUp) {
+      // TODO: Rotate the other way if >180deg
       setRotation((prev) => {
         const rx = prev[0] + (defaultRotation[0] - prev[0]) * speed;
         const ry = prev[1] + (defaultRotation[1] - prev[1]) * speed;
@@ -127,41 +132,48 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
 
   useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
-      if (!isPickedUp) {
-        if (isBombClicked(event)) {
+      // Bomb is already picked up
+      // 1) Check if user clicked on a module => rotate bomb forward & zoom in
+      if (isBombClicked(event)) {
+        if (!isPickedUp) {
+          setIsPickedUp(true);
+        } else {
+          reset();
+        }
+      }
+
+      const modId = isModuleClicked(event);
+      if (modId) {
+        if (!isPickedUp) {
           setIsPickedUp(true);
           event.preventDefault();
         }
-      } else {
-        // Bomb is already picked up
-        // 1) Check if user clicked on a module => rotate bomb forward & zoom in
-        const modId = isModuleClicked(event);
-        if (modId) {
-          const modulePosition = modules?.[modId]?.position;
-          const { position } = positionToCoords(modulePosition!); // TODO: Handle undefined position / fix type
-          setRotation(defaultRotation);
 
-          position.z = CAMERA_DISTANCE_ZOOMED;
-          position.y += CAMERA_HEIGHT;
+        const modulePosition = modules?.[modId]?.position;
+        const { position } = positionToCoords(modulePosition!); // TODO: Handle undefined position / fix type
+        setRotation(defaultRotation);
 
-          const lookAt = new THREE.Vector3(position.x, position.y, position.z);
-          zoomToModule(modId, position, lookAt);
-          event.preventDefault();
-          return;
-        }
+        position.z = CAMERA_DISTANCE_ZOOMED;
+        position.y += CAMERA_HEIGHT;
 
-        // 2) If user clicked bomb => start dragging
-        if (isBombClicked(event)) {
-          setIsDragging(true);
-          lastPointerPosition.current = { x: event.clientX, y: event.clientY };
-          event.preventDefault();
-        }
+        const lookAt = new THREE.Vector3(position.x, position.y, position.z);
+        zoomToModule(modId, position, lookAt);
+        event.preventDefault();
+        return;
+      }
 
-        // 3) Otherwise => clicked outside => put it down
-        else {
-          setIsPickedUp(false);
-          setIsDragging(false);
-        }
+      // 2) If user clicked bomb => start dragging
+      if (isBombClicked(event)) {
+        setIsDragging(true);
+        lastPointerPosition.current = { x: event.clientX, y: event.clientY };
+        event.preventDefault();
+      }
+
+      // 3) Otherwise => clicked outside => put it down
+      else {
+        setIsPickedUp(false);
+        setIsDragging(false);
+        reset();
       }
     }
 
@@ -180,6 +192,7 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
             return [rx, ry, rz];
           });
         }
+
         lastPointerPosition.current = { x: event.clientX, y: event.clientY };
       }
     }
@@ -209,6 +222,8 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
         geometry={nodes.Case.geometry}
         material={materials.Silver}
         scale={[0.911, 1, 1]}
+        onPointerEnter={(e) => e.stopPropagation()}
+        name="BombCase"
       >
         <group position={[0, -BOMB_HEIGHT, 0]} scale={[1.098, 1, 1]}>
           <mesh

@@ -5,7 +5,7 @@ import { useModuleModel } from "../hooks/use-module-model";
 
 export default function Table() {
   const { nodes, materials } = useModuleModel("table");
-  const { zoomState, reset } = useGameStore();
+  const { zoomState } = useGameStore();
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -13,13 +13,6 @@ export default function Table() {
 
   return (
     <group
-      onClick={(e) => {
-        if (zoomState === "module-view") {
-          e.stopPropagation();
-          reset();
-          setIsHovered(false);
-        }
-      }}
       onPointerEnter={(e) => {
         if (zoomState === "module-view") {
           setIsHovered(true);
