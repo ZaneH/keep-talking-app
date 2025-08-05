@@ -57,7 +57,14 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
   const { camera, scene } = useThree();
   const { nodes, materials } = useModuleModel("bomb");
   const setZoomState = useGameStore((s) => s.setZoomState);
-  const { zoomToModule, selectedModuleId, reset } = useGameStore();
+  const {
+    zoomToModule,
+    selectedModuleId,
+    reset,
+    cameraLocked,
+    cameraTargetLookAt,
+    cameraTargetPosition,
+  } = useGameStore();
 
   const [isPickedUp, setIsPickedUp] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -123,13 +130,17 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
   }
 
   useFrame(() => {
+    if (cameraLocked && cameraTargetPosition && cameraTargetLookAt) {
+      camera.position.lerp(cameraTargetPosition, 0.1);
+      camera.lookAt(cameraTargetLookAt);
+    }
+
     const targetY = isPickedUp ? 1 : BOMB_HEIGHT;
     const speed = 0.1;
     setAnimatedHeight((prev) => prev + (targetY - prev) * speed);
 
     if (!isPickedUp) {
       setRotation((prev) => {
-        const speed = 0.1;
         const targetY = getClosestForwardRotationRadians(prev[1]);
 
         const rx = prev[0] + (defaultRotation[0] - prev[0]) * speed;
@@ -169,15 +180,23 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
         }
 
         const modulePosition = module?.position;
-        const { position } = positionToCoords(modulePosition!); // TODO: Handle undefined position / fix type
+        const { position: baseCoords } = positionToCoords(modulePosition!); // TODO: Handle undefined position / fix type
         const closestRotationY = getClosestForwardRotationRadians(rotation[1]);
         setRotation([defaultRotation[0], closestRotationY, defaultRotation[2]]);
 
-        position.z = CAMERA_DISTANCE_ZOOMED;
-        position.y += CAMERA_HEIGHT;
+        const cameraTargetPosition = new THREE.Vector3(
+          baseCoords.x,
+          baseCoords.y + CAMERA_HEIGHT,
+          CAMERA_DISTANCE_ZOOMED,
+        );
 
-        const lookAt = new THREE.Vector3(position.x, position.y, position.z);
-        zoomToModule(modId, position, lookAt);
+        const lookAt = new THREE.Vector3(
+          baseCoords.x,
+          cameraTargetPosition.y,
+          0,
+        );
+
+        zoomToModule(modId, cameraTargetPosition, lookAt);
         event.preventDefault();
         return;
       }
