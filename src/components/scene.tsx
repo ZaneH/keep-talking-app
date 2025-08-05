@@ -24,7 +24,7 @@ export default function Scene() {
   const { setSessionId, setBombs, setSelectedBombId } = useGameStore();
   const { cameraTargetPosition, cameraTargetLookAt } = useGameStore();
   const isSessionFetched = useRef<boolean>(false);
-  const cameraRef = useRef<THREE.PerspectiveCamera>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   useCameraControl(cameraRef);
 
   // Default camera position and target

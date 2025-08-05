@@ -16,7 +16,7 @@ interface ModuleProps {
   onPointerEnter?: (_e: any) => void;
   onPointerLeave?: (_e: any) => void;
   position?: ModulePosition;
-  onClick?: (event: any) => void;
+  onClick?: (_event: any) => void;
 }
 
 export default function Module({
