@@ -38,6 +38,21 @@ interface Props {
   indicators?: { [key: string]: Indicator };
 }
 
+function getClosestForwardRotationRadians(currentRotation: number): number {
+  const distTo0 = Math.abs(shortestAngularDelta(currentRotation, 0));
+  const distToPi = Math.abs(shortestAngularDelta(currentRotation, Math.PI));
+
+  return distTo0 < distToPi ? 0 : Math.PI;
+}
+
+function shortestAngularDelta(from: number, to: number): number {
+  const TWO_PI = Math.PI * 2;
+  let delta = (to - from) % TWO_PI;
+  if (delta > Math.PI) delta -= TWO_PI;
+  if (delta < -Math.PI) delta += TWO_PI;
+  return delta;
+}
+
 function BombSimple({ modules, startedAt, timerDuration }: Props) {
   const { camera, scene } = useThree();
   const { nodes, materials } = useModuleModel("bomb");
@@ -113,11 +128,14 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
     setAnimatedHeight((prev) => prev + (targetY - prev) * speed);
 
     if (!isPickedUp) {
-      // TODO: Rotate the other way if >180deg
       setRotation((prev) => {
+        const speed = 0.1;
+        const targetY = getClosestForwardRotationRadians(prev[1]);
+
         const rx = prev[0] + (defaultRotation[0] - prev[0]) * speed;
-        const ry = prev[1] + (defaultRotation[1] - prev[1]) * speed;
+        const ry = prev[1] + shortestAngularDelta(prev[1], targetY) * speed;
         const rz = prev[2] + (defaultRotation[2] - prev[2]) * speed;
+
         return [rx, ry, rz];
       });
     }
@@ -135,23 +153,25 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
       // Bomb is already picked up
       // 1) Check if user clicked on a module => rotate bomb forward & zoom in
       if (isBombClicked(event)) {
-        if (!isPickedUp) {
-          setIsPickedUp(true);
-        } else {
+        if (isPickedUp) {
           reset();
+        } else {
+          setIsPickedUp(true);
         }
       }
 
       const modId = isModuleClicked(event);
       if (modId) {
+        const module = modules?.[modId];
         if (!isPickedUp) {
           setIsPickedUp(true);
           event.preventDefault();
         }
 
-        const modulePosition = modules?.[modId]?.position;
+        const modulePosition = module?.position;
         const { position } = positionToCoords(modulePosition!); // TODO: Handle undefined position / fix type
-        setRotation(defaultRotation);
+        const closestRotationY = getClosestForwardRotationRadians(rotation[1]);
+        setRotation([rotation[0], closestRotationY, rotation[2]]);
 
         position.z = CAMERA_DISTANCE_ZOOMED;
         position.y += CAMERA_HEIGHT;
