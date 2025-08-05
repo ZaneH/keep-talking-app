@@ -171,7 +171,7 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
         const modulePosition = module?.position;
         const { position } = positionToCoords(modulePosition!); // TODO: Handle undefined position / fix type
         const closestRotationY = getClosestForwardRotationRadians(rotation[1]);
-        setRotation([rotation[0], closestRotationY, rotation[2]]);
+        setRotation([defaultRotation[0], closestRotationY, defaultRotation[2]]);
 
         position.z = CAMERA_DISTANCE_ZOOMED;
         position.y += CAMERA_HEIGHT;
