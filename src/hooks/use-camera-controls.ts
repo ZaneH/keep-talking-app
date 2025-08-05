@@ -12,7 +12,7 @@ const defaultCameraPosition = new THREE.Vector3(
 const defaultCameraLookAt = new THREE.Vector3(0, 0, 0);
 
 export function useCameraControl(
-  cameraRef: RefObject<THREE.PerspectiveCamera>,
+  cameraRef: RefObject<THREE.PerspectiveCamera | null>,
 ) {
   const { cameraTargetPosition, cameraTargetLookAt } = useGameStore();
 
