@@ -29,9 +29,6 @@ const LETTER_PAUSE = 0.9;
 
 const SLIDER_FACTOR = 0.0064;
 
-const globalMorseClock = new THREE.Clock();
-globalMorseClock.start();
-
 export default function MorseModule({
   moduleId,
   name = "morse",
@@ -60,6 +57,16 @@ export default function MorseModule({
 
   const tubeInnerRef = useRef<any>(null);
   const isLightOn = useRef(false);
+
+  const localMorseClock = useMemo(() => {
+    const clock = new THREE.Clock();
+    clock.start();
+    return clock;
+  }, [moduleId]);
+
+  const clonedAmberMaterial = useMemo(() => {
+    return materials["Light.Amber.001"].clone();
+  }, [materials, moduleId]);
 
   const freqSliderPositions = useMemo(() => {
     const positions = [];
@@ -92,13 +99,12 @@ export default function MorseModule({
     }
 
     return timings;
-  }, [displayedPattern]);
+  }, [displayedPattern, moduleId]);
 
   const setLightState = useCallback((isOn: boolean) => {
     if (!tubeInnerRef.current) return;
 
-    const material = tubeInnerRef.current
-      .material as THREE.MeshStandardMaterial;
+    const material = tubeInnerRef.current.material;
 
     if (isOn) {
       material.emissive = new THREE.Color(0xffcc00);
@@ -117,10 +123,11 @@ export default function MorseModule({
       patternTimings.length === 0 ||
       !tubeInnerRef.current ||
       isSolved
-    )
+    ) {
       return;
+    }
 
-    const elapsedTime = globalMorseClock.getElapsedTime();
+    const elapsedTime = localMorseClock.getElapsedTime();
 
     // Calculate total cycle time
     const totalDuration = patternTimings.reduce(
@@ -264,7 +271,7 @@ export default function MorseModule({
             castShadow
             receiveShadow
             geometry={nodes.MorseTubeInner.geometry}
-            material={materials["Light.Amber.001"]}
+            material={clonedAmberMaterial}
             rotation={[0, 0, -Math.PI / 2]}
             scale={[0.005, 0.013, 0.005]}
             ref={tubeInnerRef}
