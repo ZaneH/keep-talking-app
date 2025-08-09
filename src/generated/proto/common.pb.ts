@@ -26,3 +26,10 @@ export enum Color {
   PINK = "PINK",
   UNKNOWN = "UNKNOWN",
 }
+
+export enum CardinalDirection {
+  UP = "UP",
+  DOWN = "DOWN",
+  LEFT = "LEFT",
+  RIGHT = "RIGHT",
+}
