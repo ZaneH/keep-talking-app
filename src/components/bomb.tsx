@@ -24,6 +24,7 @@ import {
   CAMERA_DISTANCE_ZOOMED,
   CAMERA_HEIGHT,
 } from "../utils/constants";
+import NeedyKnobModule from "./modules/needy-knob";
 
 interface Props {
   bombId?: string;
@@ -410,6 +411,15 @@ function renderModule(key?: string, module?: Module) {
           key={key}
           moduleId={module.id!}
           state={module.needyVentGasState}
+          position={module.position}
+        />
+      );
+    case ModuleModuleType.NEEDY_KNOB:
+      return (
+        <NeedyKnobModule
+          key={key}
+          moduleId={module.id!}
+          state={module.needyKnobState}
           position={module.position}
         />
       );

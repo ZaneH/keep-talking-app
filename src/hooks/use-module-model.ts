@@ -13,6 +13,7 @@ export const ModuleModels = {
   memory: "/memory.glb",
   morse: "/morse.glb",
   "needy-vent-gas": "/needy-vent-gas.glb",
+  "needy-knob": "/needy-knob.glb",
 };
 
 export const preloadModels = () => {
