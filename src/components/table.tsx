@@ -29,24 +29,63 @@ export default function Table() {
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.Bars.geometry}
-        material={materials["Darker Orange"]}
-        position={[0, 0.916, -1.674]}
-        scale={[0.106, 1.058, 0.106]}
+        geometry={nodes.Floor001.geometry}
+        material={materials.Floor}
       />
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.Glass.geometry}
-        material={materials.Window}
-        position={[0, 0.914, -1.674]}
-        scale={[1.011, 1.011, 0.01]}
+        geometry={nodes.Roof001.geometry}
+        material={materials["Wall Brick"]}
+        position={[0, 2.73, 0]}
+        rotation={[0, 0, Math.PI]}
       />
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.Floor.geometry}
-        material={materials["Orange PBSR"]}
+        geometry={nodes.WallB001.geometry}
+        material={materials["Wall Brick"]}
+        position={[0, 1.674, -1.674]}
+        rotation={[Math.PI / 2, 0, 0]}
+      />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.WallF001.geometry}
+        material={materials["Wall Brick"]}
+        position={[0, 1.674, 1.674]}
+        rotation={[Math.PI / 2, 0, Math.PI]}
+      />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.WallR001.geometry}
+        material={materials["Wall Brick"]}
+        position={[1.674, 1.674, 0]}
+        rotation={[Math.PI / 2, 0, Math.PI / 2]}
+      />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.WallL001.geometry}
+        material={materials["Wall Brick"]}
+        position={[-1.674, 1.674, 0]}
+        rotation={[Math.PI / 2, 0, -Math.PI / 2]}
+      />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Legs001.geometry}
+        material={materials["Metal.Table"]}
+        position={[0.655, 0, -0.335]}
+        scale={0.184}
+      />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Top001.geometry}
+        material={materials["Metal.Table"]}
+        position={[0, 0.449, 0]}
       />
     </group>
   );

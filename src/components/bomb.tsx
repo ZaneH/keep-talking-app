@@ -23,6 +23,7 @@ import {
   BOMB_HEIGHT,
   CAMERA_DISTANCE_ZOOMED,
   CAMERA_HEIGHT,
+  LIFTED_BOMB_HEIGHT,
 } from "../utils/constants";
 import NeedyKnobModule from "./modules/needy-knob";
 
@@ -136,7 +137,7 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
       camera.lookAt(cameraTargetLookAt);
     }
 
-    const targetY = isPickedUp ? 1 : BOMB_HEIGHT;
+    const targetY = isPickedUp ? LIFTED_BOMB_HEIGHT : BOMB_HEIGHT;
     const speed = 0.1;
     setAnimatedHeight((prev) => prev + (targetY - prev) * speed);
 
@@ -187,7 +188,7 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
 
         const cameraTargetPosition = new THREE.Vector3(
           baseCoords.x,
-          baseCoords.y + CAMERA_HEIGHT,
+          baseCoords.y + CAMERA_HEIGHT - 0.1,
           CAMERA_DISTANCE_ZOOMED,
         );
 

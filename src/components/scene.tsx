@@ -199,7 +199,7 @@ export default function Scene() {
         makeDefault
         position={[0, 0.2, 1.5]}
         rotation={[-Math.PI / 20, 0, 0]}
-        fov={60}
+        fov={40}
         near={0.2}
         far={50}
       />

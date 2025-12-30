@@ -3,3 +3,4 @@ export const CAMERA_DISTANCE = 1.5;
 export const CAMERA_DISTANCE_ZOOMED = 0.5;
 export const MODULE_DISTANCE = 0.5;
 export const BOMB_HEIGHT = 0.73;
+export const LIFTED_BOMB_HEIGHT = 0.9;
