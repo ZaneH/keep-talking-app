@@ -118,12 +118,37 @@ export default function NeedyVentGasModule({
         ref={meshRef}
         {...pointerHandlers}
       >
+        <group position={[0, 0.062, 0.042]} scale={[0.972, 0.972, 1]}>
+          <mesh
+            castShadow
+            receiveShadow
+            geometry={nodes.Cube063.geometry}
+            material={materials["Plastic Dark"]}
+          />
+          <mesh
+            castShadow
+            receiveShadow
+            geometry={nodes.Cube063_1.geometry}
+            material={materials.CautionStrip}
+          />
+          <mesh
+            castShadow
+            receiveShadow
+            geometry={nodes.TimerScreenNum.geometry}
+            material={materials.Backlight}
+            position={[0, -0.001, 0.003]}
+            scale={1.202}
+          >
+            <Text {...COUNTDOWN_TEXT_ATTRS}>{remainingTimeSeconds}</Text>
+          </mesh>
+        </group>
+
         <mesh
           castShadow
           receiveShadow
           geometry={nodes.VentGasScreenBase.geometry}
           material={materials["Metal.Brass"]}
-          position={[0, -0.016, 0.033]}
+          position={[0, -0.017, 0.033]}
           scale={[0.972, 0.972, 1]}
         >
           <mesh
@@ -159,38 +184,6 @@ export default function NeedyVentGasModule({
               Y/N
             </Text>
           </mesh>
-        </mesh>
-        <group position={[0, 0.062, 0.035]} scale={[0.972, 0.972, 1]}>
-          <mesh
-            castShadow
-            receiveShadow
-            geometry={nodes.Cube063.geometry}
-            material={materials["Plastic Dark"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            geometry={nodes.Cube063_1.geometry}
-            material={materials.BlueWire}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            geometry={nodes.VentGasTimerScreen.geometry}
-            material={materials.Backlight}
-            position={[0, -0.001, 0.003]}
-            scale={1.202}
-          />
-        </group>
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.VentGasTimerScreen.geometry}
-          material={materials.Backlight}
-          position={[0, 0.061, 0.037]}
-          scale={[1.169, 1.169, 1.202]}
-        >
-          <Text {...COUNTDOWN_TEXT_ATTRS}>{remainingTimeSeconds}</Text>
         </mesh>
       </mesh>
     </Module>
