@@ -11,26 +11,26 @@ import Module from "./module";
 import { CardinalDirection } from "../../generated/proto/common.pb";
 import { CustomMaterials } from "./custom-materials";
 
-const TEXT_Y_OFFSET = 0.003;
-const GREEN_TEXT_OFFSET = 0.001;
+// const TEXT_Y_OFFSET = 0.003;
+// const GREEN_TEXT_OFFSET = 0.001;
 const RED_TEXT_OFFSET = 0.003;
 
-const GREEN_FONT_SIZE = 0.0125;
+// const GREEN_FONT_SIZE = 0.0125;
 const RED_FONT_SIZE = 0.015;
 
-const GREEN_FONT_FAMILY = "/fonts/Inter-Medium.ttf";
+// const GREEN_FONT_FAMILY = "/fonts/Inter-Medium.ttf";
 const RED_FONT_FAMILY = "/fonts/Digital7_Mono.ttf";
 
-const GREEN_FONT_COLOR = 0x5b8c45;
+// const GREEN_FONT_COLOR = 0x5b8c45;
 const RED_FONT_COLOR = 0x9e3029;
 
-const GREEN_TEXT_ATTRS = {
-  fontSize: GREEN_FONT_SIZE,
-  font: GREEN_FONT_FAMILY,
-  color: GREEN_FONT_COLOR,
-  position: [0, TEXT_Y_OFFSET, GREEN_TEXT_OFFSET] as [number, number, number],
-  textAlign: "center" as any,
-};
+// const GREEN_TEXT_ATTRS = {
+//   fontSize: GREEN_FONT_SIZE,
+//   font: GREEN_FONT_FAMILY,
+//   color: GREEN_FONT_COLOR,
+//   position: [0, TEXT_Y_OFFSET, GREEN_TEXT_OFFSET] as [number, number, number],
+//   textAlign: "center" as any,
+// };
 
 const COUNTDOWN_TEXT_ATTRS = {
   fontSize: RED_FONT_SIZE,
@@ -55,12 +55,12 @@ export default function NeedyKnobModule({
   const [countdownStartedAt, setCountdownStartedAt] = useState<
     number | undefined
   >(Number(state?.countdownStartedAt));
-  const [displayedPatternFirstRow, setDisplayedPatternFirstRow] = useState<
-    boolean[] | undefined
-  >(state?.displayedPatternFirstRow);
-  const [displayedPatternSecondRow, setDisplayedPatternSecondRow] = useState<
-    boolean[] | undefined
-  >(state?.displayedPatternFirstRow);
+  const [displayedPatternFirstRow] = useState<boolean[] | undefined>(
+    state?.displayedPatternFirstRow,
+  );
+  const [displayedPatternSecondRow] = useState<boolean[] | undefined>(
+    state?.displayedPatternSecondRow,
+  );
   const [dialDirection, setDialDirection] = useState<
     CardinalDirection | undefined
   >(state?.dialDirection);
@@ -150,7 +150,7 @@ export default function NeedyKnobModule({
               receiveShadow
               geometry={nodes["01Light"].geometry}
               material={
-                state?.displayedPatternFirstRow?.[0]
+                displayedPatternFirstRow?.[0]
                   ? CustomMaterials.GreenLight
                   : materials["GreenLight.Unlit"]
               }
@@ -172,7 +172,7 @@ export default function NeedyKnobModule({
               receiveShadow
               geometry={nodes["02Light"].geometry}
               material={
-                state?.displayedPatternFirstRow?.[1]
+                displayedPatternFirstRow?.[1]
                   ? CustomMaterials.GreenLight
                   : materials["GreenLight.Unlit"]
               }
@@ -194,7 +194,7 @@ export default function NeedyKnobModule({
               receiveShadow
               geometry={nodes["03Light"].geometry}
               material={
-                state?.displayedPatternFirstRow?.[2]
+                displayedPatternFirstRow?.[2]
                   ? CustomMaterials.GreenLight
                   : materials["GreenLight.Unlit"]
               }
@@ -222,7 +222,7 @@ export default function NeedyKnobModule({
               receiveShadow
               geometry={nodes["07Light"].geometry}
               material={
-                state?.displayedPatternSecondRow?.[0]
+                displayedPatternSecondRow?.[0]
                   ? CustomMaterials.GreenLight
                   : materials["GreenLight.Unlit"]
               }
@@ -244,7 +244,7 @@ export default function NeedyKnobModule({
               receiveShadow
               geometry={nodes["08Light"].geometry}
               material={
-                state?.displayedPatternSecondRow?.[1]
+                displayedPatternSecondRow?.[1]
                   ? CustomMaterials.GreenLight
                   : materials["GreenLight.Unlit"]
               }
@@ -266,7 +266,7 @@ export default function NeedyKnobModule({
               receiveShadow
               geometry={nodes["09Light"].geometry}
               material={
-                state?.displayedPatternSecondRow?.[2]
+                displayedPatternSecondRow?.[2]
                   ? CustomMaterials.GreenLight
                   : materials["GreenLight.Unlit"]
               }
@@ -294,7 +294,7 @@ export default function NeedyKnobModule({
               receiveShadow
               geometry={nodes["04Light"].geometry}
               material={
-                state?.displayedPatternFirstRow?.[3]
+                displayedPatternFirstRow?.[3]
                   ? CustomMaterials.GreenLight
                   : materials["GreenLight.Unlit"]
               }
@@ -316,7 +316,7 @@ export default function NeedyKnobModule({
               receiveShadow
               geometry={nodes["05Light"].geometry}
               material={
-                state?.displayedPatternFirstRow?.[4]
+                displayedPatternFirstRow?.[4]
                   ? CustomMaterials.GreenLight
                   : materials["GreenLight.Unlit"]
               }
@@ -338,7 +338,7 @@ export default function NeedyKnobModule({
               receiveShadow
               geometry={nodes["06Light"].geometry}
               material={
-                state?.displayedPatternFirstRow?.[5]
+                displayedPatternFirstRow?.[5]
                   ? CustomMaterials.GreenLight
                   : materials["GreenLight.Unlit"]
               }
@@ -366,7 +366,7 @@ export default function NeedyKnobModule({
               receiveShadow
               geometry={nodes["10Light"].geometry}
               material={
-                state?.displayedPatternSecondRow?.[3]
+                displayedPatternSecondRow?.[3]
                   ? CustomMaterials.GreenLight
                   : materials["GreenLight.Unlit"]
               }
@@ -388,7 +388,7 @@ export default function NeedyKnobModule({
               receiveShadow
               geometry={nodes["11Light"].geometry}
               material={
-                state?.displayedPatternSecondRow?.[4]
+                displayedPatternSecondRow?.[4]
                   ? CustomMaterials.GreenLight
                   : materials["GreenLight.Unlit"]
               }
@@ -410,7 +410,7 @@ export default function NeedyKnobModule({
               receiveShadow
               geometry={nodes["12Light"].geometry}
               material={
-                state?.displayedPatternSecondRow?.[5]
+                displayedPatternSecondRow?.[5]
                   ? CustomMaterials.GreenLight
                   : materials["GreenLight.Unlit"]
               }
@@ -470,7 +470,7 @@ export default function NeedyKnobModule({
           <mesh
             castShadow
             receiveShadow
-            geometry={nodes.KnobTimerScreen.geometry}
+            geometry={nodes.TimerScreenNum.geometry}
             material={materials.Backlight}
             position={[0, -0.001, 0.003]}
             scale={1.202}
