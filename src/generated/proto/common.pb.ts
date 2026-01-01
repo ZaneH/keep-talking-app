@@ -28,8 +28,13 @@ export enum Color {
 }
 
 export enum CardinalDirection {
-  UP = "UP",
-  DOWN = "DOWN",
-  LEFT = "LEFT",
-  RIGHT = "RIGHT",
+  NORTH = "NORTH",
+  SOUTH = "SOUTH",
+  EAST = "EAST",
+  WEST = "WEST",
+}
+
+export type Point2D = {
+  x?: string
+  y?: string
 }

@@ -6,6 +6,7 @@
 
 import * as ModulesBig_button_module from "./big_button_module.pb"
 import * as ModulesKeypad_module from "./keypad_module.pb"
+import * as ModulesMaze_module from "./maze_module.pb"
 import * as ModulesMemory_module from "./memory_module.pb"
 import * as ModulesMorse_module from "./morse_module.pb"
 import * as ModulesNeedy_knob_module from "./needy_knob_module.pb"
@@ -38,7 +39,7 @@ type BasePlayerInput = {
 }
 
 export type PlayerInput = BasePlayerInput
-  & OneOf<{ wiresInput: ModulesWires_module.WiresInput; passwordInput: ModulesPassword_module.PasswordInput; bigButtonInput: ModulesBig_button_module.BigButtonInput; simonInput: ModulesSimon_module.SimonInput; keypadInput: ModulesKeypad_module.KeypadInput; whosOnFirstInput: ModulesWhos_on_first_module.WhosOnFirstInput; memoryInput: ModulesMemory_module.MemoryInput; morseInput: ModulesMorse_module.MorseInput; needyVentGasInput: ModulesNeedy_vent_gas_module.NeedyVentGasInput; needyKnobInput: ModulesNeedy_knob_module.NeedyKnobInput }>
+  & OneOf<{ wiresInput: ModulesWires_module.WiresInput; passwordInput: ModulesPassword_module.PasswordInput; bigButtonInput: ModulesBig_button_module.BigButtonInput; simonInput: ModulesSimon_module.SimonInput; keypadInput: ModulesKeypad_module.KeypadInput; whosOnFirstInput: ModulesWhos_on_first_module.WhosOnFirstInput; memoryInput: ModulesMemory_module.MemoryInput; morseInput: ModulesMorse_module.MorseInput; needyVentGasInput: ModulesNeedy_vent_gas_module.NeedyVentGasInput; needyKnobInput: ModulesNeedy_knob_module.NeedyKnobInput; mazeInput: ModulesMaze_module.MazeInput }>
 
 
 type BasePlayerInputResult = {
@@ -48,4 +49,4 @@ type BasePlayerInputResult = {
 }
 
 export type PlayerInputResult = BasePlayerInputResult
-  & OneOf<{ bigButtonInputResult: ModulesBig_button_module.BigButtonInputResult; simonInputResult: ModulesSimon_module.SimonInputResult; passwordInputResult: ModulesPassword_module.PasswordInputResult; keypadInputResult: ModulesKeypad_module.KeypadInputResult; whosOnFirstInputResult: ModulesWhos_on_first_module.WhosOnFirstInputResult; memoryInputResult: ModulesMemory_module.MemoryInputResult; morseInputResult: ModulesMorse_module.MorseInputResult; needyVentGasInputResult: ModulesNeedy_vent_gas_module.NeedyVentGasInputResult; needyKnobInputResult: ModulesNeedy_knob_module.NeedyKnobInputResult }>
+  & OneOf<{ bigButtonInputResult: ModulesBig_button_module.BigButtonInputResult; simonInputResult: ModulesSimon_module.SimonInputResult; passwordInputResult: ModulesPassword_module.PasswordInputResult; keypadInputResult: ModulesKeypad_module.KeypadInputResult; whosOnFirstInputResult: ModulesWhos_on_first_module.WhosOnFirstInputResult; memoryInputResult: ModulesMemory_module.MemoryInputResult; morseInputResult: ModulesMorse_module.MorseInputResult; needyVentGasInputResult: ModulesNeedy_vent_gas_module.NeedyVentGasInputResult; needyKnobInputResult: ModulesNeedy_knob_module.NeedyKnobInputResult; mazeInputResult: ModulesMaze_module.MazeInputResult }>

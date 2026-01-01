@@ -6,6 +6,7 @@
 
 import * as ModulesBig_button_module from "./big_button_module.pb"
 import * as ModulesKeypad_module from "./keypad_module.pb"
+import * as ModulesMaze_module from "./maze_module.pb"
 import * as ModulesMemory_module from "./memory_module.pb"
 import * as ModulesMorse_module from "./morse_module.pb"
 import * as ModulesNeedy_knob_module from "./needy_knob_module.pb"
@@ -37,6 +38,7 @@ export enum ModuleModuleType {
   MORSE = "MORSE",
   NEEDY_VENT_GAS = "NEEDY_VENT_GAS",
   NEEDY_KNOB = "NEEDY_KNOB",
+  MAZE = "MAZE",
 }
 
 export type ModulePosition = {
@@ -54,4 +56,4 @@ type BaseModule = {
 }
 
 export type Module = BaseModule
-  & OneOf<{ wiresState: ModulesWires_module.WiresState; passwordState: ModulesPassword_module.PasswordState; bigButtonState: ModulesBig_button_module.BigButtonState; simonState: ModulesSimon_module.SimonState; keypadState: ModulesKeypad_module.KeypadState; whosOnFirstState: ModulesWhos_on_first_module.WhosOnFirstState; memoryState: ModulesMemory_module.MemoryState; morseState: ModulesMorse_module.MorseState; needyVentGasState: ModulesNeedy_vent_gas_module.NeedyVentGasState; needyKnobState: ModulesNeedy_knob_module.NeedyKnobState }>
+  & OneOf<{ wiresState: ModulesWires_module.WiresState; passwordState: ModulesPassword_module.PasswordState; bigButtonState: ModulesBig_button_module.BigButtonState; simonState: ModulesSimon_module.SimonState; keypadState: ModulesKeypad_module.KeypadState; whosOnFirstState: ModulesWhos_on_first_module.WhosOnFirstState; memoryState: ModulesMemory_module.MemoryState; morseState: ModulesMorse_module.MorseState; needyVentGasState: ModulesNeedy_vent_gas_module.NeedyVentGasState; needyKnobState: ModulesNeedy_knob_module.NeedyKnobState; mazeState: ModulesMaze_module.MazeState }>
