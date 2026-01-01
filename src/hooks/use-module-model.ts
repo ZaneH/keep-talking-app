@@ -14,6 +14,7 @@ export const ModuleModels = {
   morse: "/morse.glb",
   "needy-vent-gas": "/needy-vent-gas.glb",
   "needy-knob": "/needy-knob.glb",
+  maze: "./maze.glb",
 };
 
 export const preloadModels = () => {

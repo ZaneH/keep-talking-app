@@ -26,6 +26,7 @@ import {
   LIFTED_BOMB_HEIGHT,
 } from "../utils/constants";
 import NeedyKnobModule from "./modules/needy-knob";
+import MazeModule from "./modules/maze-module";
 
 interface Props {
   bombId?: string;
@@ -421,6 +422,15 @@ function renderModule(key?: string, module?: Module) {
           key={key}
           moduleId={module.id!}
           state={module.needyKnobState}
+          position={module.position}
+        />
+      );
+    case ModuleModuleType.MAZE:
+      return (
+        <MazeModule
+          key={key}
+          moduleId={module.id!}
+          state={module.mazeState}
           position={module.position}
         />
       );
