@@ -1,3 +1,4 @@
+import React from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
@@ -6,18 +7,6 @@ import { ModuleModuleType, type Module } from "../generated/proto/modules.pb";
 import { useModuleModel } from "../hooks/use-module-model";
 import { useGameStore } from "../hooks/use-game-store";
 import BombProvider from "./bomb-provider";
-import {
-  BigButtonModule,
-  ClockModule,
-  KeypadModule,
-  PasswordModule,
-  SimonModule,
-  WhosOnFirstModule,
-  WiresModule,
-} from "./modules";
-import MemoryModule from "./modules/memory-module";
-import MorseModule from "./modules/morse-module";
-import NeedyVentGasModule from "./modules/needy-vent-gas";
 import { positionToCoords } from "../utils/position-to-coords";
 import {
   BOMB_HEIGHT,
@@ -25,8 +14,23 @@ import {
   CAMERA_HEIGHT,
   LIFTED_BOMB_HEIGHT,
 } from "../utils/constants";
-import NeedyKnobModule from "./modules/needy-knob";
-import MazeModule from "./modules/maze-module";
+
+const BigButtonModule = React.lazy(() => import("./modules/big-button-module"));
+const ClockModule = React.lazy(() => import("./modules/clock-module"));
+const KeypadModule = React.lazy(() => import("./modules/keypad-module"));
+const PasswordModule = React.lazy(() => import("./modules/password-module"));
+const SimonModule = React.lazy(() => import("./modules/simon-module"));
+const WhosOnFirstModule = React.lazy(
+  () => import("./modules/whos-on-first-module"),
+);
+const WiresModule = React.lazy(() => import("./modules/wires-module"));
+const MemoryModule = React.lazy(() => import("./modules/memory-module"));
+const MorseModule = React.lazy(() => import("./modules/morse-module"));
+const NeedyKnobModule = React.lazy(() => import("./modules/needy-knob-module"));
+const NeedyVentGasModule = React.lazy(
+  () => import("./modules/needy-vent-gas-module"),
+);
+const MazeModule = React.lazy(() => import("./modules/maze-module"));
 
 interface Props {
   bombId?: string;
