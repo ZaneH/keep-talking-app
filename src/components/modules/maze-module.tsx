@@ -10,6 +10,7 @@ import { CardinalDirection } from "../../generated/proto/common.pb";
 import { GameService } from "../../services/api";
 import { useGameStore } from "../../hooks/use-game-store";
 import type { MazeState } from "../../generated/proto/maze_module.pb";
+import { CustomMaterials } from "./custom-materials";
 
 const GRID_OFFSET = 0.0165;
 
@@ -108,6 +109,10 @@ export default function MazeModule({
           },
         });
 
+        if (res.solved) {
+          setIsSolved(true);
+        }
+
         const newPlayerPosition =
           res.mazeInputResult?.mazeState?.playerPosition;
         if (newPlayerPosition) {
@@ -125,43 +130,47 @@ export default function MazeModule({
     return dot;
   }, [materials]);
 
-  const dotMaterials = useMemo(() => {
-    const mats: Record<string, MeshStandardMaterial> = {};
-
-    try {
-      const px = parseInt(playerPosition?.X);
-      const py = parseInt(playerPosition?.Y);
-
-      for (let x = 0; x <= 5; x++) {
-        for (let y = 0; y <= 5; y++) {
-          const key = `${x},${y}`;
-          mats[key] =
-            x === px && y === py ? emittingDot : materials["MazeLight.Unlit"];
-        }
-      }
-    } catch (e) {
-      for (let x = 0; x <= 5; x++) {
-        for (let y = 0; y <= 5; y++) {
-          mats[`${x},${y}`] = materials["MazeLight.Unlit"];
-        }
-      }
-    }
-
-    return mats;
-  }, [playerPosition, emittingDot, materials]);
-
-  const shouldHideDot = useCallback(
-    (x: number, y: number) => {
-      return goalPosition?.[0] === x && goalPosition?.[1] === y;
-    },
-    [goalPosition],
-  );
-
   useFrame((state, _) => {
     if (goalRef.current) {
       goalRef.current.rotation.z = state.clock.elapsedTime * 0.15;
     }
   });
+
+  const dotConfig = useMemo(() => {
+    const config: Record<
+      string,
+      { material: MeshStandardMaterial; visible: boolean }
+    > = {};
+
+    try {
+      const px = parseInt(playerPosition?.X);
+      const py = parseInt(playerPosition?.Y);
+      const gx = goalPosition?.[0];
+      const gy = goalPosition?.[1];
+
+      for (let x = 0; x <= 5; x++) {
+        for (let y = 0; y <= 5; y++) {
+          const key = `${x},${y}`;
+          config[key] = {
+            material:
+              x === px && y === py ? emittingDot : materials["MazeLight.Unlit"],
+            visible: !(x === gx && y === gy),
+          };
+        }
+      }
+    } catch (e) {
+      for (let x = 0; x <= 5; x++) {
+        for (let y = 0; y <= 5; y++) {
+          config[`${x},${y}`] = {
+            material: materials["MazeLight.Unlit"],
+            visible: true,
+          };
+        }
+      }
+    }
+
+    return config;
+  }, [playerPosition, goalPosition, emittingDot, materials]);
 
   return (
     <Module id={moduleId} position={position}>
@@ -184,253 +193,253 @@ export default function MazeModule({
         castShadow
         receiveShadow
         geometry={nodes["0000Dot"].geometry}
-        material={dotMaterials["0,0"]}
-        visible={!shouldHideDot(0, 0)}
+        material={dotConfig["0,0"].material}
+        visible={dotConfig["0,0"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0001Dot"].geometry}
-        material={dotMaterials["0,1"]}
-        visible={!shouldHideDot(0, 1)}
+        material={dotConfig["0,1"].material}
+        visible={dotConfig["0,1"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0002Dot"].geometry}
-        material={dotMaterials["0,2"]}
-        visible={!shouldHideDot(0, 2)}
+        material={dotConfig["0,2"].material}
+        visible={dotConfig["0,2"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0003Dot"].geometry}
-        material={dotMaterials["0,3"]}
-        visible={!shouldHideDot(0, 3)}
+        material={dotConfig["0,3"].material}
+        visible={dotConfig["0,3"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0004Dot"].geometry}
-        material={dotMaterials["0,4"]}
-        visible={!shouldHideDot(0, 4)}
+        material={dotConfig["0,4"].material}
+        visible={dotConfig["0,4"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0005Dot"].geometry}
-        material={dotMaterials["0,5"]}
-        visible={!shouldHideDot(0, 5)}
+        material={dotConfig["0,5"].material}
+        visible={dotConfig["0,5"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0100Dot"].geometry}
-        material={dotMaterials["1,0"]}
-        visible={!shouldHideDot(1, 0)}
+        material={dotConfig["1,0"].material}
+        visible={dotConfig["1,0"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0101Dot"].geometry}
-        material={dotMaterials["1,1"]}
-        visible={!shouldHideDot(1, 1)}
+        material={dotConfig["1,1"].material}
+        visible={dotConfig["1,1"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0102Dot"].geometry}
-        material={dotMaterials["1,2"]}
-        visible={!shouldHideDot(1, 2)}
+        material={dotConfig["1,2"].material}
+        visible={dotConfig["1,2"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0103Dot"].geometry}
-        material={dotMaterials["1,3"]}
-        visible={!shouldHideDot(1, 3)}
+        material={dotConfig["1,3"].material}
+        visible={dotConfig["1,3"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0104Dot"].geometry}
-        material={dotMaterials["1,4"]}
-        visible={!shouldHideDot(1, 4)}
+        material={dotConfig["1,4"].material}
+        visible={dotConfig["1,4"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0105Dot"].geometry}
-        material={dotMaterials["1,5"]}
-        visible={!shouldHideDot(1, 5)}
+        material={dotConfig["1,5"].material}
+        visible={dotConfig["1,5"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0200Dot"].geometry}
-        material={dotMaterials["2,0"]}
-        visible={!shouldHideDot(2, 0)}
+        material={dotConfig["2,0"].material}
+        visible={dotConfig["2,0"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0201Dot"].geometry}
-        material={dotMaterials["2,1"]}
-        visible={!shouldHideDot(2, 1)}
+        material={dotConfig["2,1"].material}
+        visible={dotConfig["2,1"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0202Dot"].geometry}
-        material={dotMaterials["2,2"]}
-        visible={!shouldHideDot(2, 2)}
+        material={dotConfig["2,2"].material}
+        visible={dotConfig["2,2"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0203Dot"].geometry}
-        material={dotMaterials["2,3"]}
-        visible={!shouldHideDot(2, 3)}
+        material={dotConfig["2,3"].material}
+        visible={dotConfig["2,3"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0204Dot"].geometry}
-        material={dotMaterials["2,4"]}
-        visible={!shouldHideDot(2, 4)}
+        material={dotConfig["2,4"].material}
+        visible={dotConfig["2,4"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0205Dot"].geometry}
-        material={dotMaterials["2,5"]}
-        visible={!shouldHideDot(2, 5)}
+        material={dotConfig["2,5"].material}
+        visible={dotConfig["2,5"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0300Dot"].geometry}
-        material={dotMaterials["3,0"]}
-        visible={!shouldHideDot(3, 0)}
+        material={dotConfig["3,0"].material}
+        visible={dotConfig["3,0"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0301Dot"].geometry}
-        material={dotMaterials["3,1"]}
-        visible={!shouldHideDot(3, 1)}
+        material={dotConfig["3,1"].material}
+        visible={dotConfig["3,1"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0302Dot"].geometry}
-        material={dotMaterials["3,2"]}
-        visible={!shouldHideDot(3, 2)}
+        material={dotConfig["3,2"].material}
+        visible={dotConfig["3,2"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0303Dot"].geometry}
-        material={dotMaterials["3,3"]}
-        visible={!shouldHideDot(3, 3)}
+        material={dotConfig["3,3"].material}
+        visible={dotConfig["3,3"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0304Dot"].geometry}
-        material={dotMaterials["3,4"]}
-        visible={!shouldHideDot(3, 4)}
+        material={dotConfig["3,4"].material}
+        visible={dotConfig["3,4"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0305Dot"].geometry}
-        material={dotMaterials["3,5"]}
-        visible={!shouldHideDot(3, 5)}
+        material={dotConfig["3,5"].material}
+        visible={dotConfig["3,5"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0400Dot"].geometry}
-        material={dotMaterials["4,0"]}
-        visible={!shouldHideDot(4, 0)}
+        material={dotConfig["4,0"].material}
+        visible={dotConfig["4,0"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0401Dot"].geometry}
-        material={dotMaterials["4,1"]}
-        visible={!shouldHideDot(4, 1)}
+        material={dotConfig["4,1"].material}
+        visible={dotConfig["4,1"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0402Dot"].geometry}
-        material={dotMaterials["4,2"]}
-        visible={!shouldHideDot(4, 2)}
+        material={dotConfig["4,2"].material}
+        visible={dotConfig["4,2"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0403Dot"].geometry}
-        material={dotMaterials["4,3"]}
-        visible={!shouldHideDot(4, 3)}
+        material={dotConfig["4,3"].material}
+        visible={dotConfig["4,3"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0404Dot"].geometry}
-        material={dotMaterials["4,4"]}
-        visible={!shouldHideDot(4, 4)}
+        material={dotConfig["4,4"].material}
+        visible={dotConfig["4,4"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0405Dot"].geometry}
-        material={dotMaterials["4,5"]}
-        visible={!shouldHideDot(4, 5)}
+        material={dotConfig["4,5"].material}
+        visible={dotConfig["4,5"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0500Dot"].geometry}
-        material={dotMaterials["5,0"]}
-        visible={!shouldHideDot(5, 0)}
+        material={dotConfig["5,0"].material}
+        visible={dotConfig["5,0"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0501Dot"].geometry}
-        material={dotMaterials["5,1"]}
-        visible={!shouldHideDot(5, 1)}
+        material={dotConfig["5,1"].material}
+        visible={dotConfig["5,1"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0502Dot"].geometry}
-        material={dotMaterials["5,2"]}
-        visible={!shouldHideDot(5, 2)}
+        material={dotConfig["5,2"].material}
+        visible={dotConfig["5,2"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0503Dot"].geometry}
-        material={dotMaterials["5,3"]}
-        visible={!shouldHideDot(5, 3)}
+        material={dotConfig["5,3"].material}
+        visible={dotConfig["5,3"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0504Dot"].geometry}
-        material={dotMaterials["5,4"]}
-        visible={!shouldHideDot(5, 4)}
+        material={dotConfig["5,4"].material}
+        visible={dotConfig["5,4"].visible}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0505Dot"].geometry}
-        material={dotMaterials["5,5"]}
-        visible={!shouldHideDot(5, 5)}
+        material={dotConfig["5,5"].material}
+        visible={dotConfig["5,5"].visible}
       />
       <mesh
         castShadow
@@ -514,7 +523,9 @@ export default function MazeModule({
         castShadow
         receiveShadow
         geometry={nodes.Light010.geometry}
-        material={materials["Unlit light"]}
+        material={
+          isSolved ? CustomMaterials.GreenLight : materials["Unlit light"]
+        }
         position={[0.062, 0.064, 0.021]}
         rotation={[Math.PI / 2, 0, 0]}
       />

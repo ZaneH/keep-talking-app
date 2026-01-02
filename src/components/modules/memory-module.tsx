@@ -282,7 +282,9 @@ export default function MemoryModule({
           castShadow
           receiveShadow
           geometry={nodes.Light008.geometry}
-          material={materials["Unlit light"]}
+          material={
+            isSolved ? CustomMaterials.GreenLight : materials["Unlit light"]
+          }
           position={[0.061, 0.062, 0.021]}
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}
