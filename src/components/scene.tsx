@@ -7,16 +7,16 @@ import {
   EffectComposer,
   Outline,
 } from "@react-three/postprocessing";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import type { Bomb as BombType } from "../generated/proto/bomb.pb";
 import { useGameStore } from "../hooks/use-game-store";
 import { GameService } from "../services/api";
-import Bomb from "./bomb";
 import { useHighlight } from "./highlight-provider";
-import Table from "./table";
 import { CAMERA_DISTANCE, CAMERA_HEIGHT } from "../utils/constants";
 import { useCameraControl } from "../hooks/use-camera-controls";
+const Bomb = React.lazy(() => import("./bomb"));
+const Table = React.lazy(() => import("./table"));
 
 export default function Scene() {
   const { selected } = useHighlight();
