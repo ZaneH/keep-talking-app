@@ -40,7 +40,7 @@ export default function MazeModule({
       console.error("failed to place marker");
     }
 
-    return undefined;
+    return [-1, -1];
   }, [state?.marker1]);
 
   const marker2Position = useMemo(() => {
@@ -54,7 +54,7 @@ export default function MazeModule({
       console.error("failed to place marker", e);
     }
 
-    return undefined;
+    return [-1, -1];
   }, [state?.marker2]);
 
   const goalPosition = useMemo(() => {
@@ -68,7 +68,7 @@ export default function MazeModule({
       console.error("failed to place goal", e);
     }
 
-    return undefined;
+    return [-1, -1];
   }, [state?.goalPosition]);
 
   const northRef = useRef<any>(null);
@@ -480,46 +480,43 @@ export default function MazeModule({
         ref={southRef}
         onClick={onButtonClick}
       />
-      {goalPosition && (
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.MazeGoal.geometry}
-          material={materials["Maze.Goal"]}
-          ref={goalRef}
-          position={[
-            -0.051 + GRID_OFFSET * goalPosition[0],
-            0.033 - GRID_OFFSET * goalPosition[1],
-            0.035,
-          ]}
-        />
-      )}
-      {marker1Position && (
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.MazeMarkerA.geometry}
-          material={materials["Maze.MarkerA"]}
-          position={[
-            -0.051 + GRID_OFFSET * marker1Position[0],
-            0.033 - GRID_OFFSET * marker1Position[1],
-            0.035,
-          ]}
-        />
-      )}
-      {marker2Position && (
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.MazeMarkerB.geometry}
-          material={materials["Maze.MarkerB"]}
-          position={[
-            -0.051 + 0.0165 * marker2Position[0],
-            0.033 - 0.0165 * marker2Position[1],
-            0.035,
-          ]}
-        />
-      )}
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.MazeGoal.geometry}
+        material={materials["Maze.Goal"]}
+        visible={goalPosition[0] !== -1}
+        ref={goalRef}
+        position={[
+          -0.051 + GRID_OFFSET * goalPosition[0],
+          0.033 - GRID_OFFSET * goalPosition[1],
+          0.035,
+        ]}
+      />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.MazeMarkerA.geometry}
+        material={materials["Maze.MarkerA"]}
+        visible={marker1Position[0] !== -1}
+        position={[
+          -0.051 + GRID_OFFSET * marker1Position[0],
+          0.033 - GRID_OFFSET * marker1Position[1],
+          0.035,
+        ]}
+      />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.MazeMarkerB.geometry}
+        material={materials["Maze.MarkerB"]}
+        visible={marker2Position[0] !== -1}
+        position={[
+          -0.051 + 0.0165 * marker2Position[0],
+          0.033 - 0.0165 * marker2Position[1],
+          0.035,
+        ]}
+      />
       <mesh
         castShadow
         receiveShadow
