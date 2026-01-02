@@ -32,10 +32,32 @@ export default function MazeModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
-  const [marker1] = useState<Point2D | undefined>(state?.maze?.marker1);
-  const [marker2] = useState<Point2D | undefined>(state?.maze?.marker2);
   const [playerPosition, setPlayerPosition] = useState(state?.playerPosition);
   const [isSolved, setIsSolved] = useState(false);
+
+  const marker1Position = useMemo(() => {
+    try {
+      const x = parseInt(state?.maze?.marker1?.X);
+      const y = parseInt(state?.maze?.marker1?.Y);
+      return [x, y];
+    } catch (e) {
+      console.error("failed to place marker");
+    }
+
+    return undefined;
+  }, [state?.maze?.marker1]);
+
+  const marker2Position = useMemo(() => {
+    try {
+      const x = parseInt(state?.maze?.marker2?.X!);
+      const y = parseInt(state?.maze?.marker2?.Y!);
+      return [x, y];
+    } catch (e) {
+      console.error("failed to place marker");
+    }
+
+    return undefined;
+  }, [state?.maze?.marker2]);
 
   const northRef = useRef<any>(null);
   const southRef = useRef<any>(null);
@@ -121,341 +143,229 @@ export default function MazeModule({
         receiveShadow
         geometry={nodes.MazeBackplate.geometry}
         material={materials.MazeBacklight}
-        position={[-0.01, -0.009, 0.034]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.06}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0000Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
+        position={[-0.051, 0.033, 0.035]}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0001Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0002Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0003Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0004Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0005Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0100Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0101Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0102Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0103Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0104Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0105Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0200Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0201Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0202Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0203Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0204Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0205Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0300Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0301Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0302Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0303Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0304Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0305Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0400Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0401Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0402Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0403Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0404Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0405Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0500Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0501Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0502Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0503Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0504Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0505Dot"].geometry}
         material={materials["MazeLight.Unlit"]}
-        position={[-0.01, -0.009, 0.035]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={0.003}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.MazeButtonsE.geometry}
         material={materials["Plastic Dark"]}
-        position={[-0.078, -0.01, 0.033]}
-        rotation={[Math.PI / 2, 0, 0]}
         ref={eastRef}
         onClick={onButtonClick}
       />
@@ -464,8 +374,6 @@ export default function MazeModule({
         receiveShadow
         geometry={nodes.MazeButtonsW.geometry}
         material={materials["Plastic Dark"]}
-        position={[-0.078, -0.01, 0.033]}
-        rotation={[Math.PI / 2, 0, 0]}
         ref={westRef}
         onClick={onButtonClick}
       />
@@ -474,8 +382,6 @@ export default function MazeModule({
         receiveShadow
         geometry={nodes.MazeButtonsN.geometry}
         material={materials["Plastic Dark"]}
-        position={[-0.011, 0.06, 0.033]}
-        rotation={[Math.PI / 2, -Math.PI / 2, 0]}
         ref={northRef}
         onClick={onButtonClick}
       />
@@ -484,18 +390,40 @@ export default function MazeModule({
         receiveShadow
         geometry={nodes.MazeButtonsS.geometry}
         material={materials["Plastic Dark"]}
-        position={[-0.011, 0.06, 0.033]}
-        rotation={[Math.PI / 2, -Math.PI / 2, 0]}
         ref={southRef}
         onClick={onButtonClick}
       />
+      {marker1Position && (
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.MazeMarkerA.geometry}
+          material={materials["Maze.MarkerA"]}
+          position={[
+            -0.051 + 0.0165 * marker1Position[0],
+            0.033 - 0.0165 * marker1Position[1],
+            0.035,
+          ]}
+        />
+      )}
+      {marker2Position && (
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.MazeMarkerB.geometry}
+          material={materials["Maze.MarkerB"]}
+          position={[
+            -0.051 + 0.0165 * marker2Position[0],
+            0.033 - 0.0165 * marker2Position[1],
+            0.035,
+          ]}
+        />
+      )}
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.MazeShell.geometry}
         material={materials["Plastic Dark"]}
-        position={[-0.01, -0.009, 0]}
-        scale={0.065}
       />
       <mesh
         castShadow

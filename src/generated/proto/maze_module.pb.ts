@@ -21,14 +21,4 @@ export type MazeState = {
 export type Maze = {
   marker1?: CommonCommon.Point2D
   marker2?: CommonCommon.Point2D
-  rows?: MazeRow[]
-}
-
-export type MazeRow = {
-  cells?: MazeCell[]
-}
-
-export type MazeCell = {
-  right?: boolean
-  botom?: boolean
 }
