@@ -1,24 +1,17 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import type { BaseModuleProps } from "./module";
 import Module from "./module";
 import type { MeshStandardMaterial } from "three";
-import { Text } from "@react-three/drei";
-import { type ThreeEvent } from "@react-three/fiber";
-import {
-  CardinalDirection,
-  type Point2D,
-} from "../../generated/proto/common.pb";
+import { useFrame, type ThreeEvent } from "@react-three/fiber";
+import * as THREE from "three";
+import { CardinalDirection } from "../../generated/proto/common.pb";
 import { GameService } from "../../services/api";
 import { useGameStore } from "../../hooks/use-game-store";
-import { CustomMaterials } from "./custom-materials";
 import type { MazeState } from "../../generated/proto/maze_module.pb";
 
-const TEXT_OFFSET = 0.001;
-const FONT_SIZE = 0.03;
-const FONT_FAMILY = "Digital7_Mono.ttf";
-const FONT_COLOR = 0x2f530d;
+const GRID_OFFSET = 0.0165;
 
 export default function MazeModule({
   moduleId,
@@ -31,33 +24,46 @@ export default function MazeModule({
   const { selectedBombId, selectedModuleId, sessionId } = useGameStore();
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
+  const goalRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
   const [playerPosition, setPlayerPosition] = useState(state?.playerPosition);
   const [isSolved, setIsSolved] = useState(false);
 
   const marker1Position = useMemo(() => {
     try {
-      const x = parseInt(state?.maze?.marker1?.X);
-      const y = parseInt(state?.maze?.marker1?.Y);
+      const x = parseInt(state?.marker1?.X);
+      const y = parseInt(state?.marker1?.Y);
       return [x, y];
     } catch (e) {
       console.error("failed to place marker");
     }
 
     return undefined;
-  }, [state?.maze?.marker1]);
+  }, [state?.marker1]);
 
   const marker2Position = useMemo(() => {
     try {
-      const x = parseInt(state?.maze?.marker2?.X!);
-      const y = parseInt(state?.maze?.marker2?.Y!);
+      const x = parseInt(state?.marker2?.X!);
+      const y = parseInt(state?.marker2?.Y!);
       return [x, y];
     } catch (e) {
-      console.error("failed to place marker");
+      console.error("failed to place marker", e);
     }
 
     return undefined;
-  }, [state?.maze?.marker2]);
+  }, [state?.marker2]);
+
+  const goalPosition = useMemo(() => {
+    try {
+      const x = parseInt(state?.goalPosition?.X!);
+      const y = parseInt(state?.goalPosition?.Y!);
+      return [x, y];
+    } catch (e) {
+      console.error("failed to place goal", e);
+    }
+
+    return undefined;
+  }, [state?.goalPosition]);
 
   const northRef = useRef<any>(null);
   const southRef = useRef<any>(null);
@@ -112,20 +118,50 @@ export default function MazeModule({
     [sessionId, selectedBombId, selectedModuleId],
   );
 
-  // const emittingBacklight = useMemo(() => {
-  //   const backlight: MeshStandardMaterial = materials.GreenBacklight;
-  //   backlight.emissiveIntensity = 0.3;
-  //   backlight.emissive.setHex(backlight?.color.getHex());
-  //   return backlight;
-  // }, [materials]);
-  //
-  // const emittingBacklightDark = useMemo(() => {
-  //   const backlightDark: MeshStandardMaterial =
-  //     materials["GreenBacklight.Dark"];
-  //   backlightDark.emissiveIntensity = 0.25;
-  //   backlightDark.emissive.setHex(backlightDark?.color.getHex());
-  //   return backlightDark;
-  // }, [materials]);
+  const emittingDot = useMemo(() => {
+    const dot: MeshStandardMaterial = materials["MazeLight.Unlit"].clone();
+    dot.emissiveIntensity = 0.3;
+    dot.emissive.setHex(0xffffff);
+    return dot;
+  }, [materials]);
+
+  const dotMaterials = useMemo(() => {
+    const mats: Record<string, MeshStandardMaterial> = {};
+
+    try {
+      const px = parseInt(playerPosition?.X);
+      const py = parseInt(playerPosition?.Y);
+
+      for (let x = 0; x <= 5; x++) {
+        for (let y = 0; y <= 5; y++) {
+          const key = `${x},${y}`;
+          mats[key] =
+            x === px && y === py ? emittingDot : materials["MazeLight.Unlit"];
+        }
+      }
+    } catch (e) {
+      for (let x = 0; x <= 5; x++) {
+        for (let y = 0; y <= 5; y++) {
+          mats[`${x},${y}`] = materials["MazeLight.Unlit"];
+        }
+      }
+    }
+
+    return mats;
+  }, [playerPosition, emittingDot, materials]);
+
+  const shouldHideDot = useCallback(
+    (x: number, y: number) => {
+      return goalPosition?.[0] === x && goalPosition?.[1] === y;
+    },
+    [goalPosition],
+  );
+
+  useFrame((state, _) => {
+    if (goalRef.current) {
+      goalRef.current.rotation.z = state.clock.elapsedTime * 0.15;
+    }
+  });
 
   return (
     <Module id={moduleId} position={position}>
@@ -148,218 +184,253 @@ export default function MazeModule({
         castShadow
         receiveShadow
         geometry={nodes["0000Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
-        position={[-0.051, 0.033, 0.035]}
+        material={dotMaterials["0,0"]}
+        visible={!shouldHideDot(0, 0)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0001Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["0,1"]}
+        visible={!shouldHideDot(0, 1)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0002Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["0,2"]}
+        visible={!shouldHideDot(0, 2)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0003Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["0,3"]}
+        visible={!shouldHideDot(0, 3)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0004Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["0,4"]}
+        visible={!shouldHideDot(0, 4)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0005Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["0,5"]}
+        visible={!shouldHideDot(0, 5)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0100Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["1,0"]}
+        visible={!shouldHideDot(1, 0)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0101Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["1,1"]}
+        visible={!shouldHideDot(1, 1)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0102Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["1,2"]}
+        visible={!shouldHideDot(1, 2)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0103Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["1,3"]}
+        visible={!shouldHideDot(1, 3)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0104Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["1,4"]}
+        visible={!shouldHideDot(1, 4)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0105Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["1,5"]}
+        visible={!shouldHideDot(1, 5)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0200Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["2,0"]}
+        visible={!shouldHideDot(2, 0)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0201Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["2,1"]}
+        visible={!shouldHideDot(2, 1)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0202Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["2,2"]}
+        visible={!shouldHideDot(2, 2)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0203Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["2,3"]}
+        visible={!shouldHideDot(2, 3)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0204Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["2,4"]}
+        visible={!shouldHideDot(2, 4)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0205Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["2,5"]}
+        visible={!shouldHideDot(2, 5)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0300Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["3,0"]}
+        visible={!shouldHideDot(3, 0)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0301Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["3,1"]}
+        visible={!shouldHideDot(3, 1)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0302Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["3,2"]}
+        visible={!shouldHideDot(3, 2)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0303Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["3,3"]}
+        visible={!shouldHideDot(3, 3)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0304Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["3,4"]}
+        visible={!shouldHideDot(3, 4)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0305Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["3,5"]}
+        visible={!shouldHideDot(3, 5)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0400Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["4,0"]}
+        visible={!shouldHideDot(4, 0)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0401Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["4,1"]}
+        visible={!shouldHideDot(4, 1)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0402Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["4,2"]}
+        visible={!shouldHideDot(4, 2)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0403Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["4,3"]}
+        visible={!shouldHideDot(4, 3)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0404Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["4,4"]}
+        visible={!shouldHideDot(4, 4)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0405Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["4,5"]}
+        visible={!shouldHideDot(4, 5)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0500Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["5,0"]}
+        visible={!shouldHideDot(5, 0)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0501Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["5,1"]}
+        visible={!shouldHideDot(5, 1)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0502Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["5,2"]}
+        visible={!shouldHideDot(5, 2)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0503Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["5,3"]}
+        visible={!shouldHideDot(5, 3)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0504Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["5,4"]}
+        visible={!shouldHideDot(5, 4)}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={nodes["0505Dot"].geometry}
-        material={materials["MazeLight.Unlit"]}
+        material={dotMaterials["5,5"]}
+        visible={!shouldHideDot(5, 5)}
       />
       <mesh
         castShadow
@@ -393,6 +464,20 @@ export default function MazeModule({
         ref={southRef}
         onClick={onButtonClick}
       />
+      {goalPosition && (
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.MazeGoal.geometry}
+          material={materials["Maze.Goal"]}
+          ref={goalRef}
+          position={[
+            -0.051 + GRID_OFFSET * goalPosition[0],
+            0.033 - GRID_OFFSET * goalPosition[1],
+            0.035,
+          ]}
+        />
+      )}
       {marker1Position && (
         <mesh
           castShadow
@@ -400,8 +485,8 @@ export default function MazeModule({
           geometry={nodes.MazeMarkerA.geometry}
           material={materials["Maze.MarkerA"]}
           position={[
-            -0.051 + 0.0165 * marker1Position[0],
-            0.033 - 0.0165 * marker1Position[1],
+            -0.051 + GRID_OFFSET * marker1Position[0],
+            0.033 - GRID_OFFSET * marker1Position[1],
             0.035,
           ]}
         />

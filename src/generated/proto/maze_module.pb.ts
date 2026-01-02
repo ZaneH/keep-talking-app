@@ -14,11 +14,8 @@ export type MazeInputResult = {
 }
 
 export type MazeState = {
-  maze?: Maze
-  playerPosition?: CommonCommon.Point2D
-}
-
-export type Maze = {
   marker1?: CommonCommon.Point2D
   marker2?: CommonCommon.Point2D
+  playerPosition?: CommonCommon.Point2D
+  goalPosition?: CommonCommon.Point2D
 }
