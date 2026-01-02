@@ -11,26 +11,13 @@ import Module from "./module";
 import { CardinalDirection } from "../../generated/proto/common.pb";
 import { CustomMaterials } from "./custom-materials";
 
-// const TEXT_Y_OFFSET = 0.003;
-// const GREEN_TEXT_OFFSET = 0.001;
 const RED_TEXT_OFFSET = 0.003;
 
-// const GREEN_FONT_SIZE = 0.0125;
 const RED_FONT_SIZE = 0.015;
 
-// const GREEN_FONT_FAMILY = "/fonts/Inter-Medium.ttf";
 const RED_FONT_FAMILY = "/fonts/Digital7_Mono.ttf";
 
-// const GREEN_FONT_COLOR = 0x5b8c45;
 const RED_FONT_COLOR = 0x9e3029;
-
-// const GREEN_TEXT_ATTRS = {
-//   fontSize: GREEN_FONT_SIZE,
-//   font: GREEN_FONT_FAMILY,
-//   color: GREEN_FONT_COLOR,
-//   position: [0, TEXT_Y_OFFSET, GREEN_TEXT_OFFSET] as [number, number, number],
-//   textAlign: "center" as any,
-// };
 
 const COUNTDOWN_TEXT_ATTRS = {
   fontSize: RED_FONT_SIZE,
@@ -66,13 +53,13 @@ export default function NeedyKnobModule({
   >(state?.dialDirection);
   const [currentTime, setCurrentTime] = useState(Date.now());
   const dialRotation = useMemo(() => {
-    if (dialDirection === CardinalDirection.UP) {
+    if (dialDirection === CardinalDirection.NORTH) {
       return 0;
-    } else if (dialDirection === CardinalDirection.RIGHT) {
+    } else if (dialDirection === CardinalDirection.EAST) {
       return -Math.PI / 2;
-    } else if (dialDirection === CardinalDirection.DOWN) {
+    } else if (dialDirection === CardinalDirection.SOUTH) {
       return Math.PI;
-    } else if (dialDirection === CardinalDirection.LEFT) {
+    } else if (dialDirection === CardinalDirection.WEST) {
       return Math.PI / 2;
     }
 
