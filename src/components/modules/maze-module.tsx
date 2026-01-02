@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import type { BaseModuleProps } from "./module";
 import Module from "./module";
 import type { MeshStandardMaterial } from "three";
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
-import * as THREE from "three";
 import { CardinalDirection } from "../../generated/proto/common.pb";
 import { GameService } from "../../services/api";
 import { useGameStore } from "../../hooks/use-game-store";
@@ -32,10 +31,12 @@ export default function MazeModule({
 
   const marker1Position = useMemo(() => {
     try {
+      // @ts-ignore - Generated proto uses lowercase but runtime uses uppercase
       const x = parseInt(state?.marker1?.X);
+      // @ts-ignore
       const y = parseInt(state?.marker1?.Y);
       return [x, y];
-    } catch (e) {
+    } catch {
       console.error("failed to place marker");
     }
 
@@ -44,7 +45,9 @@ export default function MazeModule({
 
   const marker2Position = useMemo(() => {
     try {
+      // @ts-ignore
       const x = parseInt(state?.marker2?.X!);
+      // @ts-ignore
       const y = parseInt(state?.marker2?.Y!);
       return [x, y];
     } catch (e) {
@@ -56,7 +59,9 @@ export default function MazeModule({
 
   const goalPosition = useMemo(() => {
     try {
+      // @ts-ignore
       const x = parseInt(state?.goalPosition?.X!);
+      // @ts-ignore
       const y = parseInt(state?.goalPosition?.Y!);
       return [x, y];
     } catch (e) {
@@ -143,7 +148,9 @@ export default function MazeModule({
     > = {};
 
     try {
+      // @ts-ignore
       const px = parseInt(playerPosition?.X);
+      // @ts-ignore
       const py = parseInt(playerPosition?.Y);
       const gx = goalPosition?.[0];
       const gy = goalPosition?.[1];
@@ -158,7 +165,7 @@ export default function MazeModule({
           };
         }
       }
-    } catch (e) {
+    } catch {
       for (let x = 0; x <= 5; x++) {
         for (let y = 0; y <= 5; y++) {
           config[`${x},${y}`] = {
