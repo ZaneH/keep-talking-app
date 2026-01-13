@@ -60,7 +60,13 @@ function shortestAngularDelta(from: number, to: number): number {
   return delta;
 }
 
-function BombSimple({ modules, startedAt, timerDuration, strikeCount, maxStrikes }: Props) {
+function BombSimple({
+  modules,
+  startedAt,
+  timerDuration,
+  strikeCount,
+  maxStrikes,
+}: Props) {
   const { camera, scene } = useThree();
   const { nodes, materials } = useModuleModel("bomb");
   const setZoomState = useGameStore((s) => s.setZoomState);
@@ -71,10 +77,15 @@ function BombSimple({ modules, startedAt, timerDuration, strikeCount, maxStrikes
     cameraLocked,
     cameraTargetLookAt,
     cameraTargetPosition,
+    zoomState,
   } = useGameStore();
 
   const [isPickedUp, setIsPickedUp] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [pendingPickup, setPendingPickup] = useState(false);
+  const [pendingModuleClick, setPendingModuleClick] = useState<string | null>(
+    null,
+  );
 
   const [rotation, setRotation] = useState<[number, number, number]>([0, 0, 0]);
   const [animatedHeight, setAnimatedHeight] = useState(0);
@@ -168,24 +179,21 @@ function BombSimple({ modules, startedAt, timerDuration, strikeCount, maxStrikes
 
   useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
-      // Bomb is already picked up
-      // 1) Check if user clicked on a module => rotate bomb forward & zoom in
-      if (isBombClicked(event)) {
-        if (isPickedUp) {
-          reset();
-        } else {
-          setIsPickedUp(true);
-        }
+      const modId = isModuleClicked(event);
+      const bombClicked = isBombClicked(event);
+
+      if (bombClicked && !isPickedUp) {
+        setPendingPickup(true);
+        event.preventDefault();
+        return;
       }
 
-      const modId = isModuleClicked(event);
-      if (modId) {
-        const module = modules?.[modId];
-        if (!isPickedUp) {
-          setIsPickedUp(true);
-          event.preventDefault();
+      if (modId && isPickedUp) {
+        if (zoomState === "module-view" && selectedModuleId === modId) {
+          return;
         }
 
+        const module = modules?.[modId];
         const modulePosition = module?.position;
         const { position: baseCoords } = positionToCoords(modulePosition!); // TODO: Handle undefined position / fix type
         const closestRotationY = getClosestForwardRotationRadians(rotation[1]);
@@ -208,18 +216,26 @@ function BombSimple({ modules, startedAt, timerDuration, strikeCount, maxStrikes
         return;
       }
 
-      // 2) If user clicked bomb => start dragging
-      if (isBombClicked(event)) {
+      if (modId && !isPickedUp) {
+        setPendingModuleClick(modId);
+        setPendingPickup(true);
+        event.preventDefault();
+        return;
+      }
+
+      if (bombClicked && isPickedUp) {
         setIsDragging(true);
         lastPointerPosition.current = { x: event.clientX, y: event.clientY };
         event.preventDefault();
+        return;
       }
 
-      // 3) Otherwise => clicked outside => put it down
-      else {
+      if (!bombClicked && !modId) {
+        if (zoomState === "module-view") {
+          reset();
+        }
         setIsPickedUp(false);
         setIsDragging(false);
-        reset();
       }
     }
 
@@ -239,6 +255,16 @@ function BombSimple({ modules, startedAt, timerDuration, strikeCount, maxStrikes
         }
 
         lastPointerPosition.current = { x: event.clientX, y: event.clientY };
+      } else if (pendingPickup && !isDragging) {
+        const threshold = 5;
+        if (lastPointerPosition.current) {
+          const dx = Math.abs(event.clientX - lastPointerPosition.current.x);
+          const dy = Math.abs(event.clientY - lastPointerPosition.current.y);
+          if (dx > threshold || dy > threshold) {
+            setPendingPickup(false);
+            setPendingModuleClick(null);
+          }
+        }
       }
     }
 
@@ -246,6 +272,43 @@ function BombSimple({ modules, startedAt, timerDuration, strikeCount, maxStrikes
       if (isPickedUp && isDragging) {
         setIsDragging(false);
       }
+
+      if (pendingPickup && !isDragging) {
+        setIsPickedUp(true);
+
+        if (pendingModuleClick) {
+          const modId = pendingModuleClick;
+          const module = modules?.[modId];
+          const modulePosition = module?.position;
+          const { position: baseCoords } = positionToCoords(modulePosition!);
+          const closestRotationY = getClosestForwardRotationRadians(
+            rotation[1],
+          );
+          setRotation([
+            defaultRotation[0],
+            closestRotationY,
+            defaultRotation[2],
+          ]);
+
+          const cameraTargetPosition = new THREE.Vector3(
+            baseCoords.x,
+            baseCoords.y + CAMERA_HEIGHT - 0.1,
+            CAMERA_DISTANCE_ZOOMED,
+          );
+
+          const lookAt = new THREE.Vector3(
+            baseCoords.x,
+            cameraTargetPosition.y,
+            0,
+          );
+
+          zoomToModule(modId, cameraTargetPosition, lookAt);
+        }
+      }
+
+      setPendingPickup(false);
+      setPendingModuleClick(null);
+      lastPointerPosition.current = null;
     }
 
     document.addEventListener("pointerdown", handlePointerDown);
@@ -257,7 +320,17 @@ function BombSimple({ modules, startedAt, timerDuration, strikeCount, maxStrikes
       document.removeEventListener("pointermove", handlePointerMove);
       document.removeEventListener("pointerup", handlePointerUp);
     };
-  }, [camera, scene, isPickedUp, isDragging, setZoomState, selectedModuleId]);
+  }, [
+    camera,
+    scene,
+    isPickedUp,
+    isDragging,
+    setZoomState,
+    selectedModuleId,
+    zoomState,
+    modules,
+    rotation,
+  ]);
 
   return (
     <group ref={bombRef}>
@@ -316,7 +389,12 @@ function BombSimple({ modules, startedAt, timerDuration, strikeCount, maxStrikes
         />
       </mesh>
 
-      <BombProvider startedAt={startedAt} timerDuration={timerDuration} strikeCount={strikeCount} maxStrikes={maxStrikes}>
+      <BombProvider
+        startedAt={startedAt}
+        timerDuration={timerDuration}
+        strikeCount={strikeCount}
+        maxStrikes={maxStrikes}
+      >
         {Object.entries(modules || {}).map(([moduleId, mod]) => (
           <group key={moduleId} userData={{ moduleId }}>
             {renderModule(moduleId, mod)}
