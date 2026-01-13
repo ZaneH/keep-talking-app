@@ -36,8 +36,7 @@ export default function SimpleWiresModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
-  const { sessionId, selectedBombId, selectedModuleId, updateBombFromStatus } =
-    useGameStore();
+  const { sessionId, selectedBombId, updateBombFromStatus } = useGameStore();
   const { onPointerDown, guard } = useGuardedInput(moduleId);
   const [isSolved, setIsSolved] = useState(false);
 
