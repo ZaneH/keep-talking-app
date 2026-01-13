@@ -1,6 +1,6 @@
 "use client";
 
-import { Environment, PerspectiveCamera } from "@react-three/drei";
+import { PerspectiveCamera } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
   BrightnessContrast,
