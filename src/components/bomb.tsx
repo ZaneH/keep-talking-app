@@ -60,7 +60,7 @@ function shortestAngularDelta(from: number, to: number): number {
   return delta;
 }
 
-function BombSimple({ modules, startedAt, timerDuration }: Props) {
+function BombSimple({ modules, startedAt, timerDuration, strikeCount, maxStrikes }: Props) {
   const { camera, scene } = useThree();
   const { nodes, materials } = useModuleModel("bomb");
   const setZoomState = useGameStore((s) => s.setZoomState);
@@ -316,7 +316,7 @@ function BombSimple({ modules, startedAt, timerDuration }: Props) {
         />
       </mesh>
 
-      <BombProvider startedAt={startedAt} timerDuration={timerDuration}>
+      <BombProvider startedAt={startedAt} timerDuration={timerDuration} strikeCount={strikeCount} maxStrikes={maxStrikes}>
         {Object.entries(modules || {}).map(([moduleId, mod]) => (
           <group key={moduleId} userData={{ moduleId }}>
             {renderModule(moduleId, mod)}

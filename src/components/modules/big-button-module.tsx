@@ -31,7 +31,8 @@ export default function BigButtonModule({
   const { actions, mixer } = useAnimations(animations, coverRef);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
   const [stripColor, setStripColor] = useState<Color>();
-  const { sessionId, selectedBombId, selectedModuleId } = useGameStore();
+  const { sessionId, selectedBombId, selectedModuleId, updateBombFromStatus } =
+    useGameStore();
   const [isCoverOpen, setIsCoverOpen] = useState(false);
   const [prevAction, setPrevAction] = useState<any>(null);
   const [pressDownTime, setPressDownTime] = useState(0);
@@ -92,6 +93,10 @@ export default function BigButtonModule({
       });
 
       setStripColor(response.bigButtonInputResult?.stripColor);
+
+      if (response.bombStatus?.strikeCount !== undefined && selectedBombId) {
+        updateBombFromStatus(selectedBombId, response.bombStatus.strikeCount);
+      }
     }, 500);
 
     setLongPressTimeout(timeout);
@@ -127,6 +132,10 @@ export default function BigButtonModule({
 
     if (response.solved) {
       setIsSolved(true);
+    }
+
+    if (response.bombStatus?.strikeCount !== undefined && selectedBombId) {
+      updateBombFromStatus(selectedBombId, response.bombStatus.strikeCount);
     }
   };
 

@@ -20,7 +20,12 @@ interface GameActions {
   setSessionId: (_sessionId?: string) => void;
   setBombs: (_bombs: Bomb[]) => void;
   setSelectedBombId: (_bombId?: string) => void;
-  zoomToModule: (_moduleId: string, _position: THREE.Vector3, _lookAt: THREE.Vector3) => void;
+  updateBombFromStatus: (_bombId: string, _strikeCount: number) => void;
+  zoomToModule: (
+    _moduleId: string,
+    _position: THREE.Vector3,
+    _lookAt: THREE.Vector3,
+  ) => void;
   reset: () => void;
 }
 
@@ -40,6 +45,13 @@ export const useGameStore = create<GameState & GameActions>()((set) => ({
   setSessionId: (sessionId) => set({ sessionId }),
   setBombs: (bombs) => set({ bombs }),
   setSelectedBombId: (bombId) => set({ selectedBombId: bombId }),
+  updateBombFromStatus: (bombId, strikeCount) =>
+    set((state) => {
+      const updatedBombs = state.bombs.map((bomb) =>
+        bomb.id === bombId ? { ...bomb, strikeCount } : bomb,
+      );
+      return { bombs: updatedBombs };
+    }),
   zoomToModule: (moduleId, position, lookAt) => {
     console.log("zoomToModule called:", { moduleId, position, lookAt });
     set({

@@ -104,7 +104,7 @@ export default function Scene() {
         }).then((res) => {
           console.log({ bombs: res.bombs });
 
-          setBombs(res.bombs || []);
+          setBombs(res.bombs ?? []);
           setSelectedBombId(res.bombs?.[0]?.id);
         });
       })

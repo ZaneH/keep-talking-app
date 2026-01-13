@@ -28,8 +28,13 @@ export default function SimonSaysModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
-  const { zoomState, selectedModuleId, sessionId, selectedBombId } =
-    useGameStore();
+  const {
+    zoomState,
+    selectedModuleId,
+    sessionId,
+    selectedBombId,
+    updateBombFromStatus,
+  } = useGameStore();
   const mixer = useRef<THREE.AnimationMixer | undefined>(undefined);
   const [isSolved, setIsSolved] = useState<boolean>(false);
 
@@ -157,6 +162,10 @@ export default function SimonSaysModule({
       if (response.strike) {
         setShowingSequence(true);
         sequencePosition.current = 0;
+      }
+
+      if (response.bombStatus?.strikeCount !== undefined && selectedBombId) {
+        updateBombFromStatus(selectedBombId, response.bombStatus.strikeCount);
       }
 
       if (displaySequence) {

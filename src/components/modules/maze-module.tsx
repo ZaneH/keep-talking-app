@@ -21,7 +21,7 @@ export default function MazeModule({
 }: BaseModuleProps & {
   state?: MazeState;
 }) {
-  const { selectedBombId, selectedModuleId, sessionId } = useGameStore();
+  const { selectedBombId, selectedModuleId, sessionId, updateBombFromStatus } = useGameStore();
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const goalRef = useRef<any>(null);
@@ -123,9 +123,13 @@ export default function MazeModule({
         if (newPlayerPosition) {
           setPlayerPosition(newPlayerPosition);
         }
+
+        if (res.bombStatus?.strikeCount !== undefined && selectedBombId) {
+          updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
+        }
       }
     },
-    [sessionId, selectedBombId, selectedModuleId],
+    [sessionId, selectedBombId, selectedModuleId, updateBombFromStatus],
   );
 
   const emittingDot = useMemo(() => {

@@ -25,7 +25,8 @@ export default function PasswordModule({
 }: BaseModuleProps & {
   state?: PasswordState;
 }) {
-  const { selectedBombId, selectedModuleId, sessionId } = useGameStore();
+  const { selectedBombId, selectedModuleId, sessionId, updateBombFromStatus } =
+    useGameStore();
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
@@ -111,6 +112,10 @@ export default function PasswordModule({
           if (res.solved) {
             setIsSolved(true);
           }
+
+          if (res.bombStatus?.strikeCount !== undefined && selectedBombId) {
+            updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
+          }
           break;
 
         default:
@@ -134,9 +139,13 @@ export default function PasswordModule({
         if (newLetters) {
           setLetters(newLetters);
         }
+
+        if (res.bombStatus?.strikeCount !== undefined && selectedBombId) {
+          updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
+        }
       }
     },
-    [sessionId, selectedBombId, selectedModuleId],
+    [sessionId, selectedBombId, selectedModuleId, updateBombFromStatus],
   );
 
   const emittingBacklight = useMemo(() => {
