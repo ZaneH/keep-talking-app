@@ -76,10 +76,18 @@ export default function BigButtonModule({
     });
   }, [selectedModuleId]);
 
+  useEffect(() => {
+    if (selectedModuleId !== moduleId) {
+      clearTimeout(longPressTimeout);
+      setStripColor(undefined);
+    }
+  }, [selectedModuleId]);
+
   const handlePointerDown = useCallback(() => {
     if (isSolved) return;
 
-    onPointerDown();
+    if (!onPointerDown()) return;
+
     setPressDownTime(Date.now());
 
     const timeout = setTimeout(async () => {
@@ -104,15 +112,6 @@ export default function BigButtonModule({
 
   const handlePointerUp = async () => {
     if (isSolved) return;
-
-    guard(() => {
-      clearTimeout(longPressTimeout);
-      setStripColor(undefined);
-
-      const pressDuration = Date.now() - pressDownTime;
-      const isHold = pressDuration > HOLD_THRESHOLD_MS;
-      return { isHold, pressDuration };
-    });
 
     const guarded = guard(() => {
       clearTimeout(longPressTimeout);

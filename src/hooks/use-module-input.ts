@@ -11,10 +11,11 @@ export function useModuleInput(moduleId: string) {
     }
   }, [selectedModuleId, moduleId]);
 
-  const onPointerDown = useCallback(() => {
-    if (zoomState !== "module-view") return;
-    if (selectedModuleId !== moduleId) return;
+  const onPointerDown = useCallback((): boolean => {
+    if (zoomState !== "module-view") return false;
+    if (selectedModuleId !== moduleId) return false;
     setIsPressed(true);
+    return true;
   }, [zoomState, selectedModuleId, moduleId]);
 
   const clearPressed = useCallback(() => {
