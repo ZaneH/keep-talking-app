@@ -224,7 +224,7 @@ function BombSimple({
         return;
       }
 
-      if (bombClicked && isPickedUp) {
+      if (bombClicked && isPickedUp && zoomState !== "module-view") {
         setIsDragging(true);
         lastPointerPosition.current = { x: event.clientX, y: event.clientY };
         event.preventDefault();
