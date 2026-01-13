@@ -1,5 +1,4 @@
 import { Text } from "@react-three/drei";
-import { type ThreeEvent } from "@react-three/fiber";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { NeedyKnobState } from "../../generated/proto/needy_knob_module.pb";
 import { useGameStore } from "../../hooks/use-game-store";
@@ -10,6 +9,7 @@ import type { BaseModuleProps } from "./module";
 import Module from "./module";
 import { CardinalDirection } from "../../generated/proto/common.pb";
 import { CustomMaterials } from "./custom-materials";
+import { useGuardedInput } from "../../hooks/use-module-input";
 
 const RED_TEXT_OFFSET = 0.003;
 
@@ -39,6 +39,7 @@ export default function NeedyKnobModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
+  const { onPointerDown, guard } = useGuardedInput(moduleId);
   const [countdownStartedAt, setCountdownStartedAt] = useState<
     number | undefined
   >(Number(state?.countdownStartedAt));
@@ -85,8 +86,12 @@ export default function NeedyKnobModule({
   }, [countdownStartedAt, currentTime]);
 
   const onDialClick = useCallback(
-    async (_e: ThreeEvent<MouseEvent>) => {
-      if (selectedModuleId !== moduleId) return;
+    async () => {
+      const guarded = guard(() => {
+        if (selectedModuleId !== moduleId) return undefined;
+        return true;
+      });
+      if (guarded === undefined) return;
 
       const res = await GameService.SendInput({
         sessionId,
@@ -108,7 +113,7 @@ export default function NeedyKnobModule({
         updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
       }
     },
-    [sessionId, selectedBombId, selectedModuleId, updateBombFromStatus],
+    [sessionId, selectedBombId, selectedModuleId, updateBombFromStatus, guard],
   );
 
   return (
@@ -441,6 +446,7 @@ export default function NeedyKnobModule({
               rotation={[0, dialRotation, 0]}
               scale={0.183}
               ref={dialRef}
+              onPointerDown={onPointerDown}
               onClick={onDialClick}
             />
           </group>

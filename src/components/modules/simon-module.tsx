@@ -6,6 +6,7 @@ import type { SimonState } from "../../generated/proto/simon_module.pb";
 import { useGameStore } from "../../hooks/use-game-store";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
+import { useGuardedInput } from "../../hooks/use-module-input";
 import { GameService } from "../../services/api";
 import { CustomMaterials } from "./custom-materials";
 import Module, { type BaseModuleProps } from "./module";
@@ -29,24 +30,21 @@ export default function SimonSaysModule({
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
   const {
-    zoomState,
     selectedModuleId,
     sessionId,
     selectedBombId,
     updateBombFromStatus,
   } = useGameStore();
+  const { onPointerDown, guard } = useGuardedInput(moduleId);
   const mixer = useRef<THREE.AnimationMixer | undefined>(undefined);
   const [isSolved, setIsSolved] = useState<boolean>(false);
 
-  // Keep track of flash animation to prevent funky clicks
   const isAnimating = useRef<boolean>(false);
 
-  // Tracks the visible state of the module (sequence of colors)
   const [currentSequence, setCurrentSequence] = useState(
     state?.currentSequence || [],
   );
 
-  // Track whether we should be in auto-demonstration mode
   const sequencePosition = useRef<number>(0);
   const [showingSequence, setShowingSequence] = useState(true);
 
@@ -119,15 +117,18 @@ export default function SimonSaysModule({
 
   const onButtonClick = useCallback(
     async (event: ThreeEvent<PointerEvent>) => {
-      if (isSolved) return;
-      if (selectedModuleId !== moduleId) return;
-      if (!event.object) return;
-      if (isAnimating.current) return;
+      const guarded = guard(() => {
+        if (isSolved) return undefined;
+        if (selectedModuleId !== moduleId) return undefined;
+        if (!event.object) return undefined;
+        if (isAnimating.current) return undefined;
+        return event.object;
+      });
+      if (guarded === undefined) return;
+      const selectedMesh: any = guarded;
 
-      // Stop showing sequence
       setShowingSequence(false);
 
-      const selectedMesh: any = event.object;
       const selectedMaterial = selectedMesh.material;
 
       createFlashingAnimation(selectedMesh, selectedMaterial);
@@ -177,13 +178,15 @@ export default function SimonSaysModule({
       }
     },
     [
-      zoomState,
       mixer,
       isAnimating,
       selectedModuleId,
       showingSequence,
       selectedBombId,
       moduleId,
+      guard,
+      isSolved,
+      updateBombFromStatus,
     ],
   );
 
@@ -204,39 +207,28 @@ export default function SimonSaysModule({
   );
 
   useFrame((_, delta) => {
-    // Update animation mixer
     mixer.current?.update(delta);
 
-    // If we're not in demonstration mode or the sequence is empty, don't proceed
     if (!showingSequence || currentSequence.length === 0) return;
 
-    // Get elapsed time from the global clock
     const elapsedTime = globalSimonClock.getElapsedTime();
 
-    // Calculate the total cycle time for the entire sequence plus pause
     const fullCycleTime =
       currentSequence.length * SEQUENCE_DELAY + SEQUENCE_PAUSE;
     const normalizedTime = elapsedTime % fullCycleTime;
 
-    // Only process during the sequence demonstration part of the cycle
     if (normalizedTime < currentSequence.length * SEQUENCE_DELAY) {
-      // Calculate which step in the sequence we should be showing
       const currentIndex = Math.floor(normalizedTime / SEQUENCE_DELAY);
       const timeInStep = normalizedTime % SEQUENCE_DELAY;
 
-      // Flash the button if we're in the flash phase and not already animating
       if (timeInStep < FLASH_DURATION && !isAnimating.current) {
-        // Only flash if this is a new index (prevent flashing the same button twice)
         if (currentIndex !== lastFlashedIndex.current) {
           const colorToFlash = currentSequence[currentIndex];
           flashButtonByColor(colorToFlash);
 
-          // Update the last flashed index
           lastFlashedIndex.current = currentIndex;
         }
       } else if (timeInStep >= FLASH_DURATION) {
-        // Reset the last flashed index when we're outside the flash phase
-        // This ensures we'll flash again when we come back to this index
         if (currentIndex === lastFlashedIndex.current) {
           lastFlashedIndex.current = -1;
         }
@@ -262,6 +254,7 @@ export default function SimonSaysModule({
             geometry={nodes.SimonSaysPatternD.geometry}
             material={materials.GreenLight}
             position={[0, -0.034, 0.03]}
+            onPointerDown={onPointerDown}
             onPointerUp={onButtonClick}
             ref={greenButtonRef}
           />
@@ -271,6 +264,7 @@ export default function SimonSaysModule({
             geometry={nodes.SimonSaysPatternL.geometry}
             material={materials.RedLight}
             position={[-0.034, 0, 0.03]}
+            onPointerDown={onPointerDown}
             onPointerUp={onButtonClick}
             ref={redButtonRef}
           />
@@ -280,6 +274,7 @@ export default function SimonSaysModule({
             geometry={nodes.SimonSaysPatternR.geometry}
             material={materials.YellowLight}
             position={[0.034, 0, 0.03]}
+            onPointerDown={onPointerDown}
             onPointerUp={onButtonClick}
             ref={yellowButtonRef}
           />
@@ -289,6 +284,7 @@ export default function SimonSaysModule({
             geometry={nodes.SimonSaysPatternU.geometry}
             material={materials.BlueLight}
             position={[0, 0.034, 0.03]}
+            onPointerDown={onPointerDown}
             onPointerUp={onButtonClick}
             ref={blueButtonRef}
           />

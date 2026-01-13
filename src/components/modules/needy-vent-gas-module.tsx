@@ -8,6 +8,7 @@ import { useModuleModel } from "../../hooks/use-module-model";
 import { GameService } from "../../services/api";
 import type { BaseModuleProps } from "./module";
 import Module from "./module";
+import { useGuardedInput } from "../../hooks/use-module-input";
 
 const TEXT_Y_OFFSET = 0.003;
 const GREEN_TEXT_OFFSET = 0.001;
@@ -50,6 +51,7 @@ export default function NeedyVentGasModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
+  const { onPointerDown, guard } = useGuardedInput(moduleId);
   const [countdownStartedAt, setCountdownStartedAt] = useState<
     number | undefined
   >(Number(state?.countdownStartedAt));
@@ -78,11 +80,15 @@ export default function NeedyVentGasModule({
   }, [countdownStartedAt, currentTime]);
 
   const onButtonClick = useCallback(
-    async (e: ThreeEvent<MouseEvent>) => {
-      if (selectedModuleId !== moduleId) return;
-      if (!e.object) return;
+    async (event: ThreeEvent<MouseEvent>) => {
+      const guarded = guard(() => {
+        if (selectedModuleId !== moduleId) return undefined;
+        if (!event.object) return undefined;
+        return event.object;
+      });
+      if (guarded === undefined) return;
 
-      const button = e.object;
+      const button = guarded;
       let input = false;
       if (button === yButtonRef.current) {
         input = true;
@@ -108,7 +114,7 @@ export default function NeedyVentGasModule({
         updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
       }
     },
-    [sessionId, selectedBombId, selectedModuleId, updateBombFromStatus],
+    [sessionId, selectedBombId, selectedModuleId, updateBombFromStatus, guard, yButtonRef],
   );
 
   return (
@@ -163,6 +169,7 @@ export default function NeedyVentGasModule({
             position={[0.011, -0.037, 0.012]}
             scale={1.252}
             ref={nButtonRef}
+            onPointerDown={onPointerDown}
             onClick={onButtonClick}
           />
           <mesh
@@ -173,6 +180,7 @@ export default function NeedyVentGasModule({
             position={[-0.011, -0.037, 0.012]}
             scale={1.252}
             ref={nButtonRef}
+            onPointerDown={onPointerDown}
             onClick={onButtonClick}
           />
           <mesh

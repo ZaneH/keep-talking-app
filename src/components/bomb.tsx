@@ -213,6 +213,7 @@ function BombSimple({
 
         zoomToModule(modId, cameraTargetPosition, lookAt);
         event.preventDefault();
+        event.stopPropagation();
         return;
       }
 
