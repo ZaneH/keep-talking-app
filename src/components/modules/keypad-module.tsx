@@ -49,6 +49,7 @@ export default function KeypadModule({
 
   const onKeypadClick = useCallback(
     async (event: ThreeEvent<MouseEvent>) => {
+      event.stopPropagation();
       if (isSolved) return;
 
       const guarded = guard(() => {
