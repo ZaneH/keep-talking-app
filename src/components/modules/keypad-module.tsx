@@ -27,7 +27,7 @@ export default function KeypadModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
-  const { selectedModuleId, selectedBombId, sessionId } = useGameStore();
+  const { selectedModuleId, selectedBombId, sessionId, updateBombFromStatus } = useGameStore();
   const [i1, i2, i3, i4] = useLoader(TextureLoader, [
     `/symbols/${state?.displayedSymbols?.[0]}.png`,
     `/symbols/${state?.displayedSymbols?.[1]}.png`,
@@ -84,6 +84,10 @@ export default function KeypadModule({
 
     if (res.solved) {
       setIsSolved(true);
+    }
+
+    if (res.bombStatus?.strikeCount !== undefined && selectedBombId) {
+      updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
     }
   };
 

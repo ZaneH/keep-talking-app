@@ -7,6 +7,8 @@ import Module, { type BaseModuleProps } from "./module";
 import { useFrame } from "@react-three/fiber";
 
 const SCREEN_OFFSET = 0.035;
+const X_OFFSET = -0.05;
+const X_SPACING = 0.024;
 
 function TextLabel() {
   const { startedAt, timerDuration } = useBomb();
@@ -42,6 +44,46 @@ function TextLabel() {
   );
 }
 
+function StrikeOverlays() {
+  const { strikeCount, maxStrikes } = useBomb();
+  const strikes = strikeCount ?? 0;
+  const max = maxStrikes ?? 0;
+
+  return (
+    <>
+      {Array.from({ length: max }).map((_, index) =>
+        index >= strikes ? (
+          <Text
+            key={index}
+            fontSize={0.04}
+            position={[X_OFFSET + X_SPACING * index, -0.0425, SCREEN_OFFSET]}
+            color="grey"
+            font="/fonts/Digital7_Mono.ttf"
+          >
+            X
+            <meshStandardMaterial emissiveIntensity={3.5} color="gray" />
+          </Text>
+        ) : (
+          <Text
+            key={index}
+            fontSize={0.04}
+            position={[X_OFFSET + X_SPACING * index, -0.0425, SCREEN_OFFSET]}
+            color={"red"}
+            font="/fonts/Digital7_Mono.ttf"
+          >
+            X
+            <meshStandardMaterial
+              emissive="red"
+              emissiveIntensity={3.5}
+              color="red"
+            />
+          </Text>
+        ),
+      )}
+    </>
+  );
+}
+
 export default function ClockModule({
   moduleId,
   name = "clock",
@@ -54,6 +96,7 @@ export default function ClockModule({
   return (
     <Module id={moduleId} position={position}>
       <TextLabel />
+      <StrikeOverlays />
       <mesh
         castShadow
         receiveShadow

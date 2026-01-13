@@ -35,7 +35,7 @@ export default function SimpleWiresModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
-  const { sessionId, selectedBombId, selectedModuleId } = useGameStore();
+  const { sessionId, selectedBombId, selectedModuleId, updateBombFromStatus } = useGameStore();
   const [isSolved, setIsSolved] = useState(false);
 
   const [wireConfig, setWireConfig] = useState<{
@@ -100,6 +100,10 @@ export default function SimpleWiresModule({
 
       if (resp?.solved) {
         setIsSolved(true);
+      }
+
+      if (resp?.bombStatus?.strikeCount !== undefined && selectedBombId) {
+        updateBombFromStatus(selectedBombId, resp.bombStatus.strikeCount);
       }
 
       setWireConfig((prev) => {

@@ -40,7 +40,7 @@ export default function MemoryModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
-  const { sessionId, selectedBombId, selectedModuleId } = useGameStore();
+  const { sessionId, selectedBombId, selectedModuleId, updateBombFromStatus } = useGameStore();
   const [stage, setStage] = useState<number>(state?.stage || 1);
   const [screenWord, setScreenWord] = useState(state?.screenNumber);
   const [buttons, setButtons] = useState(state?.displayedNumbers);
@@ -76,8 +76,12 @@ export default function MemoryModule({
 
       const newStage = res?.memoryInputResult?.memoryState?.stage;
       setStage(newStage || 1);
+
+      if (res.bombStatus?.strikeCount !== undefined && selectedBombId) {
+        updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
+      }
     },
-    [moduleId, selectedModuleId, sessionId, selectedBombId, isSolved],
+    [moduleId, selectedModuleId, sessionId, selectedBombId, isSolved, updateBombFromStatus],
   );
 
   return (

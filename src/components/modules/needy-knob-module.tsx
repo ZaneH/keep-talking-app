@@ -35,7 +35,7 @@ export default function NeedyKnobModule({
 }: BaseModuleProps & {
   state?: NeedyKnobState;
 }) {
-  const { selectedBombId, selectedModuleId, sessionId } = useGameStore();
+  const { selectedBombId, selectedModuleId, sessionId, updateBombFromStatus } = useGameStore();
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
@@ -103,8 +103,12 @@ export default function NeedyKnobModule({
       const newDialDirection =
         res.needyKnobInputResult?.needyKnobState?.dialDirection;
       setDialDirection(newDialDirection);
+
+      if (res.bombStatus?.strikeCount !== undefined && selectedBombId) {
+        updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
+      }
     },
-    [sessionId, selectedBombId, selectedModuleId],
+    [sessionId, selectedBombId, selectedModuleId, updateBombFromStatus],
   );
 
   return (

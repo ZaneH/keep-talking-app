@@ -41,11 +41,18 @@ type BasePlayerInput = {
 export type PlayerInput = BasePlayerInput
   & OneOf<{ wiresInput: ModulesWires_module.WiresInput; passwordInput: ModulesPassword_module.PasswordInput; bigButtonInput: ModulesBig_button_module.BigButtonInput; simonInput: ModulesSimon_module.SimonInput; keypadInput: ModulesKeypad_module.KeypadInput; whosOnFirstInput: ModulesWhos_on_first_module.WhosOnFirstInput; memoryInput: ModulesMemory_module.MemoryInput; morseInput: ModulesMorse_module.MorseInput; needyVentGasInput: ModulesNeedy_vent_gas_module.NeedyVentGasInput; needyKnobInput: ModulesNeedy_knob_module.NeedyKnobInput; mazeInput: ModulesMaze_module.MazeInput }>
 
+export type BombStatus = {
+  strikeCount?: number
+  maxStrikes?: number
+  exploded?: boolean
+}
+
 
 type BasePlayerInputResult = {
   moduleId?: string
   strike?: boolean
   solved?: boolean
+  bombStatus?: BombStatus
 }
 
 export type PlayerInputResult = BasePlayerInputResult

@@ -37,7 +37,7 @@ export default function MorseModule({
 }: BaseModuleProps & {
   state?: MorseState;
 }) {
-  const { selectedBombId, selectedModuleId, sessionId } = useGameStore();
+  const { selectedBombId, selectedModuleId, sessionId, updateBombFromStatus } = useGameStore();
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
@@ -186,6 +186,10 @@ export default function MorseModule({
         if (res.solved) {
           setIsSolved(true);
         }
+
+        if (res.bombStatus?.strikeCount !== undefined && selectedBombId) {
+          updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
+        }
       } else if (
         event.object === freqDownRef.current ||
         event.object === freqUpRef.current
@@ -212,9 +216,13 @@ export default function MorseModule({
         setDisplayedFrequency(newFreq);
         const newIdx = res.morseInputResult?.morseState?.selectedFrequencyIndex;
         setSelectedFrequencyIndex(newIdx || 0);
+
+        if (res.bombStatus?.strikeCount !== undefined && selectedBombId) {
+          updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
+        }
       }
     },
-    [isSolved, selectedModuleId, moduleId, sessionId, selectedBombId],
+    [isSolved, selectedModuleId, moduleId, sessionId, selectedBombId, updateBombFromStatus],
   );
 
   return (
