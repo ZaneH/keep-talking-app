@@ -182,7 +182,6 @@ export default function Scene() {
         <Table />
       </group>
 
-      <Environment files="/dikhololo_night_1k.hdr" />
       <EffectComposer autoClear={false}>
         <BrightnessContrast contrast={0.18} />
         <Outline

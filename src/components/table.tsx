@@ -35,14 +35,6 @@ export default function Table() {
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.Roof001.geometry}
-        material={materials["Wall Brick"]}
-        position={[0, 2.73, 0]}
-        rotation={[0, 0, Math.PI]}
-      />
-      <mesh
-        castShadow
-        receiveShadow
         geometry={nodes.WallB001.geometry}
         material={materials["Wall Brick"]}
         position={[0, 1.674, -1.674]}
