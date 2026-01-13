@@ -5,6 +5,7 @@ import { type MemoryState } from "../../generated/proto/memory_module.pb";
 import { useGameStore } from "../../hooks/use-game-store";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
+import { useGuardedInput } from "../../hooks/use-module-input";
 import { GameService } from "../../services/api";
 import { getNamedRoot } from "../../utils/node-finder";
 import { CustomMaterials } from "./custom-materials";
@@ -41,6 +42,7 @@ export default function MemoryModule({
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
   const { sessionId, selectedBombId, selectedModuleId, updateBombFromStatus } = useGameStore();
+  const { onPointerDown, guard } = useGuardedInput(moduleId);
   const [stage, setStage] = useState<number>(state?.stage || 1);
   const [screenWord, setScreenWord] = useState(state?.screenNumber);
   const [buttons, setButtons] = useState(state?.displayedNumbers);
@@ -48,11 +50,15 @@ export default function MemoryModule({
 
   const onButtonClick = useCallback(
     async (event: ThreeEvent<MouseEvent>) => {
-      if (isSolved) return;
-      if (selectedModuleId !== moduleId) return;
-      if (!event.object) return;
+      const guarded = guard(() => {
+        if (isSolved) return undefined;
+        if (selectedModuleId !== moduleId) return undefined;
+        if (!event.object) return undefined;
+        return event.object;
+      });
+      if (guarded === undefined) return;
 
-      const parent = getNamedRoot(event.object, "MemoryButton");
+      const parent = getNamedRoot(guarded, "MemoryButton");
       const buttonIndex = parent?.userData.buttonIndex;
 
       const res = await GameService.SendInput({
@@ -81,7 +87,7 @@ export default function MemoryModule({
         updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
       }
     },
-    [moduleId, selectedModuleId, sessionId, selectedBombId, isSolved, updateBombFromStatus],
+    [moduleId, selectedModuleId, sessionId, selectedBombId, isSolved, updateBombFromStatus, guard],
   );
 
   return (
@@ -112,6 +118,7 @@ export default function MemoryModule({
               geometry={nodes.MemoryC1.geometry}
               material={materials.TanButton}
               position={[-0.042, 0, 0]}
+              onPointerDown={onPointerDown}
               onClick={onButtonClick}
             >
               <Text
@@ -129,6 +136,7 @@ export default function MemoryModule({
               geometry={nodes.MemoryC2.geometry}
               material={materials.TanButton}
               position={[-0.014, 0, 0]}
+              onPointerDown={onPointerDown}
               onClick={onButtonClick}
             >
               <Text
@@ -146,6 +154,7 @@ export default function MemoryModule({
               geometry={nodes.MemoryC3.geometry}
               material={materials.TanButton}
               position={[0.014, 0, 0]}
+              onPointerDown={onPointerDown}
               onClick={onButtonClick}
             >
               <Text
@@ -163,6 +172,7 @@ export default function MemoryModule({
               geometry={nodes.MemoryC4.geometry}
               material={materials.TanButton}
               position={[0.042, 0, 0]}
+              onPointerDown={onPointerDown}
               onClick={onButtonClick}
             >
               <Text

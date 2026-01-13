@@ -5,6 +5,7 @@ import { type WhosOnFirstState } from "../../generated/proto/whos_on_first_modul
 import { useGameStore } from "../../hooks/use-game-store";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
+import { useGuardedInput } from "../../hooks/use-module-input";
 import { GameService } from "../../services/api";
 import { getNamedRoot } from "../../utils/node-finder";
 import { CustomMaterials } from "./custom-materials";
@@ -38,6 +39,7 @@ export default function WhosOnFirstModule({
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
   const { sessionId, selectedBombId, selectedModuleId, updateBombFromStatus } = useGameStore();
+  const { onPointerDown, guard } = useGuardedInput(moduleId);
   const [stage, setStage] = useState<number>(state?.stage || 1);
   const [screenWord, setScreenWord] = useState(state?.screenWord);
   const [buttons, setButtons] = useState(state?.buttonWords);
@@ -45,11 +47,15 @@ export default function WhosOnFirstModule({
 
   const onWordClick = useCallback(
     async (event: ThreeEvent<MouseEvent>) => {
-      if (isSolved) return;
-      if (selectedModuleId !== moduleId) return;
-      if (!event.object) return;
+      const guarded = guard(() => {
+        if (isSolved) return undefined;
+        if (selectedModuleId !== moduleId) return undefined;
+        if (!event.object) return undefined;
+        return event.object;
+      });
+      if (guarded === undefined) return;
 
-      const parent = getNamedRoot(event.object, "WOFButton");
+      const parent = getNamedRoot(guarded, "WOFButton");
       const word = parent?.userData.word;
 
       const res = await GameService.SendInput({
@@ -79,7 +85,7 @@ export default function WhosOnFirstModule({
         updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
       }
     },
-    [moduleId, selectedModuleId, sessionId, selectedBombId, isSolved, updateBombFromStatus],
+    [moduleId, selectedModuleId, sessionId, selectedBombId, isSolved, updateBombFromStatus, guard],
   );
 
   return (
@@ -100,6 +106,7 @@ export default function WhosOnFirstModule({
             geometry={nodes.LTop.geometry}
             material={materials.TanButton}
             position={[-0.028, 0.032, 0]}
+            onPointerDown={onPointerDown}
             onClick={onWordClick}
             name="WOFButton"
             userData={{
@@ -116,6 +123,7 @@ export default function WhosOnFirstModule({
             geometry={nodes.RTop.geometry}
             material={materials.TanButton}
             position={[0.028, 0.032, 0]}
+            onPointerDown={onPointerDown}
             onClick={onWordClick}
             name="WOFButton"
             userData={{
@@ -132,6 +140,7 @@ export default function WhosOnFirstModule({
             geometry={nodes.LMid.geometry}
             material={materials.TanButton}
             position={[-0.028, 0, 0]}
+            onPointerDown={onPointerDown}
             onClick={onWordClick}
             name="WOFButton"
             userData={{
@@ -148,6 +157,7 @@ export default function WhosOnFirstModule({
             geometry={nodes.RMid.geometry}
             material={materials.TanButton}
             position={[0.028, 0, 0]}
+            onPointerDown={onPointerDown}
             onClick={onWordClick}
             name="WOFButton"
             userData={{
@@ -164,6 +174,7 @@ export default function WhosOnFirstModule({
             geometry={nodes.LBot.geometry}
             material={materials.TanButton}
             position={[-0.028, -0.032, 0]}
+            onPointerDown={onPointerDown}
             onClick={onWordClick}
             name="WOFButton"
             userData={{
@@ -180,6 +191,7 @@ export default function WhosOnFirstModule({
             geometry={nodes.RBot.geometry}
             material={materials.TanButton}
             position={[0.028, -0.032, 0]}
+            onPointerDown={onPointerDown}
             onClick={onWordClick}
             name="WOFButton"
             userData={{

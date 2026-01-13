@@ -11,6 +11,7 @@ import { useGameStore } from "../../hooks/use-game-store";
 import type { MorseState } from "../../generated/proto/morse_module.pb";
 import { CustomMaterials } from "./custom-materials";
 import * as THREE from "three";
+import { useGuardedInput } from "../../hooks/use-module-input";
 
 const TEXT_OFFSET = 0.013;
 const FONT_SIZE = 0.015;
@@ -41,6 +42,7 @@ export default function MorseModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
+  const { onPointerDown, guard } = useGuardedInput(moduleId);
   const displayedPattern = state?.displayedPattern;
   const [displayedFrequency, setDisplayedFrequency] = useState(
     state?.displayedFrequency,
@@ -169,11 +171,15 @@ export default function MorseModule({
 
   const onButtonClick = useCallback(
     async (event: ThreeEvent<MouseEvent>) => {
-      if (isSolved) return;
-      if (selectedModuleId !== moduleId) return;
-      if (!event.object) return;
+      const guarded = guard(() => {
+        if (isSolved) return undefined;
+        if (selectedModuleId !== moduleId) return undefined;
+        if (!event.object) return undefined;
+        return event.object;
+      });
+      if (guarded === undefined) return;
 
-      if (event.object === txButtonRef.current) {
+      if (guarded === txButtonRef.current) {
         const res = await GameService.SendInput({
           sessionId,
           bombId: selectedBombId,
@@ -191,11 +197,11 @@ export default function MorseModule({
           updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
         }
       } else if (
-        event.object === freqDownRef.current ||
-        event.object === freqUpRef.current
+        guarded === freqDownRef.current ||
+        guarded === freqUpRef.current
       ) {
         let direction: IncrementDecrement;
-        if (event.object === freqDownRef.current) {
+        if (guarded === freqDownRef.current) {
           direction = IncrementDecrement.DECREMENT;
         } else {
           direction = IncrementDecrement.INCREMENT;
@@ -222,7 +228,7 @@ export default function MorseModule({
         }
       }
     },
-    [isSolved, selectedModuleId, moduleId, sessionId, selectedBombId, updateBombFromStatus],
+    [isSolved, selectedModuleId, moduleId, sessionId, selectedBombId, updateBombFromStatus, guard, txButtonRef, freqDownRef, freqUpRef],
   );
 
   return (
@@ -293,6 +299,7 @@ export default function MorseModule({
           position={[0, -0.054, 0.028]}
           scale={[0.972, 0.972, 1]}
           ref={txButtonRef}
+          onPointerDown={onPointerDown}
           onClick={onButtonClick}
         />
         <mesh
@@ -318,7 +325,8 @@ export default function MorseModule({
             position={[-0.06, -0.01, 0.003]}
             rotation={[Math.PI / 2, 0, 0]}
             ref={freqDownRef}
-            onClick={onButtonClick}
+            onPointerDown={onPointerDown}
+          onClick={onButtonClick}
           />
           <mesh
             castShadow
@@ -328,7 +336,8 @@ export default function MorseModule({
             position={[0.06, -0.01, 0.003]}
             rotation={[Math.PI / 2, 0, 0]}
             ref={freqUpRef}
-            onClick={onButtonClick}
+            onPointerDown={onPointerDown}
+          onClick={onButtonClick}
           />
           <mesh
             castShadow

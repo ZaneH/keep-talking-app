@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import Module, { type BaseModuleProps } from "./module";
@@ -8,6 +8,7 @@ import {
 } from "../../generated/proto/keypad_module.pb";
 import { GameService } from "../../services/api";
 import { useGameStore } from "../../hooks/use-game-store";
+import { useGuardedInput } from "../../hooks/use-module-input";
 import { CustomMaterials } from "./custom-materials";
 import { type ThreeEvent } from "@react-three/fiber";
 import { useLoader } from "@react-three/fiber";
@@ -27,7 +28,9 @@ export default function KeypadModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
-  const { selectedModuleId, selectedBombId, sessionId, updateBombFromStatus } = useGameStore();
+  const { selectedModuleId, selectedBombId, sessionId, updateBombFromStatus } =
+    useGameStore();
+  const { onPointerDown, guard } = useGuardedInput(moduleId);
   const [i1, i2, i3, i4] = useLoader(TextureLoader, [
     `/symbols/${state?.displayedSymbols?.[0]}.png`,
     `/symbols/${state?.displayedSymbols?.[1]}.png`,
@@ -44,52 +47,67 @@ export default function KeypadModule({
     false,
   ]);
 
-  const onKeypadClick = async (event: ThreeEvent<MouseEvent>) => {
-    if (isSolved) return;
-    if (selectedModuleId !== moduleId) return;
-    if (!event.object) return;
+  const onKeypadClick = useCallback(
+    async (event: ThreeEvent<MouseEvent>) => {
+      if (isSolved) return;
 
-    const object = event.object;
-    if (!object.userData.symbol) {
-      console.warn("No symbol found on the clicked object");
-      return;
-    }
+      const guarded = guard(() => {
+        if (!event.object) return undefined;
+        const object = event.object;
+        if (!object.userData.symbol) {
+          console.warn("No symbol found on the clicked object");
+          return undefined;
+        }
+        return object.userData.symbol as Symbol;
+      });
 
-    const res = await GameService.SendInput({
-      sessionId: sessionId,
-      bombId: selectedBombId,
-      moduleId: selectedModuleId,
-      keypadInput: {
-        symbol: object.userData.symbol as Symbol,
-      },
-    });
+      if (!guarded) return;
 
-    const activatedSymbols =
-      res.keypadInputResult?.keypadState?.activatedSymbols;
-    setLitState((prev) => {
-      const displayedSymbols = state?.displayedSymbols || [];
-      const newState = [...prev];
-      const brSymbol = displayedSymbols[0];
-      const blSymbol = displayedSymbols[1];
-      const tlSymbol = displayedSymbols[2];
-      const trSymbol = displayedSymbols[3];
+      const res = await GameService.SendInput({
+        sessionId: sessionId,
+        bombId: selectedBombId,
+        moduleId: selectedModuleId,
+        keypadInput: {
+          symbol: guarded,
+        },
+      });
 
-      newState[0] = activatedSymbols?.includes(brSymbol) || false;
-      newState[1] = activatedSymbols?.includes(blSymbol) || false;
-      newState[2] = activatedSymbols?.includes(tlSymbol) || false;
-      newState[3] = activatedSymbols?.includes(trSymbol) || false;
+      const activatedSymbols =
+        res.keypadInputResult?.keypadState?.activatedSymbols;
+      setLitState((prev) => {
+        const displayedSymbols = state?.displayedSymbols || [];
+        const newState = [...prev];
+        const brSymbol = displayedSymbols[0];
+        const blSymbol = displayedSymbols[1];
+        const tlSymbol = displayedSymbols[2];
+        const trSymbol = displayedSymbols[3];
 
-      return newState;
-    });
+        newState[0] = activatedSymbols?.includes(brSymbol) || false;
+        newState[1] = activatedSymbols?.includes(blSymbol) || false;
+        newState[2] = activatedSymbols?.includes(tlSymbol) || false;
+        newState[3] = activatedSymbols?.includes(trSymbol) || false;
 
-    if (res.solved) {
-      setIsSolved(true);
-    }
+        return newState;
+      });
 
-    if (res.bombStatus?.strikeCount !== undefined && selectedBombId) {
-      updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
-    }
-  };
+      if (res.solved) {
+        setIsSolved(true);
+      }
+
+      if (res.bombStatus?.strikeCount !== undefined && selectedBombId) {
+        updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
+      }
+    },
+    [
+      isSolved,
+      guard,
+      sessionId,
+      selectedBombId,
+      selectedModuleId,
+      state?.displayedSymbols,
+      updateBombFromStatus,
+    ],
+  );
 
   return (
     <Module id={moduleId} position={position}>
@@ -104,6 +122,7 @@ export default function KeypadModule({
       >
         <mesh
           position={[0.017, -0.041, 0.036]}
+          onPointerDown={onPointerDown}
           onClick={onKeypadClick}
           userData={{ symbol: state?.displayedSymbols?.[0] }}
         >
@@ -112,6 +131,7 @@ export default function KeypadModule({
         </mesh>
         <mesh
           position={[-0.044, -0.041, 0.036]}
+          onPointerDown={onPointerDown}
           onClick={onKeypadClick}
           userData={{ symbol: state?.displayedSymbols?.[1] }}
         >
@@ -120,6 +140,7 @@ export default function KeypadModule({
         </mesh>
         <mesh
           position={[-0.044, 0.02, 0.036]}
+          onPointerDown={onPointerDown}
           onClick={onKeypadClick}
           userData={{ symbol: state?.displayedSymbols?.[2] }}
         >
@@ -128,6 +149,7 @@ export default function KeypadModule({
         </mesh>
         <mesh
           position={[0.017, 0.02, 0.036]}
+          onPointerDown={onPointerDown}
           onClick={onKeypadClick}
           userData={{ symbol: state?.displayedSymbols?.[3] }}
         >
@@ -142,6 +164,7 @@ export default function KeypadModule({
           material={materials.TanButton}
           position={[0.017, -0.044, 0.032]}
           scale={[0.972, 0.972, 1]}
+          onPointerDown={onPointerDown}
           onClick={onKeypadClick}
         />
         <mesh
@@ -152,6 +175,7 @@ export default function KeypadModule({
           material={materials.TanButton}
           position={[-0.044, -0.044, 0.032]}
           scale={[0.972, 0.972, 1]}
+          onPointerDown={onPointerDown}
           onClick={onKeypadClick}
         />
         <mesh
@@ -162,6 +186,7 @@ export default function KeypadModule({
           material={materials.TanButton}
           position={[-0.044, 0.017, 0.032]}
           scale={[0.972, 0.972, 1]}
+          onPointerDown={onPointerDown}
           onClick={onKeypadClick}
         />
         <mesh
@@ -172,6 +197,7 @@ export default function KeypadModule({
           material={materials.TanButton}
           position={[0.017, 0.017, 0.032]}
           scale={[0.972, 0.972, 1]}
+          onPointerDown={onPointerDown}
           onClick={onKeypadClick}
         />
         <mesh

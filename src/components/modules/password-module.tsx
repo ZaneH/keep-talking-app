@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import type { BaseModuleProps } from "./module";
@@ -9,6 +9,7 @@ import { type ThreeEvent } from "@react-three/fiber";
 import { IncrementDecrement } from "../../generated/proto/common.pb";
 import { GameService } from "../../services/api";
 import { useGameStore } from "../../hooks/use-game-store";
+import { useGuardedInput } from "../../hooks/use-module-input";
 import type { PasswordState } from "../../generated/proto/password_module.pb";
 import { CustomMaterials } from "./custom-materials";
 
@@ -32,6 +33,7 @@ export default function PasswordModule({
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
   const [letters, setLetters] = useState<string | undefined>(state?.letters);
   const [isSolved, setIsSolved] = useState(false);
+  const { onPointerDown, guard } = useGuardedInput(moduleId);
 
   const lu1Ref = useRef<any>(null);
   const ld1Ref = useRef<any>(null);
@@ -48,89 +50,96 @@ export default function PasswordModule({
   const onButtonClick = useCallback(
     async (e: ThreeEvent<MouseEvent>) => {
       if (isSolved) return;
-      if (selectedModuleId !== moduleId) return;
-      if (!e.object) return;
 
-      e.stopPropagation();
+      const guarded = guard(() => {
+        if (!e.object) return undefined;
+        e.stopPropagation();
 
-      let value = { direction: undefined, index: -1 } as any;
-      const object = e.object;
+        let value = { direction: undefined, index: -1 } as any;
+        const object = e.object;
 
-      switch (object) {
-        case lu1Ref.current:
-          value.direction = IncrementDecrement.INCREMENT;
-          value.index = 0;
-          break;
-        case lu2Ref.current:
-          value.direction = IncrementDecrement.INCREMENT;
-          value.index = 1;
-          break;
-        case lu3Ref.current:
-          value.direction = IncrementDecrement.INCREMENT;
-          value.index = 2;
-          break;
-        case lu4Ref.current:
-          value.direction = IncrementDecrement.INCREMENT;
-          value.index = 3;
-          break;
-        case lu5Ref.current:
-          value.direction = IncrementDecrement.INCREMENT;
-          value.index = 4;
-          break;
+        switch (object) {
+          case lu1Ref.current:
+            value.direction = IncrementDecrement.INCREMENT;
+            value.index = 0;
+            break;
+          case lu2Ref.current:
+            value.direction = IncrementDecrement.INCREMENT;
+            value.index = 1;
+            break;
+          case lu3Ref.current:
+            value.direction = IncrementDecrement.INCREMENT;
+            value.index = 2;
+            break;
+          case lu4Ref.current:
+            value.direction = IncrementDecrement.INCREMENT;
+            value.index = 3;
+            break;
+          case lu5Ref.current:
+            value.direction = IncrementDecrement.INCREMENT;
+            value.index = 4;
+            break;
 
-        case ld1Ref.current:
-          value.direction = IncrementDecrement.DECREMENT;
-          value.index = 0;
-          break;
-        case ld2Ref.current:
-          value.direction = IncrementDecrement.DECREMENT;
-          value.index = 1;
-          break;
-        case ld3Ref.current:
-          value.direction = IncrementDecrement.DECREMENT;
-          value.index = 2;
-          break;
-        case ld4Ref.current:
-          value.direction = IncrementDecrement.DECREMENT;
-          value.index = 3;
-          break;
-        case ld5Ref.current:
-          value.direction = IncrementDecrement.DECREMENT;
-          value.index = 4;
-          break;
+          case ld1Ref.current:
+            value.direction = IncrementDecrement.DECREMENT;
+            value.index = 0;
+            break;
+          case ld2Ref.current:
+            value.direction = IncrementDecrement.DECREMENT;
+            value.index = 1;
+            break;
+          case ld3Ref.current:
+            value.direction = IncrementDecrement.DECREMENT;
+            value.index = 2;
+            break;
+          case ld4Ref.current:
+            value.direction = IncrementDecrement.DECREMENT;
+            value.index = 3;
+            break;
+          case ld5Ref.current:
+            value.direction = IncrementDecrement.DECREMENT;
+            value.index = 4;
+            break;
 
-        case submitButtonRef.current:
-          const res = await GameService.SendInput({
-            sessionId,
-            bombId: selectedBombId,
-            moduleId: selectedModuleId,
-            passwordInput: {
-              submit: {},
-            },
-          });
+          case submitButtonRef.current:
+            return { isSubmit: true };
+        }
 
-          if (res.solved) {
-            setIsSolved(true);
-          }
+        return value.direction !== undefined && value.index !== -1
+          ? { isSubmit: false, direction: value.direction, index: value.index }
+          : undefined;
+      });
 
-          if (res.bombStatus?.strikeCount !== undefined && selectedBombId) {
-            updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
-          }
-          break;
+      if (!guarded) return;
 
-        default:
-          console.log("Unknown object clicked");
-      }
+      if (guarded.isSubmit) {
+        const res = await GameService.SendInput({
+          sessionId,
+          bombId: selectedBombId,
+          moduleId: selectedModuleId,
+          passwordInput: {
+            submit: {},
+          },
+        });
 
-      if (value.direction !== undefined && value.index !== -1) {
+        if (res.solved) {
+          setIsSolved(true);
+        }
+
+        if (res.bombStatus?.strikeCount !== undefined && selectedBombId) {
+          updateBombFromStatus(selectedBombId, res.bombStatus.strikeCount);
+        }
+      } else {
+        const { direction, index } = guarded;
+
         const res = await GameService.SendInput({
           sessionId,
           bombId: selectedBombId,
           moduleId: selectedModuleId,
           passwordInput: {
             letterChange: {
-              direction: value.direction,
-              letterIndex: value.index,
+              direction,
+              letterIndex: index,
             },
           },
         });
@@ -145,7 +154,14 @@ export default function PasswordModule({
         }
       }
     },
-    [sessionId, selectedBombId, selectedModuleId, updateBombFromStatus],
+    [
+      sessionId,
+      selectedBombId,
+      selectedModuleId,
+      updateBombFromStatus,
+      isSolved,
+      guard,
+    ],
   );
 
   const emittingBacklight = useMemo(() => {
@@ -272,6 +288,7 @@ export default function PasswordModule({
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}
           ref={ld1Ref}
+          onPointerDown={onPointerDown}
           onClick={onButtonClick}
         />
         <mesh
@@ -283,6 +300,7 @@ export default function PasswordModule({
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}
           ref={lu1Ref}
+          onPointerDown={onPointerDown}
           onClick={onButtonClick}
         />
         <mesh
@@ -294,6 +312,7 @@ export default function PasswordModule({
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}
           ref={ld2Ref}
+          onPointerDown={onPointerDown}
           onClick={onButtonClick}
         />
         <mesh
@@ -305,6 +324,7 @@ export default function PasswordModule({
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}
           ref={lu2Ref}
+          onPointerDown={onPointerDown}
           onClick={onButtonClick}
         />
         <mesh
@@ -316,6 +336,7 @@ export default function PasswordModule({
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}
           ref={ld3Ref}
+          onPointerDown={onPointerDown}
           onClick={onButtonClick}
         />
         <mesh
@@ -327,6 +348,7 @@ export default function PasswordModule({
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}
           ref={lu3Ref}
+          onPointerDown={onPointerDown}
           onClick={onButtonClick}
         />
         <mesh
@@ -338,6 +360,7 @@ export default function PasswordModule({
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}
           ref={ld4Ref}
+          onPointerDown={onPointerDown}
           onClick={onButtonClick}
         />
         <mesh
@@ -349,6 +372,7 @@ export default function PasswordModule({
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}
           ref={lu4Ref}
+          onPointerDown={onPointerDown}
           onClick={onButtonClick}
         />
         <mesh
@@ -360,6 +384,7 @@ export default function PasswordModule({
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}
           ref={ld5Ref}
+          onPointerDown={onPointerDown}
           onClick={onButtonClick}
         />
         <mesh
@@ -371,6 +396,7 @@ export default function PasswordModule({
           rotation={[Math.PI / 2, 0, 0]}
           scale={[0.972, 1, 0.972]}
           ref={lu5Ref}
+          onPointerDown={onPointerDown}
           onClick={onButtonClick}
         />
 
@@ -390,6 +416,7 @@ export default function PasswordModule({
           position={[0, -0.061, 0.032]}
           scale={[1.118, 1.118, 1.15]}
           ref={submitButtonRef}
+          onPointerDown={onPointerDown}
           onClick={onButtonClick}
         />
         <mesh

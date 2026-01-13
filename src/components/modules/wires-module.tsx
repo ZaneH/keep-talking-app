@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { Color } from "../../generated/proto/common.pb";
 import type { WiresState } from "../../generated/proto/wires_module.pb";
 import { useGameStore } from "../../hooks/use-game-store";
+import { useGuardedInput } from "../../hooks/use-module-input";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import { GameService } from "../../services/api";
@@ -35,7 +36,9 @@ export default function SimpleWiresModule({
   const { nodes, materials } = useModuleModel(name);
   const meshRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
-  const { sessionId, selectedBombId, selectedModuleId, updateBombFromStatus } = useGameStore();
+  const { sessionId, selectedBombId, selectedModuleId, updateBombFromStatus } =
+    useGameStore();
+  const { onPointerDown, guard } = useGuardedInput(moduleId);
   const [isSolved, setIsSolved] = useState(false);
 
   const [wireConfig, setWireConfig] = useState<{
@@ -76,25 +79,30 @@ export default function SimpleWiresModule({
   const onWireSelect = useCallback(
     async (event: ThreeEvent<PointerEvent>) => {
       if (isSolved) return;
-      if (selectedModuleId !== moduleId) return;
-      if (!event.object) return;
 
-      const object = event.object;
+      const guarded = guard(() => {
+        if (!event.object) return undefined;
 
-      const position = object.userData.position;
-      if (
-        !wireConfig.wires[position].visible ||
-        wireConfig.wires[position].cut
-      ) {
-        return;
-      }
+        const object = event.object;
+        const position = object.userData.position;
+        if (
+          !wireConfig.wires[position].visible ||
+          wireConfig.wires[position].cut
+        ) {
+          return undefined;
+        }
+
+        return position;
+      });
+
+      if (guarded === undefined) return;
 
       const resp = await GameService.SendInput({
         bombId: selectedBombId!,
         sessionId: sessionId!,
         moduleId,
         wiresInput: {
-          wirePosition: position,
+          wirePosition: guarded,
         },
       });
 
@@ -108,18 +116,11 @@ export default function SimpleWiresModule({
 
       setWireConfig((prev) => {
         const newWires = [...prev.wires];
-        newWires[position] = { ...newWires[position], cut: true };
+        newWires[guarded] = { ...newWires[guarded], cut: true };
         return { wires: newWires };
       });
     },
-    [
-      selectedBombId,
-      sessionId,
-      moduleId,
-      wireConfig,
-      selectedModuleId,
-      isSolved,
-    ],
+    [selectedBombId, sessionId, moduleId, wireConfig, isSolved, guard],
   );
 
   const wirePositions = [
@@ -296,6 +297,8 @@ export default function SimpleWiresModule({
                   position={wire.position}
                   isCut={wire.cut}
                   disabled={isSolved}
+                  onPointerDown={onPointerDown}
+                  onPointerUp={onWireSelect}
                   uncutWire={
                     <mesh
                       castShadow
@@ -307,7 +310,6 @@ export default function SimpleWiresModule({
                       position={
                         wirePositions[wire.position].position as ThreeNumbers
                       }
-                      onPointerUp={onWireSelect}
                     />
                   }
                   cutWire={
@@ -349,12 +351,16 @@ const CuttableWire = ({
   cutWire,
   isCut,
   disabled,
+  onPointerDown,
+  onPointerUp,
 }: {
   position: number;
   uncutWire: React.ReactNode;
   cutWire: React.ReactNode;
   isCut: boolean;
   disabled: boolean;
+  onPointerDown?: () => void;
+  onPointerUp?: (_event: ThreeEvent<PointerEvent>) => void;
 }) => {
   const wireRef = useRef<THREE.Mesh>(null);
   const { unhighlight } = useHighlight();
@@ -375,6 +381,8 @@ const CuttableWire = ({
           ref={wireRef}
           disabled={disabled}
           userData={{ position }}
+          onPointerDown={onPointerDown}
+          onPointerUp={onPointerUp}
         />
       )}
     </group>

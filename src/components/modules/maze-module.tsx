@@ -10,6 +10,7 @@ import { GameService } from "../../services/api";
 import { useGameStore } from "../../hooks/use-game-store";
 import type { MazeState } from "../../generated/proto/maze_module.pb";
 import { CustomMaterials } from "./custom-materials";
+import { useGuardedInput } from "../../hooks/use-module-input";
 
 const GRID_OFFSET = 0.0165;
 
@@ -26,6 +27,7 @@ export default function MazeModule({
   const meshRef = useRef<any>(null);
   const goalRef = useRef<any>(null);
   const { pointerHandlers } = useModuleHighlight({ id: moduleId, meshRef });
+  const { onPointerDown, guard } = useGuardedInput(moduleId);
   const [playerPosition, setPlayerPosition] = useState(state?.playerPosition);
   const [isSolved, setIsSolved] = useState(false);
 
@@ -77,15 +79,18 @@ export default function MazeModule({
   const westRef = useRef<any>(null);
 
   const onButtonClick = useCallback(
-    async (e: ThreeEvent<MouseEvent>) => {
-      if (isSolved) return;
-      if (selectedModuleId !== moduleId) return;
-      if (!e.object) return;
-
-      e.stopPropagation();
+    async (event: ThreeEvent<MouseEvent>) => {
+      const guarded = guard(() => {
+        if (isSolved) return undefined;
+        if (selectedModuleId !== moduleId) return undefined;
+        if (!event.object) return undefined;
+        event.stopPropagation();
+        return event.object;
+      });
+      if (guarded === undefined) return;
 
       let value = { direction: undefined } as any;
-      const object = e.object;
+      const object = guarded;
 
       switch (object) {
         case northRef.current:
@@ -129,7 +134,7 @@ export default function MazeModule({
         }
       }
     },
-    [sessionId, selectedBombId, selectedModuleId, updateBombFromStatus],
+    [sessionId, selectedBombId, selectedModuleId, updateBombFromStatus, isSolved, guard, northRef, southRef, eastRef, westRef],
   );
 
   const emittingDot = useMemo(() => {
@@ -458,6 +463,7 @@ export default function MazeModule({
         geometry={nodes.MazeButtonsE.geometry}
         material={materials["Plastic Dark"]}
         ref={eastRef}
+        onPointerDown={onPointerDown}
         onClick={onButtonClick}
       />
       <mesh
@@ -466,6 +472,7 @@ export default function MazeModule({
         geometry={nodes.MazeButtonsW.geometry}
         material={materials["Plastic Dark"]}
         ref={westRef}
+        onPointerDown={onPointerDown}
         onClick={onButtonClick}
       />
       <mesh
@@ -474,6 +481,7 @@ export default function MazeModule({
         geometry={nodes.MazeButtonsN.geometry}
         material={materials["Plastic Dark"]}
         ref={northRef}
+        onPointerDown={onPointerDown}
         onClick={onButtonClick}
       />
       <mesh
@@ -482,6 +490,7 @@ export default function MazeModule({
         geometry={nodes.MazeButtonsS.geometry}
         material={materials["Plastic Dark"]}
         ref={southRef}
+        onPointerDown={onPointerDown}
         onClick={onButtonClick}
       />
       <mesh

@@ -4,6 +4,7 @@ import * as THREE from "three";
 import type { BigButtonState } from "../../generated/proto/big_button_module.pb";
 import { Color, PressType } from "../../generated/proto/common.pb";
 import { useGameStore } from "../../hooks/use-game-store";
+import { useGuardedInput } from "../../hooks/use-module-input";
 import useModuleHighlight from "../../hooks/use-module-highlight";
 import { useModuleModel } from "../../hooks/use-module-model";
 import { GameService } from "../../services/api";
@@ -33,6 +34,7 @@ export default function BigButtonModule({
   const [stripColor, setStripColor] = useState<Color>();
   const { sessionId, selectedBombId, selectedModuleId, updateBombFromStatus } =
     useGameStore();
+  const { onPointerDown, guard } = useGuardedInput(moduleId);
   const [isCoverOpen, setIsCoverOpen] = useState(false);
   const [prevAction, setPrevAction] = useState<any>(null);
   const [pressDownTime, setPressDownTime] = useState(0);
@@ -45,7 +47,6 @@ export default function BigButtonModule({
       prevAction.fadeOut(0);
     }
 
-    // Flip up cover
     if (moduleId === selectedModuleId) {
       const action = actions?.OpenAction;
       if (action) {
@@ -56,7 +57,6 @@ export default function BigButtonModule({
         setIsCoverOpen(true);
       }
     } else {
-      // Leaving the module, close the cover, etc.
       const action = actions?.CloseAction;
       if (action && isCoverOpen) {
         action.clampWhenFinished = true;
@@ -76,10 +76,10 @@ export default function BigButtonModule({
     });
   }, [selectedModuleId]);
 
-  const onPointerDown = useCallback(() => {
+  const handlePointerDown = useCallback(() => {
     if (isSolved) return;
-    if (selectedModuleId !== moduleId) return;
 
+    onPointerDown();
     setPressDownTime(Date.now());
 
     const timeout = setTimeout(async () => {
@@ -100,24 +100,33 @@ export default function BigButtonModule({
     }, 500);
 
     setLongPressTimeout(timeout);
-  }, [
-    selectedModuleId,
-    moduleId,
-    sessionId,
-    selectedBombId,
-    isSolved,
-    state?.buttonColor,
-  ]);
+  }, [isSolved, onPointerDown, sessionId, selectedBombId, moduleId, updateBombFromStatus]);
 
-  const onPointerUp = async () => {
+  const handlePointerUp = async () => {
     if (isSolved) return;
-    if (selectedModuleId !== moduleId) return;
 
-    clearTimeout(longPressTimeout);
-    setStripColor(undefined);
+    guard(() => {
+      clearTimeout(longPressTimeout);
+      setStripColor(undefined);
 
-    const pressDuration = Date.now() - pressDownTime;
-    const isHold = pressDuration > HOLD_THRESHOLD_MS;
+      const pressDuration = Date.now() - pressDownTime;
+      const isHold = pressDuration > HOLD_THRESHOLD_MS;
+      return { isHold, pressDuration };
+    });
+
+    const guarded = guard(() => {
+      clearTimeout(longPressTimeout);
+      setStripColor(undefined);
+
+      const pressDuration = Date.now() - pressDownTime;
+      const isHold = pressDuration > HOLD_THRESHOLD_MS;
+      return { isHold };
+    });
+
+    if (!guarded) return;
+
+    const { isHold } = guarded;
+
     const response = await GameService.SendInput({
       sessionId,
       bombId: selectedBombId,
@@ -173,8 +182,8 @@ export default function BigButtonModule({
             position={[0, -0.108, 0.127]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={[0.043, 0.006, 0.043]}
-            onPointerDown={onPointerDown}
-            onPointerUp={onPointerUp}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
           />
           <Text
             position={[0, -0.108, TEXT_OFFSET]}
