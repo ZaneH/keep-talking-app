@@ -4,10 +4,14 @@ import { Perf } from "r3f-perf";
 import * as THREE from "three";
 import { HighlightProvider } from "./highlight-provider";
 import Scene from "./scene";
+import { useState } from "react";
+import { PerformanceMonitor } from "@react-three/drei";
 
 export default function Canvas() {
+  const [dpr, setDpr] = useState<number>(2);
   return (
     <Canvas3
+      dpr={dpr}
       shadows
       gl={{
         antialias: true,
@@ -18,6 +22,10 @@ export default function Canvas() {
         } as any,
       }}
     >
+      <PerformanceMonitor
+        factor={1}
+        onChange={({ factor }) => setDpr(Math.floor(0.5 + 1.5 * factor))}
+      />
       <HighlightProvider>
         <Scene />
       </HighlightProvider>
