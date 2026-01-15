@@ -34,7 +34,6 @@ export type CreateGameRequest = BaseCreateGameRequest
 
 export type CreateGameResponse = {
   sessionId?: string
-  configInfo?: Game_configGame_config.GeneratedConfigInfo
 }
 
 

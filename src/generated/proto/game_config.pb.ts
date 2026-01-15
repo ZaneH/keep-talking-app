@@ -87,11 +87,3 @@ type BaseGameConfig = {
 
 export type GameConfig = BaseGameConfig
   & OneOf<{ level: LevelConfig; preset: PresetMissionConfig; custom: CustomBombConfig }>
-
-export type GeneratedConfigInfo = {
-  timerSeconds?: number
-  maxStrikes?: number
-  numFaces?: number
-  totalModules?: number
-  moduleTypes?: ModulesModules.ModuleModuleType[]
-}
