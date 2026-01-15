@@ -5,6 +5,7 @@
 */
 
 import * as ModulesBig_button_module from "./big_button_module.pb"
+import * as Game_configGame_config from "./game_config.pb"
 import * as ModulesKeypad_module from "./keypad_module.pb"
 import * as ModulesMaze_module from "./maze_module.pb"
 import * as ModulesMemory_module from "./memory_module.pb"
@@ -24,11 +25,16 @@ type OneOf<T> =
       (K extends string & keyof T ? { [k in K]: T[K] } & Absent<T, K>
         : never)
     : never);
-export type CreateGameRequest = {
+
+type BaseCreateGameRequest = {
 }
+
+export type CreateGameRequest = BaseCreateGameRequest
+  & OneOf<{ config: Game_configGame_config.GameConfig }>
 
 export type CreateGameResponse = {
   sessionId?: string
+  configInfo?: Game_configGame_config.GeneratedConfigInfo
 }
 
 

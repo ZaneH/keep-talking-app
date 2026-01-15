@@ -1,6 +1,6 @@
-# Keep Talking App
+# defuse.party web
 
-A web-based implementation of a bomb defusal puzzle game built with React, Three.js, TypeScript, and gRPC.
+A web-based implementation of a popular bomb defusal puzzle game built with React, Three.js, TypeScript, and gRPC.
 
 ## Prerequisites
 
